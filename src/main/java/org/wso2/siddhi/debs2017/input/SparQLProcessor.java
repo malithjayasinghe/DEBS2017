@@ -51,10 +51,11 @@ public class SparQLProcessor {
      * @param fileName the file which contains RDF triples
      */
     public static void excuteQuery(String fileName) {
+
         try {
 
             FileWriter writer = new FileWriter(new File(fileName));
-            String data;
+
             Model model = RDFDataMgr.loadModel("molding_machine_100M_rdf.ttl");
             Query query = QueryFactory.create(queryString);
                 try(QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
@@ -67,11 +68,12 @@ public class SparQLProcessor {
                         Resource machine = soln.getResource("machine");
                         Literal value = soln.getLiteral("value");
                         if (!value.toString().contains("#string")) {
-                            data = machine.getLocalName() + "," + time.getLocalName() + "," + property.getLocalName() + "," + value.getFloat() + "\n";
-                            writer.write(data);
+                           writer.write(machine.getLocalName() + "," + time.getLocalName() + "," + property.getLocalName() + "," + value.getFloat() + "\n");
                         }
                     }
                 }
+            writer.flush();
+            writer.close();
 
         } catch (IOException e) {
             e.printStackTrace();
