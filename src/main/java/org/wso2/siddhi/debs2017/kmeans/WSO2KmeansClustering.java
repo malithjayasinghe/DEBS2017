@@ -45,8 +45,11 @@ public class WSO2KmeansClustering {
         this.center = new ArrayList<>();
         this.centerOld = new ArrayList<>();
 
+        if(k > data.size()){
+           this.k = data.size();
+        }
         createGroup();
-        //System.out.println("No of Clusters :"+this.k+"\nNo of clustergroups :"+this.clusterGroup.size());
+       // System.out.println("No of Clusters :"+this.k+"\nNo of clustergroups :"+this.clusterGroup.size());
 
         initializeCenters();
         /*System.out.println("\nInitial center values");
