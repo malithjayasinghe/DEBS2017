@@ -29,9 +29,15 @@ public class WSO2KmeansClustering {
     private ArrayList<Double> center;
     private ArrayList<Double> centerOld;
 
+
+    /**Constructor
+     *
+     * @param c : the no of cluster centers
+     * @param max : the maximum no of iterations
+     * @param dataSet : the data set to be clustered
+     */
     public WSO2KmeansClustering(int c, int max, ArrayList<Double> dataSet ){
 
-        //intialize variables
         this.k = c;
         this.maxIter = max;
         this.data = dataSet;
@@ -39,11 +45,9 @@ public class WSO2KmeansClustering {
         this.center = new ArrayList<>();
         this.centerOld = new ArrayList<>();
 
-        //create a group to hold data related to each cluster
         createGroup();
         //System.out.println("No of Clusters :"+this.k+"\nNo of clustergroups :"+this.clusterGroup.size());
 
-        //initialize the cluster centers to first k values
         initializeCenters();
         /*System.out.println("\nInitial center values");
         for (int i=0; i<center.size(); i++){
@@ -52,7 +56,7 @@ public class WSO2KmeansClustering {
 
         int iter = 0;
         do {
-            //calculate the nearest center to each data point and add the data to the cluster of respective center
+
             assignToCluster();
             /*System.out.println("\nChecking each cluster");
             for (int i=0; i<clusterGroup.size(); i++){
@@ -63,9 +67,7 @@ public class WSO2KmeansClustering {
                 System.out.println("New C" + (i) + " " + center.get(i));
             }*/
 
-
-            //reinitialize the cluster centres and store the old ones
-            reintializeCluster(iter);
+            reinitializeCluster(iter);
 
             if (!center.equals(centerOld)) {
                 for (int i = 0; i < clusterGroup.size(); i++) {
@@ -80,7 +82,11 @@ public class WSO2KmeansClustering {
 
     }
 
-    private void reintializeCluster(int iter) {
+    /**
+     * reinitialize the cluster centres and store the old ones
+     * @param iter : current no. of iterations
+     */
+    private void reinitializeCluster(int iter) {
         for (int i = 0; i < k; i++) {
             if (iter == 0) {
                 centerOld.add(center.get(i));
@@ -93,6 +99,11 @@ public class WSO2KmeansClustering {
         }
     }
 
+    /**
+     * base on the data points assigned to the cluster, recalculates the cluster center
+     * @param doubles : the cluster
+     * @return : the new cluster center
+     */
     private Double average(ArrayList<Double> doubles) {
         double sum = 0;
         for (int i =0; i<doubles.size(); i++) {
@@ -101,6 +112,9 @@ public class WSO2KmeansClustering {
         return (sum/doubles.size());
     }
 
+    /**
+     * calculates the nearest center to each data point and adds the data to the cluster of respective center
+     */
     private void assignToCluster() {
         ArrayList<Double> difference = new ArrayList<>();
         double dataItem, cenVal, diff;
@@ -118,12 +132,18 @@ public class WSO2KmeansClustering {
         }
     }
 
+    /**
+     * initialize the cluster centers to first k values
+     */
     private void initializeCenters() {
         for (int i=0; i<this.k; i++) {
             center.add(data.get(i));
         }
     }
 
+    /**
+     * creates a group to hold data related to each cluster
+     */
     private void createGroup() {
         for(int i=0; i<this.k; i++){
             this.clusterGroup.add(new ArrayList<>());
@@ -131,7 +151,11 @@ public class WSO2KmeansClustering {
 
     }
 
-
+    /**
+     * calculates distance between each data point and cluster and returns the closest center
+     * @param diff: the distance to each cluster center for a data point
+     * @return : the closest cluster
+     */
     private int getMinIndex(ArrayList<Double> diff) {
         int minIndex = 0;
         for(int i = 1; i<diff.size(); i++){
@@ -144,6 +168,10 @@ public class WSO2KmeansClustering {
         return minIndex;
     }
 
+    /**
+     * gives the cluster center the last data point belongs to
+     * @return : center
+     */
     public int getCenter(){
         for (int i = 0; i<clusterGroup.size(); i++){
             for (int j=0; j<clusterGroup.get(i).size(); j++) {

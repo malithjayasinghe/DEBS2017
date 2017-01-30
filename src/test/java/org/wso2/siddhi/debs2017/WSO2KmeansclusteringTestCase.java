@@ -47,6 +47,7 @@ public class WSO2KmeansclusteringTestCase {
         log.info("Test case 1 result : "+test.getCenter());
         Assert.assertEquals(test.getCenter(), 0);
 
+
     }
 
     @org.junit.Test
