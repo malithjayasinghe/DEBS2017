@@ -1,6 +1,7 @@
 package org.wso2.siddhi.debs2017.kmeans;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -25,9 +26,9 @@ public class WSO2KmeansClustering {
     private int k;
     private int maxIter;
     private ArrayList<Double> data = new ArrayList<>();
-    private ArrayList<ArrayList<Double>> clusterGroup;
-    private ArrayList<Double> center;
-    private ArrayList<Double> centerOld;
+    private ArrayList<Double>[] clusterGroup;
+    private double[] center;
+    private double[] centerOld;
 
 
     /**Constructor
@@ -41,9 +42,9 @@ public class WSO2KmeansClustering {
         this.k = c;
         this.maxIter = max;
         this.data = dataSet;
-        this.clusterGroup = new ArrayList<>();
-        this.center = new ArrayList<>();
-        this.centerOld = new ArrayList<>();
+        this.clusterGroup = new ArrayList[k];
+        this.center = new double[k];
+        this.centerOld =  new double[k];
 
         if(k > data.size()){
            this.k = data.size();
@@ -72,9 +73,10 @@ public class WSO2KmeansClustering {
 
             reinitializeCluster(iter);
 
-            if (!center.equals(centerOld)) {
-                for (int i = 0; i < clusterGroup.size(); i++) {
-                    clusterGroup.get(i).removeAll(clusterGroup.get(i));
+            //if (!center.equals(centerOld)) {
+            if (!Arrays.equals(center, centerOld)) {
+                for (int i = 0; i < clusterGroup.length; i++) {
+                    clusterGroup[i].removeAll(clusterGroup[i]);
                 }
             }
             iter++;
@@ -92,12 +94,12 @@ public class WSO2KmeansClustering {
     private void reinitializeCluster(int iter) {
         for (int i = 0; i < k; i++) {
             if (iter == 0) {
-                centerOld.add(center.get(i));
+                centerOld[i] = center[i];
             } else {
-                centerOld.set(i, center.get(i));
+                centerOld[i] = center[i];
             }
-            if (!clusterGroup.get(i).isEmpty()) {
-                center.set(i, average(clusterGroup.get(i)));
+            if (!clusterGroup[i].isEmpty()) {
+                center[i] = average(clusterGroup[i]);
             }
         }
     }
@@ -123,14 +125,14 @@ public class WSO2KmeansClustering {
         double dataItem, cenVal, diff;
         for(int i =0; i<data.size(); i++) {
             dataItem = data.get(i);
-            for (int j=0; j<center.size(); j++) {
-                cenVal = center.get(j);
+            for (int j=0; j<center.length; j++) {
+                cenVal = center[j];
                 diff = Math.abs(cenVal-dataItem);
                 difference.add(diff);
 
             }
             int minIndex = getMinIndex(difference);
-            clusterGroup.get(minIndex).add(dataItem);
+            clusterGroup[minIndex].add(dataItem);
             difference.removeAll(difference);
         }
     }
@@ -140,7 +142,8 @@ public class WSO2KmeansClustering {
      */
     private void initializeCenters() {
         for (int i=0; i<this.k; i++) {
-            center.add(data.get(i));
+            center[i] = data.get(i);
+            clusterGroup[i] = new ArrayList<Double>();
         }
     }
 
@@ -176,9 +179,9 @@ public class WSO2KmeansClustering {
      * @return : center
      */
     public int getCenter(){
-        for (int i = 0; i<clusterGroup.size(); i++){
-            for (int j=0; j<clusterGroup.get(i).size(); j++) {
-                if(clusterGroup.get(i).get(j).equals(data.get((data.size()-1)))){
+        for (int i = 0; i<clusterGroup.length; i++){
+            for (int j=0; j<clusterGroup[i].size(); j++) {
+                if(clusterGroup[i].get(j).equals(data.get((data.size()-1)))){
 
                     return i;
 
