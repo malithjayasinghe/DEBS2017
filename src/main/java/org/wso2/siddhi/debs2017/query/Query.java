@@ -27,7 +27,6 @@ public class Query {
      */
     public static void main(String[] args){
 
-
         Query query = new Query();
         query.run();
     }
@@ -39,8 +38,6 @@ public class Query {
 
 
         SiddhiManager siddhiManager = new SiddhiManager();
-
-
 
         String inStreamDefinition = "@config(async = 'true') \n" +
                 "define stream inStream (machine string, tstamp string, dimension string, " +
@@ -77,12 +74,8 @@ public class Query {
         });
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
-
-        //@ Sachini : Handle DataLoader here
         DataPublisher dataPublisher = new DataPublisher("100m_extract.csv",inputHandler);
-
         executionPlanRuntime.start();
-
         //the data is passed as objects to the inputhandler
         dataPublisher.publish();
 

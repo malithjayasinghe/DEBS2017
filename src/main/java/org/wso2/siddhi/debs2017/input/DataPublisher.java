@@ -17,6 +17,12 @@ public class DataPublisher {
     private static final Logger log = Logger.getLogger(DataPublisher.class);
     private InputHandler inputHandler;
 
+    /**
+     * The constructor
+     *
+     * @param fileName the file name to read the data
+     * @param inputHandler the inputhandler of the execution plan
+     */
     public DataPublisher(String fileName, InputHandler inputHandler){
 
         this.fileName = fileName;
@@ -24,16 +30,16 @@ public class DataPublisher {
 
     }
 
-
-
+    /**
+     * Publishes data into Siddhi
+     */
     public void publish() {
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
-            String line = null;
-            Scanner scanner = null;
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
-                scanner = new Scanner(line);
+                Scanner scanner = new Scanner(line);
                 scanner.useDelimiter(",");
                 while(scanner.hasNext())
                 {
@@ -43,7 +49,6 @@ public class DataPublisher {
                     String property = scanner.next();
                     double value = Double.parseDouble(scanner.next());
                     try {
-
                         inputHandler.send(new Object[]{machineName, timeStamp, property, value});
 
                     }catch (InterruptedException e){
