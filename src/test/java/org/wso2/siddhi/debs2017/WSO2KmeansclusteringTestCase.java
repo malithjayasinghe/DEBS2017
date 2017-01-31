@@ -36,16 +36,15 @@ public class WSO2KmeansclusteringTestCase {
     public void Test1() throws InterruptedException {
         log.info("WSO2KmeansClustering TestCase1");
         ArrayList<Double> input = new ArrayList<>();
-        input.add(7.0);
-        input.add(8.0);
-        input.add(10.0);
-        input.add(1.0);
-        input.add(7.0);
-        input.add(9.0);
         input.add(2.0);
+        input.add(10.0);
+        input.add(8.0);
+        input.add(1.0);
+        input.add(4.0);
+        input.add(3.0);
+        input.add(10.0);
         WSO2KmeansClustering test =new WSO2KmeansClustering(3, 10, input);
-        log.info("Test case 1 result : "+test.getCenter());
-        Assert.assertEquals(test.getCenter(), 0);
+        Assert.assertEquals(test.getCenter(), 3);
 
 
     }
@@ -61,8 +60,7 @@ public class WSO2KmeansclusteringTestCase {
         input.add(5.0);
         input.add(6.0);
         WSO2KmeansClustering test =new WSO2KmeansClustering(2, 10, input);
-        log.info("Test case 2 result : "+test.getCenter());
-        Assert.assertEquals(test.getCenter(), 1);
+        Assert.assertEquals(test.getCenter(), 2);
     }
 
     @org.junit.Test
@@ -73,7 +71,7 @@ public class WSO2KmeansclusteringTestCase {
         input.add(8.0);
         WSO2KmeansClustering test =new WSO2KmeansClustering(3, 10, input);
         log.info("Test case 1 result : "+test.getCenter());
-        Assert.assertEquals(test.getCenter(), 1);
+        Assert.assertEquals(test.getCenter(), 2);
 
 
     }

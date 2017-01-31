@@ -184,11 +184,22 @@ public class WSO2KmeansClustering {
      * @return : center
      */
     public int getCenter(){
+        //take the copy of original
+        double [] unsoted = new double[center.length];
+        for(int i =0; i<unsoted.length; i++){
+            unsoted[i] = center[i];
+        }
+        //sort the array
+        Arrays.sort(center);
+
         for (int i = 0; i<clusterGroup.length; i++){
             for (int j=0; j<clusterGroup[i].size(); j++) {
                 if(clusterGroup[i].get(j).equals(data.get((data.size()-1)))){
-
-                    return i;
+                    //i is the index in actual
+                    double radius = unsoted[i];
+                    //check for sorted index
+                    int clusterNo = Arrays.binarySearch(center, radius)+1;
+                    return clusterNo;
 
                 }
             }
@@ -196,21 +207,7 @@ public class WSO2KmeansClustering {
         return -1;
     }
 
-    /*public static void main (String[] args){
 
-        ArrayList<Double> input = new ArrayList<>();
-        input.add(1.0);
-        input.add(3.0);
-        input.add(2.0);
-        input.add(4.0);
-        input.add(5.0);
-        input.add(6.0);
-        input.add(1.0);
-        WSO2KmeansClustering test =new WSO2KmeansClustering(2, 10, input);
-        System.out.println(" cluster :"+test.getCenter());
-
-
-    }*/
 
 
 
