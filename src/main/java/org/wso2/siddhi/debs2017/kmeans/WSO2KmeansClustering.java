@@ -42,20 +42,23 @@ public class WSO2KmeansClustering {
         this.k = c;
         this.maxIter = max;
         this.data = dataSet;
+
+        if(k > data.size()){
+            this.k = data.size();
+        }
+
         this.clusterGroup = new ArrayList[k];
         this.center = new double[k];
         this.centerOld =  new double[k];
 
-        if(k > data.size()){
-           this.k = data.size();
-        }
+
         createGroup();
-       // System.out.println("No of Clusters :"+this.k+"\nNo of clustergroups :"+this.clusterGroup.size());
+       //System.out.println("No of Clusters :"+this.k+"\nNo of clustergroups :"+this.clusterGroup.length);
 
         initializeCenters();
         /*System.out.println("\nInitial center values");
-        for (int i=0; i<center.size(); i++){
-            System.out.println("c"+i+":"+center.get(i));
+        for (int i=0; i<center.length; i++){
+            System.out.println("c"+i+":"+center[i]);
         }*/
 
         int iter = 0;
@@ -63,26 +66,28 @@ public class WSO2KmeansClustering {
 
             assignToCluster();
             /*System.out.println("\nChecking each cluster");
-            for (int i=0; i<clusterGroup.size(); i++){
-                System.out.println("clusterG "+i+":"+clusterGroup.get(i));
+            for (int i=0; i<clusterGroup.length; i++){
+                System.out.println("clusterG "+i+":"+clusterGroup[i]);
             };
 
-            for (int i = 0; i < center.size(); i++) {
-                System.out.println("New C" + (i) + " " + center.get(i));
+            for (int i = 0; i < center.length; i++) {
+                System.out.println("New C" + (i) + " " + center[i]);
             }*/
 
             reinitializeCluster(iter);
 
-            //if (!center.equals(centerOld)) {
+
             if (!Arrays.equals(center, centerOld)) {
                 for (int i = 0; i < clusterGroup.length; i++) {
                     clusterGroup[i].removeAll(clusterGroup[i]);
+
                 }
             }
             iter++;
-        } while (!center.equals(centerOld) && iter<=maxIter);
 
-        //System.out.println("Iterations : "+iter);
+        } while (!Arrays.equals(center, centerOld) && iter<maxIter);
+
+       // System.out.println("Iterations : "+iter);
 
 
     }
@@ -152,7 +157,7 @@ public class WSO2KmeansClustering {
      */
     private void createGroup() {
         for(int i=0; i<this.k; i++){
-            this.clusterGroup.add(new ArrayList<>());
+            this.clusterGroup[i] = new ArrayList<>();
         }
 
     }
@@ -190,6 +195,22 @@ public class WSO2KmeansClustering {
         }
         return -1;
     }
+
+    /*public static void main (String[] args){
+
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(1.0);
+        input.add(3.0);
+        input.add(2.0);
+        input.add(4.0);
+        input.add(5.0);
+        input.add(6.0);
+        input.add(1.0);
+        WSO2KmeansClustering test =new WSO2KmeansClustering(2, 10, input);
+        System.out.println(" cluster :"+test.getCenter());
+
+
+    }*/
 
 
 
