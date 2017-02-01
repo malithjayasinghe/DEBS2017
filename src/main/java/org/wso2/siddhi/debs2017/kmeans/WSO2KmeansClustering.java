@@ -148,7 +148,7 @@ public class WSO2KmeansClustering {
     private void initializeCenters() {
         for (int i=0; i<this.k; i++) {
             center[i] = data.get(i);
-            clusterGroup[i] = new ArrayList<Double>();
+            clusterGroup[i] = new ArrayList<>();
         }
     }
 
@@ -205,6 +205,18 @@ public class WSO2KmeansClustering {
             }
         }
         return -1;
+    }
+
+    public static void main(String[] args) {
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(1.0);
+        input.add(3.0);
+        input.add(2.0);
+        input.add(4.0);
+        input.add(5.0);
+        input.add(6.0);
+        WSO2KmeansClustering test =new WSO2KmeansClustering(2, 10, input);
+        System.out.println(test.getCenter());
     }
 
 

@@ -17,3 +17,4 @@
 #
 
 cluster=org.wso2.siddhi.debs2017.extension.DimensionAggregator
+test=org.wso2.siddhi.debs2017.extension.Test

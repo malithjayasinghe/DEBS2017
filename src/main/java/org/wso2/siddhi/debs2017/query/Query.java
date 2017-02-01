@@ -51,7 +51,7 @@ public class Query {
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +
                 "begin " +
-                "from inStreamA#window.length(3)" +
+                "from inStreamA#window.length(10)" +
                 "select machine, tstamp, dimension, debs2017:cluster(value) as center" +
                 " insert into outputStream " +
                 "end;");

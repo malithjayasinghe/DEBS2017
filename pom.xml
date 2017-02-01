@@ -42,6 +42,17 @@
       <artifactId>siddhi-query-compiler</artifactId>
       <version>3.1.0</version>
     </dependency>
+      <dependency>
+      <groupId>org.wso2.siddhi</groupId>
+      <artifactId>siddhi-extension-time</artifactId>
+      <version>3.1.0</version>
+      </dependency>
+      <dependency>
+          <groupId>org.wso2.siddhi</groupId>
+          <artifactId>siddhi-extension-timeseries</artifactId>
+          <version>3.1.0</version>
+      </dependency>
+
     <dependency>
       <groupId>org.apache.log4j.wso2</groupId>
       <artifactId>log4j</artifactId>

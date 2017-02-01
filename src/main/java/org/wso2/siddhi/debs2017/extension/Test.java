@@ -23,54 +23,66 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class DimensionAggregator extends AttributeAggregator{
+public class Test extends AttributeAggregator {
     private ArrayList<Double> arr = new ArrayList<>();
+    @Override
     protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
 
     }
 
+    @Override
     public Attribute.Type getReturnType() {
         return null;
     }
 
+    @Override
     public Object processAdd(Object data) {
-        arr.add((Double)data );
-        WSO2KmeansClustering test = new WSO2KmeansClustering(2, 100, arr);
-        // Do the clustering on the elements present in the array list and return the center it belongs to
+        Double blah = (double)data;
+        //System.out.println("Test----------------------"+blah);
+
+        arr.add((Double) data);
+        //System.out.println(arr);
+        WSO2KmeansClustering test = new WSO2KmeansClustering(2, 10, arr);
         return test.getCenter();
     }
 
+    @Override
     public Object processAdd(Object[] objects) {
 
         return null;
     }
 
+    @Override
     public Object processRemove(Object o) {
-        //removes expired events
-        arr.remove(0);
         return null;
     }
 
+    @Override
     public Object processRemove(Object[] objects) {
         return null;
     }
 
+    @Override
     public Object reset() {
         return null;
     }
 
+    @Override
     public void start() {
 
     }
 
+    @Override
     public void stop() {
 
     }
 
+    @Override
     public Object[] currentState() {
         return new Object[0];
     }
 
+    @Override
     public void restoreState(Object[] objects) {
 
     }
