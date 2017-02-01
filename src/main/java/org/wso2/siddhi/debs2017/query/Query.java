@@ -49,11 +49,15 @@ public class Query {
                 "select machine, tstamp, dimension, str:concat(machine, '-', dimension) as partitionId, value " +
                 "insert into inStreamA;" +
                 "\n" +
-                "@info(name = 'query1') partition with ( partitionId of inStreamA) " +
+                "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
                 "from inStreamA#window.length(10)" +
                 "select machine, tstamp, dimension, debs2017:cluster(value) as center" +
-                " insert into outputStream " +
+                " insert into #outputStream; " + //inner stream
+                "\n"+
+                "from #outputStream " +
+                "select machine, tstamp, dimension, debs2017:markov(center) as probability "+
+                "insert into detectAnomaly "+ //innerstream to produce alert if anomaly detected
                 "end;");
 
 
@@ -61,12 +65,16 @@ public class Query {
         System.out.println(inStreamDefinition + query);
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("outputStream", new StreamCallback() {
+        executionPlanRuntime.addCallback("detectAnomaly", new StreamCallback() {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
                 // EventPrinter.print(events);
                 for(Event ev : events){
-                    System.out.println(ev.getData()[0]+"\t"+ ev.getData()[1]+"\t"+ ev.getData()[2]+"\t"+ev.getData()[3]);
+
+                        System.out.println(ev.getData()[0]+","+ ev.getData()[1]+","+ ev.getData()[2]+","+ev.getData()[3]);
+
+
+                    //System.out.println(ev.getData()[3]);
 
 
                 }
