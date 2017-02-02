@@ -42,8 +42,10 @@ public class Test extends AttributeAggregator {
 
         arr.add((Double) data);
         //System.out.println(arr);
+        //System.out.println(arr);
         WSO2KmeansClustering test = new WSO2KmeansClustering(2, 10, arr);
         return test.getCenter();
+       // return 0;
     }
 
     @Override
