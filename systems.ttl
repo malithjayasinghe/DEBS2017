@@ -1,0 +1,18 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix hobbit: <http://w3id.org/hobbit/vocab#> .
+
+<http://www.example.org/exampleSystem/MyOwnSystem> a  hobbit:SystemInstance;
+    rdfs:label  "WSO2DEBS2017"@en;
+    rdfs:comment    "WSO2's DEBS 2017 Grand Challenge Implementation."@en;
+    hobbit:imageName "git.project-hobbit.eu:4567/malithj/debs2017";
+    hobbit:implementsApi <http://benchmark.org/DEBS2017/BenchmarkApi> ;
+    hobbit:instanceOf <http://www.example.org/exampleSystem/System> ;
+    <http://www.example.org/exampleSystem/System#threshold> "0.7"^^xsd:float .
+
+<http://www.example.org/exampleSystem/System> a hobbit:System ;
+    hobbit:hasParameter <http://www.example.org/exampleSystem/System#threshold> .
+
+<http://www.example.org/exampleSystem/System#threshold> a hobbit:FeatureParameter ;
+    rdfs:label  "Feature Parameter of System"@en ;
+    rdfs:comment    "Threshold parameter for System."@en ;
+    rdfs:range  xsd:float .

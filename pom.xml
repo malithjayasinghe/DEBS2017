@@ -8,6 +8,14 @@
   <name>DEBS2017</name>
   <url>http://maven.apache.org</url>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <slf4j.version>1.7.15</slf4j.version>
+        <junit.version>4.11</junit.version>
+    </properties>
+
   <dependencies>
 
     <dependency>
@@ -16,13 +24,23 @@
       <version>4.10</version>
       <scope>test</scope>
     </dependency>
+      <!--<dependency>-->
+          <!--<groupId>org.apache.jena</groupId>-->
+          <!--<artifactId>apache-jena-libs</artifactId>-->
+          <!--<type>pom</type>-->
+          <!--<version>2.12.1</version>-->
+      <!--</dependency>-->
+      <dependency>
+          <groupId>com.hp.hpl.jena</groupId>
+          <artifactId>jena</artifactId>
+          <version>2.5.5</version>
+      </dependency>
       <dependency>
           <groupId>org.apache.jena</groupId>
-          <artifactId>apache-jena-libs</artifactId>
-          <type>pom</type>
-          <version>2.12.1</version>
+          <artifactId>jena-osgi</artifactId>
+          <version>2.13.0</version>
       </dependency>
-    <dependency>
+      <dependency>
       <groupId>org.wso2.siddhi</groupId>
       <artifactId>siddhi-core</artifactId>
       <version>3.1.0</version>
@@ -59,6 +77,12 @@
       <version>1.2.17.wso2v1</version>
     </dependency>
 
+      <dependency>
+          <groupId>org.hobbit</groupId>
+          <artifactId>core</artifactId>
+          <version>0.0.1-SNAPSHOT</version>
+      </dependency>
+
 
   </dependencies>
 
@@ -72,6 +96,16 @@
                 <updatePolicy>daily</updatePolicy>
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
+        </repository>
+        <repository>
+            <id>maven.aksw.internal</id>
+            <name>University Leipzig, AKSW Maven2 Repository</name>
+            <url>http://maven.aksw.org/repository/internal</url>
+        </repository>
+        <repository>
+            <id>maven.aksw.snapshots</id>
+            <name>University Leipzig, AKSW Maven2 Repository</name>
+            <url>http://maven.aksw.org/repository/snapshots</url>
         </repository>
     </repositories>
 
@@ -119,6 +153,42 @@
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                    <!-- filter all the META-INF files of other artifacts -->
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+                                <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+                            </manifestEntries>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                    </transformers>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 

@@ -1,14 +1,14 @@
 package org.wso2.siddhi.debs2017.input;
 
 import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 /*
@@ -58,7 +58,9 @@ public class SparQLProcessor {
 
             Model model = RDFDataMgr.loadModel("molding_machine_100M_rdf.ttl");
             Query query = QueryFactory.create(queryString);
-                try(QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+                //try(QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+
+                QueryExecution qexec = QueryExecutionFactory.create(query, model);
                     ResultSet results = qexec.execSelect();
                     results = ResultSetFactory.copyResults(results);
                     for (; results.hasNext(); ) {
@@ -71,7 +73,7 @@ public class SparQLProcessor {
                            writer.write(machine.getLocalName() + "," + time.getLocalName() + "," + property.getLocalName() + "," + value.getFloat() + "\n");
                         }
                     }
-                }
+               // }
             writer.flush();
             writer.close();
 

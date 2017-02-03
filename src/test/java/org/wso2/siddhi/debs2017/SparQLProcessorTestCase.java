@@ -32,7 +32,7 @@ public class SparQLProcessorTestCase {
     @org.junit.Test
     public void Test1() throws InterruptedException {
         log.info("MedianAggregatorTestCase TestCase");
-        SparQLProcessor.excuteQuery("100m_extract.csv");
+        //SparQLProcessor.excuteQuery("100m_extract.csv");
 
     }
 
