@@ -21,6 +21,7 @@ public class MarkovModel {
     private ArrayList<Integer> getExpiredEvent = new ArrayList<>();
     private HashMap<Integer,Integer> totalTransitions;
     private double totalProbability;
+    private int checkingSequence;
 
 
 
@@ -102,10 +103,11 @@ public class MarkovModel {
 
         //to keep track of the event sequnece so far
         eventOrder.add(center);
-      /*  if(eventOrder.size()-windowSize == 1){
-            reduceCount(getExpiredEvent.get(0),getExpiredEvent.get(1));
-            getExpiredEvent.remove(0);
-        }*/
+       if(eventOrder.size()-checkingSequence == 1){
+//            reduceCount(getExpiredEvent.get(0),getExpiredEvent.get(1));
+//            getExpiredEvent.remove(0);
+           eventOrder.remove(0);
+        }
         //System.out.println(eventOrder);
     }
 
@@ -131,4 +133,6 @@ public class MarkovModel {
     public  int getWindowSize(){return  windowSize;}
 
     public  void setWindowSize(int size){this.windowSize = size;}
+
+    public void setCheckingSequence(int n)  { this.checkingSequence = n;}
 }

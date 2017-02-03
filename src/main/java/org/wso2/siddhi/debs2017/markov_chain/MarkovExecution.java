@@ -11,7 +11,7 @@ public class MarkovExecution {
     AnomalyDetection anomalyDetector = new AnomalyDetection(0.5, "_1");
     String anomaly;
 
-    public String execute(int center) {
+    public String execute(int center, int n) {
 
 
 
@@ -23,6 +23,9 @@ public class MarkovExecution {
 
         //pass the parameter from meta data
        // markovModel.setWindowSize(3);
+
+        //set the sequence to be checked for combined probability
+          markovModel.setCheckingSequence(n);
 
         if(markovModel.getCurrentCenter()==0 && markovModel.getPreviousCenter() == 0){
             //System.out.println("set initial center");
