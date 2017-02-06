@@ -29,6 +29,7 @@ public class WSO2KmeansClustering {
     private ArrayList<Double>[] clusterGroup;
     private double[] center;
     private double[] centerOld;
+    private ArrayList<Double>  kDist;
 
 
     /**Constructor
@@ -46,6 +47,26 @@ public class WSO2KmeansClustering {
         if(k > data.size()){
             this.k = data.size();
         }
+
+        //get the first k distinct values in the data
+        int count = 0;
+        kDist = new ArrayList<>();
+        for (int i =0; i<data.size(); i++){
+            if (! kDist.contains(data.get(i))){
+                kDist.add(data.get(i));
+                count++;
+            }
+            if (count==k){
+                break;
+            }
+        }
+       // System.out.println("kDist : "+kDist);
+
+        // if k values are not found, k should be the same as distinct
+        if(kDist.size()<k){
+            k = kDist.size();
+        }
+
 
         this.clusterGroup = new ArrayList[k];
         this.center = new double[k];
@@ -147,7 +168,7 @@ public class WSO2KmeansClustering {
      */
     private void initializeCenters() {
         for (int i=0; i<this.k; i++) {
-            center[i] = data.get(i);
+            center[i] = kDist.get(i);
             clusterGroup[i] = new ArrayList<>();
         }
     }

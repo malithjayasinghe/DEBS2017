@@ -51,7 +51,7 @@ public class Query {
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
-                "from inStreamA#window.length(10)" +
+                "from inStreamA#window.length(25)" +
                 "select machine, tstamp, dimension, debs2017:cluster(value) as center" +
                 " insert into #outputStream; " + //inner stream
                 "\n"+
@@ -70,10 +70,11 @@ public class Query {
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
                 // EventPrinter.print(events);
                 for(Event ev : events){
+                  // if(ev.getData()[2].equals("_112")) {
 
-                        System.out.println(ev.getData()[0]+","+ ev.getData()[1]+","+ ev.getData()[2]+","+ev.getData()[3]);
+                        System.out.println(ev.getData()[0] + "," + ev.getData()[1] + "," + ev.getData()[2] + "," + ev.getData()[3]);
 
-
+                  // }
                     //System.out.println(ev.getData()[3]);
 
 
