@@ -7,9 +7,6 @@ import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 import org.wso2.siddhi.debs2017.input.DataPublisher;
 
-
-import java.io.File;
-
 /**
  * Created by temp on 1/25/17.
  */
@@ -62,7 +59,7 @@ public class Query {
 
 
 
-        System.out.println(inStreamDefinition + query);
+        //System.out.println(inStreamDefinition + query);
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("detectAnomaly", new StreamCallback() {
@@ -90,7 +87,13 @@ public class Query {
 
 
 
-
+        while(true){
+            try {
+                Thread.currentThread().sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
 
 

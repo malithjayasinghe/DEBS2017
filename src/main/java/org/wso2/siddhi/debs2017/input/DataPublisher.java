@@ -5,7 +5,6 @@ import org.wso2.siddhi.core.stream.input.InputHandler;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -39,6 +38,7 @@ public class DataPublisher {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
                 Scanner scanner = new Scanner(line);
                 scanner.useDelimiter(",");
                 while(scanner.hasNext())
