@@ -19,7 +19,9 @@ public class ComponentStarter {
             // initialize the component
             component.init();
             // run the component
+            logger.info("----AAAA");
             component.run();
+            logger.info("----BBBB");
         } catch (Throwable t) {
             logger.error("Exception while executing component. Exiting with error code.", t);
             success = false;

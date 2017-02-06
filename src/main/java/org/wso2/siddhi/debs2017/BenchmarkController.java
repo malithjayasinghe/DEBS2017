@@ -1,6 +1,7 @@
 package org.wso2.siddhi.debs2017;
 
 import org.apache.jena.rdf.model.NodeIterator;
+import org.apache.log4j.Logger;
 import org.hobbit.core.Commands;
 import org.hobbit.core.components.AbstractBenchmarkController;
 
@@ -10,6 +11,12 @@ import java.io.IOException;
  * Created by miyurud on 2/2/17.
  */
 public class BenchmarkController extends AbstractBenchmarkController {
+
+    public static void main(String[] args){
+        Logger logger = Logger.getLogger(BenchmarkController.class);
+        logger.info("AAAAAAAAAAAAAAAAAA");
+    }
+
     @Override
     public void init() throws Exception {
         super.init();
