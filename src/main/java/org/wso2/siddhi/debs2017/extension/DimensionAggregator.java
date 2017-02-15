@@ -34,10 +34,11 @@ public class DimensionAggregator extends AttributeAggregator{
     }
 
     public Object processAdd(Object data) {
-        arr.add((Double)data );
+
         WSO2KmeansClustering test = new WSO2KmeansClustering(25, 100, arr);
         // Do the clustering on the elements present in the array list and return the center it belongs to
-        return test.getCenter();
+        arr.add((Double)data );
+        return test.getCenter((Double)data);
     }
 
     public Object processAdd(Object[] objects) {

@@ -60,7 +60,7 @@ public class WSO2KmeansClustering {
                 break;
             }
         }
-       // System.out.println("kDist : "+kDist);
+        // System.out.println("kDist : "+kDist);
 
         // if k values are not found, k should be the same as distinct
         if(kDist.size()<k){
@@ -74,7 +74,7 @@ public class WSO2KmeansClustering {
 
 
         createGroup();
-       //System.out.println("No of Clusters :"+this.k+"\nNo of clustergroups :"+this.clusterGroup.length);
+        //System.out.println("No of Clusters :"+this.k+"\nNo of clustergroups :"+this.clusterGroup.length);
 
         initializeCenters();
         /*System.out.println("\nInitial center values");
@@ -108,7 +108,7 @@ public class WSO2KmeansClustering {
 
         } while (!Arrays.equals(center, centerOld) && iter<maxIter);
 
-       // System.out.println("Iterations : "+iter);
+        // System.out.println("Iterations : "+iter);
 
 
     }
@@ -204,41 +204,37 @@ public class WSO2KmeansClustering {
      * gives the cluster center the last data point belongs to
      * @return : center
      */
-    public int getCenter(){
+    public int getCenter(double value){
+        ArrayList<Double> minDist = new ArrayList<>();
         //take the copy of original
         double [] unsoted = new double[center.length];
         for(int i =0; i<unsoted.length; i++){
             unsoted[i] = center[i];
         }
+
         //sort the array
         Arrays.sort(center);
 
-        for (int i = 0; i<clusterGroup.length; i++){
-            for (int j=0; j<clusterGroup[i].size(); j++) {
-                if(clusterGroup[i].get(j).equals(data.get((data.size()-1)))){
-                    //i is the index in actual
-                    double radius = unsoted[i];
-                    //check for sorted index
-                    int clusterNo = Arrays.binarySearch(center, radius)+1;
-                    return clusterNo;
+        //get distance to each
+        for(int i =0; i<center.length; i++){
+            minDist.add(Math.abs(center[i]-value));
 
-                }
-            }
         }
-        return -1;
+
+        return getMinIndex(minDist)+1;
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         ArrayList<Double> input = new ArrayList<>();
         input.add(1.0);
         input.add(3.0);
         input.add(2.0);
         input.add(4.0);
         input.add(5.0);
-        input.add(6.0);
+
         WSO2KmeansClustering test =new WSO2KmeansClustering(2, 10, input);
-        System.out.println(test.getCenter());
-    }
+        System.out.println(test.getCenter(1.0));
+    }*/
 
 
 
