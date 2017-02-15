@@ -44,7 +44,7 @@ public class QueryTest {
                 "insert into inStreamA;\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) \n" +
                 "begin " +
-                    "from inStreamA#window.externalTime(uTime , 20) \n" +//externalTime( tstamp , 10)
+                    "from inStreamA#window.externalTime(uTime , 5) \n" +//externalTime( tstamp , 10)
                     "select machine, tstamp, dimension, debs2017:test(value) as center \n" +
                     "insert into outputStream; " +
                 "end");
@@ -69,16 +69,16 @@ public class QueryTest {
         try {
             inputHandler.send(new Object[]{"m1","t1",1485859203101L,"d1", 1.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203102L,"d1", 2.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203103L,"d2", 3.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203104L,"d2", 4.0});
+            inputHandler.send(new Object[]{"m1","t1",1485859203103L,"d1", 3.0});
+            inputHandler.send(new Object[]{"m1","t1",1485859203104L,"d1", 4.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203105L,"d1", 5.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203106L,"d1", 6.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203107L,"d2", 7.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203108L,"d2", 8.0});
+            inputHandler.send(new Object[]{"m1","t1",1485859203107L,"d1", 7.0});
+            inputHandler.send(new Object[]{"m1","t1",1485859203108L,"d1", 8.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203109L,"d1", 9.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203110L,"d1", 1.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203111L,"d2", 11.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203112L,"d2", 12.0});
+            inputHandler.send(new Object[]{"m1","t1",1485859203110L,"d1", 10.0});
+            inputHandler.send(new Object[]{"m1","t1",1485859203111L,"d1", 11.0});
+            inputHandler.send(new Object[]{"m1","t1",1485859203112L,"d1", 12.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203113L,"d1", 13.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203114L,"d1", 14.0});
         } catch (InterruptedException e) {

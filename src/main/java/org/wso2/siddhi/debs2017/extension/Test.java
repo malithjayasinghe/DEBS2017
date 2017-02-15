@@ -41,10 +41,10 @@ public class Test extends AttributeAggregator {
         //System.out.println("Test----------------------"+blah);
 
         arr.add((Double) data);
+        System.out.println(arr);
         //System.out.println(arr);
-        //System.out.println(arr);
-        WSO2KmeansClustering test = new WSO2KmeansClustering(2, 10, arr);
-        return test.getCenter();
+        //WSO2KmeansClustering test = new WSO2KmeansClustering(2, 10, arr);
+        return 0;
        // return 0;
     }
 
@@ -56,6 +56,7 @@ public class Test extends AttributeAggregator {
 
     @Override
     public Object processRemove(Object o) {
+        arr.remove(0);
         return null;
     }
 
