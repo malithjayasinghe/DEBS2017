@@ -46,10 +46,13 @@ public class DataPublisher {
 
                     String machineName = scanner.next();
                     String timeStamp = scanner.next();
+                    String time = scanner.next();
+                    long timeValue = UnixConverter.getUnixTime(time);
+
                     String property = scanner.next();
                     double value = Double.parseDouble(scanner.next());
                     try {
-                        inputHandler.send(new Object[]{machineName, timeStamp, property, value});
+                        inputHandler.send(new Object[]{machineName, timeStamp, timeValue, property, value});
 
                     }catch (InterruptedException e){
                         e.printStackTrace();

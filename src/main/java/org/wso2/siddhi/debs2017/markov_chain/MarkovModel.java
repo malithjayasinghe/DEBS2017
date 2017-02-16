@@ -16,6 +16,8 @@ public class MarkovModel {
 
     private int currentCenter = 0;
     private int previousCenter= 0;
+    private int exPrevCenter = 0;
+    private int exCurrCenter = 0;
     private HashMap<Integer, HashMap<Integer,Integer>> transitionEventCount  = new HashMap<>();
     private ArrayList<Integer> eventOrder = new ArrayList<>();
     private ArrayList<Integer> getExpiredEvent = new ArrayList<>();
@@ -129,6 +131,16 @@ public class MarkovModel {
     }
 
     public void setPreviousCenter(int center){ previousCenter = center;}
+
+    public int getExPrevCenter(){return exPrevCenter;}
+
+    public int getExCurrCenter(){return exCurrCenter;}
+
+    public void setExPrevCenter(int center){ exPrevCenter = center;}
+
+    public void setExCurrCenter(int center){exCurrCenter = center; }
+
+    public void setEventOrder(ArrayList<Integer> arr){eventOrder = arr;}
 
     public  int getWindowSize(){return  windowSize;}
 

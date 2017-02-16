@@ -35,7 +35,7 @@ public class QueryTest {
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inStreamDefinition = "@config(async = 'true') \n" +
-                "define stream inStream (machine string, tstamp string, uTime long, dimension string, value double);";
+                "define stream inStream (machine string, tstamp string, uTime long, dimension string, value int);";
 
         String query = ("" +
                 "\n" +
@@ -45,7 +45,7 @@ public class QueryTest {
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) \n" +
                 "begin " +
                     "from inStreamA#window.externalTime(uTime , 5) \n" +//externalTime( tstamp , 10)
-                    "select machine, tstamp, dimension, debs2017:test(value) as center \n" +
+                    "select machine, tstamp, dimension, debs2017:markov(value) as center \n" +
                     "insert into outputStream; " +
                 "end");
 

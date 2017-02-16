@@ -11,7 +11,7 @@ public class MarkovExecution {
     AnomalyDetection anomalyDetector = new AnomalyDetection(0.5, "_1");
     String anomaly;
 
-    public String execute(int center, int n) {
+    public String execute(int center, ArrayList<Integer> arr) {
 
 
 
@@ -25,18 +25,22 @@ public class MarkovExecution {
        // markovModel.setWindowSize(3);
 
         //set the sequence to be checked for combined probability
-          markovModel.setCheckingSequence(n);
+         // markovModel.setCheckingSequence(n);
+
+        //passing the event sequence to calculate the probability
+
+        markovModel.setEventOrder(arr);
 
         if(markovModel.getCurrentCenter()==0 && markovModel.getPreviousCenter() == 0){
             //System.out.println("set initial center");
             markovModel.setPreviousCenter(center);
-            markovModel.addEvents(center);
+
             //System.out.println(markovModel.getPreviousCenter());
         }
         else if(markovModel.getCurrentCenter() == 0){
             //System.out.println("set initial center");
             markovModel.setCurrentCenter(center);
-            markovModel.addEvents(center);
+
             //System.out.println(markovModel.getCurrentCenter());
             markovModel.updateModel();
             //System.out.println("update events");
@@ -47,11 +51,16 @@ public class MarkovExecution {
             markovModel.setPreviousCenter(markovModel.getCurrentCenter());
             //System.out.println(markovModel.getPreviousCenter());
             markovModel.setCurrentCenter(center);
-            markovModel.addEvents(center);
+
             //System.out.println(markovModel.getCurrentCenter());
 
             markovModel.updateModel();
             markovModel.updateProbability();
+
+
+            //anomaly =  anomalyDetector.generateAlert() + " " + markovModel.gettotalProbability() ;
+
+
 
             //checking against threshold probability
             if (markovModel.gettotalProbability()< 0.5){
@@ -60,12 +69,32 @@ public class MarkovExecution {
             else {
 
                 anomaly = "Normal" + " " + markovModel.gettotalProbability();
-                //System.out.println(markovModel.gettotalProbability());
+               // System.out.println(markovModel.gettotalProbability());
             }
+
+            /*if (markovModel.gettotalProbability()< 0.5){
+                return markovModel.gettotalProbability();
+            }
+            else{
+              return 0;
+            }*/
 
         }
         return anomaly;
 
+    }
+
+    public void removeEvent(int prev, int curr){
+      //  if(markovModel.getExPrevCenter() == 0 && markovModel.getExCurrCenter() == 0){
+           // System.out.println("setting exprev");
+            markovModel.setExPrevCenter(prev);
+            markovModel.setExCurrCenter(curr);
+     //   }else{
+
+           // markovModel.setExPrevCenter(prev);
+           // markovModel.setExCurrCenter(curr);
+            markovModel.reduceCount(markovModel.getExPrevCenter(),markovModel.getExCurrCenter());
+      //  }
     }
 
 }

@@ -24,8 +24,8 @@ public class MarkovExtension extends FunctionExecutor {
 
     @Override
     protected Object execute(Object o) {
-        return markovExecution.execute((int)o, 5);
-        //return o;
+       // return markovExecution.execute((int)o, 8);
+        return o;
     }
 
     @Override
