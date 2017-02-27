@@ -43,7 +43,7 @@ public class MarkovAggregator extends AttributeAggregator {
         //System.out.println("Test----------------------"+blah);
 
            arr.add((int) data);
-          System.out.println(arr);
+          //System.out.println(arr);
           // System.out.println("Added");
            //WSO2KmeansClustering test = new WSO2KmeansClustering(2, 10, arr);
            //return test.getCenter();

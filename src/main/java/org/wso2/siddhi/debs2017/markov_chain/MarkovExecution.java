@@ -9,9 +9,9 @@ public class MarkovExecution {
 
     MarkovModel markovModel = new MarkovModel();
     AnomalyDetection anomalyDetector = new AnomalyDetection(0.5, "_1");
-    String anomaly;
 
-    public String execute(int center, ArrayList<Integer> arr) {
+
+    public double execute(int center, ArrayList<Integer> arr) {
 
 
 
@@ -63,14 +63,10 @@ public class MarkovExecution {
 
 
             //checking against threshold probability
-            if (markovModel.gettotalProbability()< 0.5){
-               anomaly =  anomalyDetector.generateAlert() + " " + markovModel.gettotalProbability() ;
-            }
-            else {
 
-                anomaly = "Normal" + " " + markovModel.gettotalProbability();
-               // System.out.println(markovModel.gettotalProbability());
-            }
+
+
+
 
             /*if (markovModel.gettotalProbability()< 0.5){
                 return markovModel.gettotalProbability();
@@ -80,7 +76,7 @@ public class MarkovExecution {
             }*/
 
         }
-        return anomaly;
+        return markovModel.gettotalProbability();
 
     }
 
