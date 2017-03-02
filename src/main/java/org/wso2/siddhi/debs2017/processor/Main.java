@@ -38,7 +38,7 @@ public class Main {
         DebsEventFactory factory = new DebsEventFactory();
 
         // Specify the size of the ring buffer, must be power of 2.
-        int bufferSize = 256;
+        int bufferSize = 1024;
 
         // Construct the Disruptor
         Disruptor<DebsEvent> disruptor = new Disruptor<>(DebsEvent::new, bufferSize, executor);
@@ -60,6 +60,7 @@ public class Main {
         DebsEventProducer producer = new DebsEventProducer(ringBuffer);
 
 
+       // System.out.println("Starting publisher");
         //read from file
         DebsDataPublisher dp = new DebsDataPublisher("data_rdf10.csv", producer);
         dp.publish();

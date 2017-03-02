@@ -89,7 +89,7 @@ public class SiddhiQuery {
 
                     // callback inputHand eventHand eventProd eventPub
 
-                    System.out.println(ev.getData()[0] + "," + ev.getData()[1] + "," + ev.getData()[2] + "," + ev.getData()[3]);
+                   // System.out.println(ev.getData()[0] + "," + ev.getData()[1] + "," + ev.getData()[2] + "," + ev.getData()[3]);
                     // System.out.println(arr.size()+"\t"+count+"\t"+DebsEventHandler.count+"\t"+DebsEventProducer.count+"\t"+ DebsDataPublisher.count);
                     if(arr.size() ==DebsDataPublisher.superCount){
                         long endtime = System.currentTimeMillis();
@@ -101,7 +101,7 @@ public class SiddhiQuery {
                         for(int i =0; i<arr.size(); i++){
                             sum =  sum + arr.get(i);
                         }
-                        System.out.println("Total Lat:"+(sum));
+                        //System.out.println("Total Lat:"+(sum));
                         System.out.println("Avg Lat:"+(sum/arr.size()));
                         System.out.println("Data:"+arr.size());
                     }

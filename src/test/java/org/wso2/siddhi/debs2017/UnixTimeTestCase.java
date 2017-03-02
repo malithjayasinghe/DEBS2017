@@ -25,9 +25,9 @@ import java.util.Scanner;
 */
 public class UnixTimeTestCase {
 
-    public static void main(String[] args) {
+    @org.junit.Test
+    public void Test1() throws InterruptedException {
         BufferedReader reader = null;
-        BufferedReader reader1 = null;
 
         try {
             reader = new BufferedReader(new FileReader("rdfData_extract_100m_time.csv"));

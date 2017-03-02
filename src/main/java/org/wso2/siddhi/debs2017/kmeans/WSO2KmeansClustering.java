@@ -159,7 +159,8 @@ public class WSO2KmeansClustering {
             }
             int minIndex = getMinIndex(difference);
             clusterGroup[minIndex].add(dataItem);
-            difference.removeAll(difference);
+            //difference.removeAll(difference);
+            difference = new ArrayList<>();
         }
     }
 
