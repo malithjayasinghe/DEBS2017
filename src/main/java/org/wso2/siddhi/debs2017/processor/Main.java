@@ -40,22 +40,30 @@ public class Main {
         // Specify the size of the ring buffer, must be power of 2.
         int bufferSize = 1024;
 
+
         // Construct the Disruptor
         Disruptor<DebsEvent> disruptor = new Disruptor<>(DebsEvent::new, bufferSize, executor);
 
-        DebsEventHandler lh1 = new DebsEventHandler(0,4);
-        DebsEventHandler lh2 = new DebsEventHandler(1, 4);
-        DebsEventHandler lh3 = new DebsEventHandler(2, 4);
-        DebsEventHandler lh4 = new DebsEventHandler(3, 4);
+        // Get the ring buffer from the Disruptor to be used for publishing.
+        RingBuffer<DebsEvent> ringBuffer = disruptor.getRingBuffer();
+
+
+
+        DebsEventHandler lh1 = new DebsEventHandler(0,4, ringBuffer);
+        DebsEventHandler lh2 = new DebsEventHandler(1, 4, ringBuffer);
+        DebsEventHandler lh3 = new DebsEventHandler(2, 4,ringBuffer);
+        DebsEventHandler lh4 = new DebsEventHandler(3, 4,ringBuffer);
+
+        //thread to detect the anomaly
+        DebsAnomalyGenerator lh5 = new DebsAnomalyGenerator();
         // Connect the handler
-        disruptor.handleEventsWith(lh1, lh2,lh3, lh4);
-        // disruptor.after(lh1).handleEventsWith(lh2);
+        disruptor.handleEventsWith(lh1, lh2,lh3,lh4);
+        disruptor.after(lh1,lh2,lh3,lh4).handleEventsWith(lh5);
 
         // Start the Disruptor, starts all threads running
         disruptor.start();
 
-        // Get the ring buffer from the Disruptor to be used for publishing.
-        RingBuffer<DebsEvent> ringBuffer = disruptor.getRingBuffer();
+
 
         DebsEventProducer producer = new DebsEventProducer(ringBuffer);
 

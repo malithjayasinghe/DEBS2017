@@ -29,7 +29,7 @@ public class DebsEventProducer  {
         this.ringBuffer = ringBuffer;
     }
 
-    public void onData(String machine, String tStamp, long uTime, String dimension, double value, long ij_time)
+    public void onData(String machine, String tStamp, long uTime, String dimension, double value, long ij_time, String sentTime)
     {
         long sequence = ringBuffer.next();  // Grab the next sequence
         try
@@ -41,6 +41,7 @@ public class DebsEventProducer  {
             event.setDimension(dimension);
             event.setValue(value);
             event.setIj_time(ij_time);
+            event.setSentTime(sentTime);
             // for the sequence
 
         }

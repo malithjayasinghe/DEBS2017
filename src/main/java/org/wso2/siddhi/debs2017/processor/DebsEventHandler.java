@@ -2,6 +2,7 @@ package org.wso2.siddhi.debs2017.processor;
 
 
 import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.ExecutionPlanRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
@@ -34,13 +35,14 @@ public class DebsEventHandler implements EventHandler<DebsEvent> {
     private final long num;
     //public static int count= 0;
     private final SiddhiQuery sq;
+    //private RingBuffer<DebsEvent> buffer;
 
 
 
 
 
     @Override
-    public void onEvent(DebsEvent debsEvent, long l, boolean b) throws Exception {
+    public void onEvent(DebsEvent debsEvent, long sequence, boolean b) throws Exception {
         //System.out.println(debsEvent.getMachine().substring(15));
 
 
@@ -48,7 +50,16 @@ public class DebsEventHandler implements EventHandler<DebsEvent> {
 
         if (machine % num == ordinal) {
             //addCount();
-            sq.publish(new Object[]{debsEvent.getMachine(), debsEvent.gettStamp(), debsEvent.getuTime(), debsEvent.getDimension(), debsEvent.getValue(), debsEvent.getIj_time()});
+
+
+            //settingt the event to be altered
+            sq.setEvent(debsEvent);
+
+            //setting the buffer sequence
+            sq.setSequence(sequence);
+
+            sq.publish(new Object[]{debsEvent.getMachine(), debsEvent.gettStamp(), debsEvent.getuTime(),
+                    debsEvent.getDimension(), debsEvent.getValue(), debsEvent.getIj_time()});
         }
 
 
@@ -57,10 +68,11 @@ public class DebsEventHandler implements EventHandler<DebsEvent> {
 
 
 
-    public DebsEventHandler(long id, long numOfCon){
+    public DebsEventHandler(long id, long numOfCon, RingBuffer<DebsEvent> buffer){
         this.num = numOfCon;
         this.ordinal = id;
-        this.sq = new SiddhiQuery();
+       // this.buffer = buffer;
+        this.sq = new SiddhiQuery(buffer);
 
     }
 

@@ -63,14 +63,14 @@ public class DebsDataPublisher {
 
                     String machineName = scanner.next();
                     String timeStamp = scanner.next();
-                    String time = scanner.next();
-                    long timeValue = UnixConverter.getUnixTime(time);
+                    String sentTime = scanner.next();
+                    long timeValue = UnixConverter.getUnixTime(sentTime);
 
                     String property = scanner.next();
                     double value = Double.parseDouble(scanner.next());
 
 
-                    prod.onData(machineName, timeStamp, timeValue, property, value, System.currentTimeMillis());
+                    prod.onData(machineName, timeStamp, timeValue, property, value, System.currentTimeMillis(),sentTime);
                    count++;
                     //  Thread.sleep(100);
 

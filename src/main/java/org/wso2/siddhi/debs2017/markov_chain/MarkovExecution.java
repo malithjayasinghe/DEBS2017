@@ -35,6 +35,7 @@ public class MarkovExecution {
             //System.out.println("set initial center");
             markovModel.setPreviousCenter(center);
 
+            return -1;
             //System.out.println(markovModel.getPreviousCenter());
         }
         else if(markovModel.getCurrentCenter() == 0){
@@ -43,6 +44,7 @@ public class MarkovExecution {
 
             //System.out.println(markovModel.getCurrentCenter());
             markovModel.updateModel();
+            return -1;
             //System.out.println("update events");
             //markovModel.updateProbability();
         }
@@ -56,27 +58,12 @@ public class MarkovExecution {
 
             markovModel.updateModel();
             markovModel.updateProbability();
+            return markovModel.gettotalProbability();
 
 
-            //anomaly =  anomalyDetector.generateAlert() + " " + markovModel.gettotalProbability() ;
-
-
-
-            //checking against threshold probability
-
-
-
-
-
-            /*if (markovModel.gettotalProbability()< 0.5){
-                return markovModel.gettotalProbability();
-            }
-            else{
-              return 0;
-            }*/
 
         }
-        return markovModel.gettotalProbability();
+
 
     }
 

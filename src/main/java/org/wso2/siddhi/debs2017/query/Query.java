@@ -49,11 +49,11 @@ public class Query {
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
-                "from inStreamA#window.externalTime(uTime , 5) \n" +
+                "from inStreamA#window.externalTime(uTime , 50) \n" +
                 "select machine, tstamp, uTime, dimension, debs2017:cluster(value) as center" +
                 " insert into #outputStream; " + //inner stream
                 "\n"+
-                "from #outputStream#window.externalTime(uTime , 5) " +
+                "from #outputStream#window.externalTime(uTime , 50) " +
                 "select machine, tstamp, dimension, debs2017:markov(center) as probability "+
                 "insert into detectAnomaly "+
                 "end;");
@@ -68,7 +68,7 @@ public class Query {
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
 
                 for(Event ev : events){
-                  // if(ev.getData()[2].equals("_112")) {
+                   //if(ev.getData()[1].equals("Timestamp_4")) {
 
 
 
@@ -76,14 +76,14 @@ public class Query {
 
                         /*if(ev.getData[3]>0){
                         //get threshold prob from meta dat file
-                       al = new AlertGenerator( threshold,ev.getData()[1], ev.getData()[2],ev.getData()[0], timeStampValue)
+                       al = new AlertGenerator( threshold,ev.getData()[1], ev.getData()[2],ev.getData()[0], ev.getData()[4]);
                         al.generateAlert();} */
 
-                  // }
+                   }
                     //System.out.println(ev.getData()[3]);
 
 
-                }
+            //    }
             }
         });
 

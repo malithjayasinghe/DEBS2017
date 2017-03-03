@@ -22,6 +22,33 @@ public class DebsEvent {
     private long uTime;
     private String dimension;
     private double value;
+    private long ij_time;
+    private String sentTime;
+    private double probability;
+
+    public String getProbThresh() {
+        return probThresh;
+    }
+
+    public void setProbThresh(String probThresh) {
+        this.probThresh = probThresh;
+    }
+
+    private String probThresh;
+
+
+    public double getProbability() {
+        return probability;
+    }
+
+    public void setProbability(double probability) {
+        this.probability = probability;
+    }
+
+
+
+
+
 
     public long getIj_time() {
         return ij_time;
@@ -30,10 +57,6 @@ public class DebsEvent {
     public void setIj_time(long ij_time) {
         this.ij_time = ij_time;
     }
-
-    private long ij_time;
-
-
 
     public String getMachine() {
         return machine;
@@ -73,6 +96,14 @@ public class DebsEvent {
 
     public void setValue(double value) {
         this.value = value;
+    }
+
+    public String getSentTime() {
+        return sentTime;
+    }
+
+    public void setSentTime(String sentTime) {
+        this.sentTime = sentTime;
     }
 
 

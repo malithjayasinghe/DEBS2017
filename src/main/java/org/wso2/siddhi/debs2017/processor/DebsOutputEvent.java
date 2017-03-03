@@ -1,5 +1,7 @@
 package org.wso2.siddhi.debs2017.processor;
 
+import java.util.Comparator;
+
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
@@ -20,7 +22,19 @@ public class DebsOutputEvent {
     private String machine;
     private String tStanmp;
     private String dimension;
-    private double probability;
+    private String time;
+    private String probability;
+
+    public DebsOutputEvent(){}
+
+
+   public DebsOutputEvent(String timeStamp,String machine, String dimension, String probability, String time){
+       this.probability = probability;
+       this.time = time;
+       this.machine = machine;
+       this.tStanmp =timeStamp;
+       this.dimension = dimension;
+   }
 
     public String getMachine() {
         return machine;
@@ -46,13 +60,39 @@ public class DebsOutputEvent {
         this.dimension = dimension;
     }
 
-    public double getProbability() {
+    public String getProbability() {
         return probability;
     }
 
-    public void setProbability(double probability) {
+    public void setProbability(String probability) {
         this.probability = probability;
     }
 
+    public String getTime() {
+        return time;
+    }
 
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+
+
+  //  @Override
+   /* public int compare(DebsOutputEvent o1, DebsOutputEvent o2) {
+       int t1 =  Integer.parseInt(o1.gettStanmp().substring(10));
+       int t2 =  Integer.parseInt(o2.gettStanmp().substring(10));
+
+       if(t1==t2){
+           int m1 = Integer.parseInt(o1.getMachine().substring(15));
+           int m2 = Integer.parseInt(o2.getMachine().substring(15));
+           if(m1==m2){
+               int d1 = Integer.parseInt(o1.getDimension().substring(1));
+               int d2 = Integer.parseInt(o2.getDimension().substring(1));
+               return d1-d2;
+           }
+           return m1-m2;
+       }
+        return t1-t2;
+    }*/
 }

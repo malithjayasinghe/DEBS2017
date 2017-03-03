@@ -54,6 +54,8 @@ public class MarkovModel {
     public void reduceCount(int prev, int curr){
         totalTransitions = transitionEventCount.get(prev);
         totalTransitions.put(curr,totalTransitions.get(curr)-1);
+        if(totalTransitions.get(curr) == 0)
+            totalTransitions.remove(curr);
     }
 
     

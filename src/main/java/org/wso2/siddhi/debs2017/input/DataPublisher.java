@@ -38,7 +38,7 @@ public class DataPublisher {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
+
                 Scanner scanner = new Scanner(line);
                 scanner.useDelimiter(",");
                 while(scanner.hasNext())
@@ -60,6 +60,7 @@ public class DataPublisher {
                 }
             }
         } catch (Exception e){
+            e.printStackTrace();
             log.info(e);
         }
     }

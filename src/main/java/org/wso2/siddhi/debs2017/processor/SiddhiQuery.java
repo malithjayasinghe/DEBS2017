@@ -1,18 +1,20 @@
 package org.wso2.siddhi.debs2017.processor;
 
 
+import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.ExecutionPlanRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
+import org.wso2.siddhi.debs2017.Output.AlertGenerator;
 import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
+import org.wso2.siddhi.debs2017.input.DebsMetaData;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
+import java.util.*;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -38,11 +40,15 @@ public class SiddhiQuery {
     private ExecutionPlanRuntime executionPlanRuntime;
     private static ArrayList<Long> arr = new ArrayList<>();
     private static int count =0;
+    RingBuffer<DebsEvent> buffer;
+    private long sequence;
+    private DebsEvent event;
 
 
 
 
-    public SiddhiQuery(){
+
+    public SiddhiQuery(RingBuffer<DebsEvent> buffer){
         this.query =  ("" +
                 "\n" +
                 "from inStream " +
@@ -51,12 +57,12 @@ public class SiddhiQuery {
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
-                "from inStreamA#window.externalTime(uTime , 200) \n" +
+                "from inStreamA#window.externalTime(uTime , 50) \n" +
                 "select machine, tstamp, uTime, dimension, debs2017:cluster(value) as center, ij_time " +
                 " insert into #outputStream; " + //inner stream
                 "\n" +
-                "from #outputStream#window.externalTime(uTime , 200) " +
-                "select machine, tstamp, dimension, debs2017:markov(center) as probability, ij_time " +
+                "from #outputStream#window.externalTime(uTime , 50) " +
+                "select machine, tstamp, dimension, debs2017:markov(center) as probability, uTime, ij_time " +
                 "insert into detectAnomaly " +
                 "end;");
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
@@ -64,6 +70,7 @@ public class SiddhiQuery {
                 "value double, ij_time long);";
         this.siddhiManager = new SiddhiManager();
         this.executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        this.buffer = buffer;
         inputHandler = executionPlanRuntime.getInputHandler("inStream");
         initCallback();
         executionPlanRuntime.start();
@@ -80,18 +87,31 @@ public class SiddhiQuery {
 
                 for (Event ev : events) {
 
-                    addToArray(System.currentTimeMillis()-(Long)ev.getData()[4]);
-                    DebsOutputEvent dOut = new DebsOutputEvent();
-                    dOut.setMachine((String) ev.getData()[0]);
-                    dOut.settStanmp((String)ev.getData()[1]);
-                    dOut.setDimension((String) ev.getData()[2]);
-                    dOut.setProbability((double)ev.getData()[3]);
 
-                    // callback inputHand eventHand eventProd eventPub
+                    double p = (Double)ev.getData()[3];
 
-                   // System.out.println(ev.getData()[0] + "," + ev.getData()[1] + "," + ev.getData()[2] + "," + ev.getData()[3]);
+
+                   if(p != -1) {
+
+                       //set the probability in debsevent
+                        publishEvent(p);
+
+                    }
+                    else{
+
+                       publishEvent(-1);
+                   }
+
+
+
+
+
+
+
+
+
                     // System.out.println(arr.size()+"\t"+count+"\t"+DebsEventHandler.count+"\t"+DebsEventProducer.count+"\t"+ DebsDataPublisher.count);
-                    if(arr.size() ==DebsDataPublisher.superCount){
+                 /*   if(arr.size() ==DebsDataPublisher.superCount){
                         long endtime = System.currentTimeMillis();
                         System.out.println("endtime"+endtime);
                         long totaltime =(endtime-Main.starttime)/1000;
@@ -101,10 +121,10 @@ public class SiddhiQuery {
                         for(int i =0; i<arr.size(); i++){
                             sum =  sum + arr.get(i);
                         }
-                        //System.out.println("Total Lat:"+(sum));
+                        System.out.println("Total Lat:"+(sum));
                         System.out.println("Avg Lat:"+(sum/arr.size()));
                         System.out.println("Data:"+arr.size());
-                    }
+                    }*/
                 }
             }
         });
@@ -132,4 +152,24 @@ public class SiddhiQuery {
         arr.add(diff);
 
     }
+
+    public synchronized void setSequence(long l){
+        this.sequence = l;
+
+    }
+
+    public synchronized void setEvent(DebsEvent db){
+        this.event = db;
+
+    }
+
+    public   synchronized  void  publishEvent(double d){
+        event = buffer.get(sequence);
+        event.setProbability(d);
+        buffer.publish(sequence);
+
+    }
+
+
+
 }

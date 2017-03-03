@@ -9,6 +9,10 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import com.hp.hpl.jena.vocabulary.*;
 import org.apache.jena.riot.RDFFormat;
+import org.wso2.siddhi.debs2017.processor.DebsEvent;
+import org.wso2.siddhi.debs2017.processor.DebsOutputEvent;
+
+import java.util.ArrayList;
 
 public class AlertGenerator {
     private static int anomalyCount = 1;
@@ -17,6 +21,7 @@ public class AlertGenerator {
     private String dimension;
     private String machineNumber;
     private String timestampValue;
+    private ArrayList<Model> alert= new ArrayList<>();
     String anomaly = "http://wso2.org.debsgrandchallenge.anomaly#";
     String ar = "http://www.agtinternational.com/ontologies/DEBSAnalyticResults#";
     String rdf = "http://www.agtinternational.com/ontologies/DEBSAnalyticResults#";
@@ -28,16 +33,16 @@ public class AlertGenerator {
 
 
 
-    public  AlertGenerator(String probThresh,String timestamp, String dimension, String machineNumber,String timestampValue){
-            this.probThresh = probThresh;
-            this.timestamp = timestamp;
-            this.dimension = dimension;
-            this.machineNumber = machineNumber;
-            this.timestampValue = timestampValue;
+    public  AlertGenerator(DebsEvent dout){
+            this.probThresh = dout.getProbThresh();
+            this.timestamp = dout.gettStamp();
+            this.dimension = dout.getDimension();
+            this.machineNumber = dout.getMachine();
+            this.timestampValue = dout.getSentTime();
     }
     public void generateAlert(){
 
-       Model model = ModelFactory.createDefaultModel();
+      Model model = ModelFactory.createDefaultModel();
        String anomalyName = "Anomaly_" + anomalyCount;
        Resource r1 = model.createResource(anomaly + anomalyName);
         Resource timeStampRes = model.createResource(anomaly+ timestamp);
@@ -64,11 +69,16 @@ public class AlertGenerator {
         .add(timeStampRes,type,timeType)
         .add(timeStampRes,timeValue,currentTime);
 
+        //alert.add(model);
 
 
 
-        RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
 
+
+
+       // RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
+         System.out.println("Anomaly"+ machineNumber + " "+ timestamp + " " + dimension);
+        //System.out.println("Anomaly");
 
     }
 }
