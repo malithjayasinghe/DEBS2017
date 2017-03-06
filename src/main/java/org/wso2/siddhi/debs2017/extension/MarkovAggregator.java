@@ -25,6 +25,10 @@ import java.util.ArrayList;
 * limitations under the License.
 */
 public class MarkovAggregator extends AttributeAggregator {
+
+    /**
+     * arraylist to maintain the events in the current window
+     * */
     private ArrayList<Integer> arr = new ArrayList<>();
     MarkovExecution markovExecution = new MarkovExecution();
     @Override
@@ -39,17 +43,18 @@ public class MarkovAggregator extends AttributeAggregator {
 
     @Override
     public Object processAdd(Object data) {
-        //Double blah = (double)data;
-        //System.out.println("Test----------------------"+blah);
+
 
            arr.add((int) data);
-          //System.out.println(arr);
-          // System.out.println("Added");
-           //WSO2KmeansClustering test = new WSO2KmeansClustering(2, 10, arr);
-           //return test.getCenter();
+
+           /**
+            * @param data cluster center value from the stream
+            * @param arr event transition for current window
+            * */
+
            return markovExecution.execute((int) data, arr);
 
-        //return 0;
+
     }
 
     @Override
@@ -59,12 +64,16 @@ public class MarkovAggregator extends AttributeAggregator {
     }
 
     @Override
+    /**
+     * remove  expired events from arraylist
+     * reduce the event transition count for the expired event
+     * */
     public Object processRemove(Object o) {
         arr.remove(0);
         if(arr.size()>=2)
         markovExecution.removeEvent((int) o, arr.get(0));
 
-        //System.out.println("removed");
+
 
 
         return null;

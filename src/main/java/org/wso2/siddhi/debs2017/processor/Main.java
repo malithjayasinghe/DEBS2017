@@ -38,7 +38,7 @@ public class Main {
         DebsEventFactory factory = new DebsEventFactory();
 
         // Specify the size of the ring buffer, must be power of 2.
-        int bufferSize = 1024;
+        int bufferSize = 256;
 
 
         // Construct the Disruptor

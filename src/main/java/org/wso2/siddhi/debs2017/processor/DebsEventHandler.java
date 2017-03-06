@@ -48,7 +48,9 @@ public class DebsEventHandler implements EventHandler<DebsEvent> {
 
         long machine = Long.parseLong(debsEvent.getMachine().substring(15));
 
-        if (machine % num == ordinal) {
+        long dimension = Long.parseLong(debsEvent.getDimension().substring(1));
+
+        if (dimension % num == ordinal) {
             //addCount();
 
 

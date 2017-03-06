@@ -12,26 +12,37 @@ import java.util.Set;
 public class MarkovModel {
 
 
-    private  int windowSize;
 
     private int currentCenter = 0;
     private int previousCenter= 0;
     private int exPrevCenter = 0;
     private int exCurrCenter = 0;
+
+    /**
+     * hash map to keep track of the event count of the center transitions
+     **/
     private HashMap<Integer, HashMap<Integer,Integer>> transitionEventCount  = new HashMap<>();
+
+    /**
+     * arraylist to maintain the current events in the time window for which probability sequence is checked
+     */
     private ArrayList<Integer> eventOrder = new ArrayList<>();
-    private ArrayList<Integer> getExpiredEvent = new ArrayList<>();
+
     private HashMap<Integer,Integer> totalTransitions;
     private double totalProbability;
-    private int checkingSequence;
+
+    /**
+     * update the event count
+     * get the number of events transitioned from a partiular center (previous center)
+     * increment the event count for the transition from the previous center to current center
+     */
 
 
 
     public void updateModel(){
-        //updating the event count
 
         if(transitionEventCount.containsKey(previousCenter)){
-           // transitionEventCount.get(previousCenter).put(currentCenter, );
+
            HashMap<Integer,Integer> temp =  transitionEventCount.get(previousCenter);
            if(temp.containsKey(currentCenter)){
                temp.put(currentCenter,temp.get(currentCenter)+1);
@@ -46,11 +57,16 @@ public class MarkovModel {
             HashMap<Integer,Integer> hm = new HashMap<>();
             hm.put(currentCenter, 1);
             transitionEventCount.put(previousCenter, hm);
-           // System.out.println(transitionEventCount.get(previousCenter).get(currentCenter));
+
         }
     }
 
-    //reduce event count
+
+    /**
+     * reduce the event count as events expire from the external time window
+     *@param curr the cluster center that is expired
+     *@param prev the cluster center that is before the expired center
+    **/
     public void reduceCount(int prev, int curr){
         totalTransitions = transitionEventCount.get(prev);
         totalTransitions.put(curr,totalTransitions.get(curr)-1);
@@ -58,7 +74,12 @@ public class MarkovModel {
             totalTransitions.remove(curr);
     }
 
-    
+    /**
+     * traverse the arraylist containing the events in the current window
+     * get the event counts from the transitionEventCount hashmap
+     * calculate the current probability for a particular transition
+     * multiply each transition probability to get the total combined probability
+     */
     public void updateProbability() {
 
 
@@ -67,7 +88,7 @@ public class MarkovModel {
         int previousEvent = 0;
         double eventCount = 0;
 
-       // if (eventOrder.size() >= windowSize) {
+
 
             for (int i = 1; i < eventOrder.size(); i++) {
 
@@ -78,49 +99,28 @@ public class MarkovModel {
                     previousEvent = currentEvent;
                     currentEvent = eventOrder.get(i);
                 }
-                totalTransitions = transitionEventCount.get(previousEvent);
+                //get the event count for  the transitions between two particular centers
                 double currentEventCount = transitionEventCount.get(previousEvent).get(currentEvent);
+
+                // retreive the hashmap to get all the transitions from a particular center
+                totalTransitions = transitionEventCount.get(previousEvent);
+
+                // traverse the retrieved hashmap to get the count of all transitions from a particular center
                 for (Integer key : totalTransitions.keySet()) {
-                    // System.out.println(totalTransitions.get(key));
                     eventCount = eventCount + totalTransitions.get(key);
-                    // System.out.println(eventCount + " "+ "totalTransitionsfrom"+ " "+ previousCenter);
                 }
+
                 if (eventCount > 0 && currentEventCount >0) {
                     currentProbability = currentProbability * (currentEventCount / eventCount);
                 }
                 eventCount = 0;
 
-           // }
+
         }
             totalProbability = currentProbability;
-           // System.out.println(currentProbability);
-           // System.out.println(totalProbability);
+      }
 
-
-
-    }
-
-    public void addEvents(int center){
-
-        //to keep track of the events to remove
-        getExpiredEvent.add(center);
-
-        //to keep track of the event sequnece so far
-        eventOrder.add(center);
-       if(eventOrder.size()-checkingSequence == 1){
-//            reduceCount(getExpiredEvent.get(0),getExpiredEvent.get(1));
-//            getExpiredEvent.remove(0);
-           eventOrder.remove(0);
-        }
-        //System.out.println(eventOrder);
-    }
-
-
-
-
-
-
-   public double gettotalProbability(){
+    public double gettotalProbability(){
         return totalProbability;
     }
 
@@ -144,9 +144,5 @@ public class MarkovModel {
 
     public void setEventOrder(ArrayList<Integer> arr){eventOrder = arr;}
 
-    public  int getWindowSize(){return  windowSize;}
 
-    public  void setWindowSize(int size){this.windowSize = size;}
-
-    public void setCheckingSequence(int n)  { this.checkingSequence = n;}
 }

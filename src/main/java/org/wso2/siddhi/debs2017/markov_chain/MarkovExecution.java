@@ -8,54 +8,47 @@ import java.util.ArrayList;
 public class MarkovExecution {
 
     MarkovModel markovModel = new MarkovModel();
-    AnomalyDetection anomalyDetector = new AnomalyDetection(0.5, "_1");
 
+     /**
+      * @param  center current cluster center retreived from the stream
+      * @param  arr arraylist containing the event transition for the current window
+      * */
 
     public double execute(int center, ArrayList<Integer> arr) {
 
-
-
-        //INPUT values for each threshold probability and dimension - hardcoded for one dimension
-        //DO: IMPLEMENT LOGIC TO READ THE META DATA VALUES
-
-        //read from meta data file
-       // int size =
-
-        //pass the parameter from meta data
-       // markovModel.setWindowSize(3);
-
-        //set the sequence to be checked for combined probability
-         // markovModel.setCheckingSequence(n);
-
-        //passing the event sequence to calculate the probability
-
+        //passing the event sequence in the current time window  to calculate the  combined probability
         markovModel.setEventOrder(arr);
 
+
+        /**
+         * initialize the current center and previous center
+         *
+         * */
+
         if(markovModel.getCurrentCenter()==0 && markovModel.getPreviousCenter() == 0){
-            //System.out.println("set initial center");
+
             markovModel.setPreviousCenter(center);
 
             return -1;
-            //System.out.println(markovModel.getPreviousCenter());
+
         }
         else if(markovModel.getCurrentCenter() == 0){
-            //System.out.println("set initial center");
-            markovModel.setCurrentCenter(center);
 
-            //System.out.println(markovModel.getCurrentCenter());
+            markovModel.setCurrentCenter(center);
             markovModel.updateModel();
             return -1;
-            //System.out.println("update events");
-            //markovModel.updateProbability();
+
         }
       else{
-           // System.out.println("Start update");
+            /**
+             * if both centers are initilaized set the previosu center to existin current center
+             * set the current center to the latest event retrieved from the stream
+             * update the event count
+             * calcualte the current probability and return
+             * */
+
             markovModel.setPreviousCenter(markovModel.getCurrentCenter());
-            //System.out.println(markovModel.getPreviousCenter());
             markovModel.setCurrentCenter(center);
-
-            //System.out.println(markovModel.getCurrentCenter());
-
             markovModel.updateModel();
             markovModel.updateProbability();
             return markovModel.gettotalProbability();
@@ -67,17 +60,18 @@ public class MarkovExecution {
 
     }
 
+    /**
+     * remove the expired event from the hashmap maintaining the event count
+     * @param curr the expired event from the time window
+     * @param prev the event before the expired event
+     * */
+
     public void removeEvent(int prev, int curr){
-      //  if(markovModel.getExPrevCenter() == 0 && markovModel.getExCurrCenter() == 0){
-           // System.out.println("setting exprev");
+
             markovModel.setExPrevCenter(prev);
             markovModel.setExCurrCenter(curr);
-     //   }else{
-
-           // markovModel.setExPrevCenter(prev);
-           // markovModel.setExCurrCenter(curr);
             markovModel.reduceCount(markovModel.getExPrevCenter(),markovModel.getExCurrCenter());
-      //  }
+
     }
 
 }
