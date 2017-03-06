@@ -13,17 +13,15 @@ import org.wso2.siddhi.debs2017.input.DataPublisher;
  */
 public class Query {
 
-
-   //AlertGenerator al;
-
-    private Query(){}
+    private Query() {
+    }
 
     /**
      * The main method
      *
      * @param args arguments
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         Query query = new Query();
         query.run();
@@ -34,9 +32,7 @@ public class Query {
      */
     public void run() {
 
-
         SiddhiManager siddhiManager = new SiddhiManager();
-
         String inStreamDefinition = "@config(async = 'true') \n" +
                 "define stream inStream (machine string, tstamp string, uTime long, dimension string, " +
                 "value double);";
@@ -52,59 +48,37 @@ public class Query {
                 "from inStreamA#window.externalTime(uTime , 50) \n" +
                 "select machine, tstamp, uTime, dimension, debs2017:cluster(value) as center" +
                 " insert into #outputStream; " + //inner stream
-                "\n"+
+                "\n" +
                 "from #outputStream#window.externalTime(uTime , 50) " +
-                "select machine, tstamp, dimension, debs2017:markov(center) as probability "+
-                "insert into detectAnomaly "+
+                "select machine, tstamp, dimension, debs2017:markov(center) as probability " +
+                "insert into detectAnomaly " +
                 "end;");
 
 
-
-        //System.out.println(inStreamDefinition + query);
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
-
         executionPlanRuntime.addCallback("detectAnomaly", new StreamCallback() {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
+                for (Event ev : events) {
+                    System.out.println(ev.getData()[0] + "," + ev.getData()[1] + "," + ev.getData()[2] + "," + ev.getData()[3]);
 
-                for(Event ev : events){
-                   //if(ev.getData()[1].equals("Timestamp_4")) {
+                }
 
-
-
-                        System.out.println(ev.getData()[0] + "," + ev.getData()[1] + "," + ev.getData()[2] + "," + ev.getData()[3]);
-
-                        /*if(ev.getData[3]>0){
-                        //get threshold prob from meta dat file
-                       al = new AlertGenerator( threshold,ev.getData()[1], ev.getData()[2],ev.getData()[0], ev.getData()[4]);
-                        al.generateAlert();} */
-
-                   }
-                    //System.out.println(ev.getData()[3]);
-
-
-            //    }
             }
         });
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
-        DataPublisher dataPublisher = new DataPublisher("rdfData_extract_100m_time.csv",inputHandler);
+        DataPublisher dataPublisher = new DataPublisher("rdfData_extract_100m_time.csv", inputHandler);
         executionPlanRuntime.start();
-        //the data is passed as objects to the inputhandler
         dataPublisher.publish();
 
-
-
-        while(true){
+        while (true) {
             try {
                 Thread.currentThread().sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
-
-
 
 
     }
