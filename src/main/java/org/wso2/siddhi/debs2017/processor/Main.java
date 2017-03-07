@@ -46,9 +46,6 @@ public class Main {
 
         // Get the ring buffer from the Disruptor to be used for publishing.
         RingBuffer<DebsEvent> ringBuffer = disruptor.getRingBuffer();
-
-
-
         DebsEventHandler lh1 = new DebsEventHandler(0,4, ringBuffer);
         DebsEventHandler lh2 = new DebsEventHandler(1, 4, ringBuffer);
         DebsEventHandler lh3 = new DebsEventHandler(2, 4,ringBuffer);
@@ -62,13 +59,8 @@ public class Main {
 
         // Start the Disruptor, starts all threads running
         disruptor.start();
-
-
-
         DebsEventProducer producer = new DebsEventProducer(ringBuffer);
 
-
-       // System.out.println("Starting publisher");
         //read from file
         DebsDataPublisher dp = new DebsDataPublisher("data_rdf10.csv", producer);
         dp.publish();
