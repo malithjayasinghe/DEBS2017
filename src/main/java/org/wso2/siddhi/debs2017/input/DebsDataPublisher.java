@@ -28,7 +28,6 @@ public class DebsDataPublisher {
     private String fileName;
     private static final Logger log = Logger.getLogger(DataPublisher.class);
     private DebsEventProducer prod;
-   // public static  boolean IS_END_DATA = true;
     public static int count;
     public static int superCount;
 
@@ -36,9 +35,8 @@ public class DebsDataPublisher {
      * The constructor
      *
      * @param fileName the file name to read the data
-     *
      */
-    public DebsDataPublisher(String fileName, DebsEventProducer producer){
+    public DebsDataPublisher(String fileName, DebsEventProducer producer) {
 
         this.fileName = fileName;
         this.prod = producer;
@@ -55,11 +53,9 @@ public class DebsDataPublisher {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                // System.out.println(line);
                 Scanner scanner = new Scanner(line);
                 scanner.useDelimiter(",");
-                while(scanner.hasNext())
-                {
+                while (scanner.hasNext()) {
 
                     String machineName = scanner.next();
                     String timeStamp = scanner.next();
@@ -69,27 +65,17 @@ public class DebsDataPublisher {
                     String property = scanner.next();
                     double value = Double.parseDouble(scanner.next());
 
-
-                    prod.onData(machineName, timeStamp, timeValue, property, value, System.currentTimeMillis(),sentTime);
-                   count++;
-                    //  Thread.sleep(100);
+                    prod.onData(machineName, timeStamp, timeValue, property, value, System.currentTimeMillis(), sentTime);
+                    count++;
 
                 }
-
-              //  System.out.println("+data");
             }
-            superCount = count;
-            //IS_END_DATA = false;
-            //Thread.sleep(20000);
-            // prod.onData("2","-1",-1,"-1", -1.0, -1);
-            //  System.out.println(" test");
 
-        } catch (Exception e){
-            //System.out.println(e);
+            superCount = count;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-
 
 
 }
