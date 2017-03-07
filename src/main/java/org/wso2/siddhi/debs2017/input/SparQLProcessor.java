@@ -55,11 +55,8 @@ public class SparQLProcessor {
         try {
 
             FileWriter writer = new FileWriter(new File(fileName));
-
             Model model = RDFDataMgr.loadModel("molding_machine_100M_rdf.ttl");
             Query query = QueryFactory.create(queryString);
-                //try(QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-
                 QueryExecution qexec = QueryExecutionFactory.create(query, model);
                     ResultSet results = qexec.execSelect();
                     results = ResultSetFactory.copyResults(results);
@@ -73,7 +70,6 @@ public class SparQLProcessor {
                            writer.write(machine.getLocalName() + "," + time.getLocalName() + "," + property.getLocalName() + "," + value.getFloat() + "\n");
                         }
                     }
-               // }
             writer.flush();
             writer.close();
 

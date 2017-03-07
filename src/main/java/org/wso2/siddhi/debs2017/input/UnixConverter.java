@@ -26,21 +26,10 @@ public class UnixConverter {
     public static long getUnixTime(String data){
         String source = data.substring(0, 10)+" "+data.substring(11, 19);
         String timeZ = data.substring(19);
-        //System.out.println(dateT);
-
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date dateTime = null;
+        Date dateTime;
         df.setTimeZone(TimeZone.getTimeZone(timeZ));
-        try {
-            dateTime = df.parse(source, new ParsePosition(0));
-            //dateTime=Date(Long(dateTime)/1000);
-        } catch (NullPointerException ec){
-            //log.error(ec.getMessage());
-            // ec.printStackTrace();
-
-            return -1;
-        }
-
+        dateTime = df.parse(source, new ParsePosition(0));
         return new Long(dateTime.getTime())/1000;
     }
 }

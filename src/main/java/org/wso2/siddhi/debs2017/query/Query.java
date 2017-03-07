@@ -68,7 +68,7 @@ public class Query {
         });
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
-        DataPublisher dataPublisher = new DataPublisher("rdfData_extract_100m_time.csv", inputHandler);
+        DataPublisher dataPublisher = new DataPublisher("/Users/temp/DEBS2017/data_rdf10.csv", inputHandler);
         executionPlanRuntime.start();
         dataPublisher.publish();
 
