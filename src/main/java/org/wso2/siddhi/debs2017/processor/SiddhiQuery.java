@@ -39,17 +39,14 @@ public class SiddhiQuery {
     private final SiddhiManager siddhiManager;
     private ExecutionPlanRuntime executionPlanRuntime;
     private static ArrayList<Long> arr = new ArrayList<>();
-    private static int count =0;
-    RingBuffer<DebsEvent> buffer;
+    private static int count = 0;
+    private RingBuffer<DebsEvent> buffer;
     private long sequence;
     private DebsEvent event;
 
 
-
-
-
-    public SiddhiQuery(RingBuffer<DebsEvent> buffer){
-        this.query =  ("" +
+    public SiddhiQuery(RingBuffer<DebsEvent> buffer) {
+        this.query = ("" +
                 "\n" +
                 "from inStream " +
                 "select machine, tstamp, dimension, str:concat(machine, '-', dimension) as partitionId, uTime ,value, ij_time " +
@@ -76,63 +73,26 @@ public class SiddhiQuery {
         executionPlanRuntime.start();
 
 
-
-
     }
 
     private void initCallback() {
         executionPlanRuntime.addCallback("detectAnomaly", new StreamCallback() {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
-
                 for (Event ev : events) {
-
-
-                    double p = (Double)ev.getData()[3];
-
-
-                   if(p != -1) {
-
-                       //set the probability in debsevent
+                    double p = (Double) ev.getData()[3];
+                    if (p != -1) {
+                        //set the probability in debsevent
                         publishEvent(p);
-
+                    } else {
+                        publishEvent(-1);
                     }
-                    else{
-
-                       publishEvent(-1);
-                   }
-
-
-
-
-
-
-
-
-
-                    // System.out.println(arr.size()+"\t"+count+"\t"+DebsEventHandler.count+"\t"+DebsEventProducer.count+"\t"+ DebsDataPublisher.count);
-                 /*   if(arr.size() ==DebsDataPublisher.superCount){
-                        long endtime = System.currentTimeMillis();
-                        System.out.println("endtime"+endtime);
-                        long totaltime =(endtime-DistributedQuery.starttime)/1000;
-                        System.out.println("\nTotaltime:" +(totaltime));
-                        System.out.println("Throughput:"+(arr.size()/totaltime));
-                        long sum =0;
-                        for(int i =0; i<arr.size(); i++){
-                            sum =  sum + arr.get(i);
-                        }
-                        System.out.println("Total Lat:"+(sum));
-                        System.out.println("Avg Lat:"+(sum/arr.size()));
-                        System.out.println("Data:"+arr.size());
-                    }*/
                 }
             }
         });
     }
 
-    public void publish(Object[] obj){
-
-        addCount();
+    public void publish(Object[] obj) {
         try {
             inputHandler.send(obj);
         } catch (InterruptedException e) {
@@ -141,35 +101,27 @@ public class SiddhiQuery {
 
     }
 
-    public static synchronized void addCount()
-    {
-
-        //count++;
-
-    }
-    public static synchronized void addToArray(Long diff)
-    {
+    public static synchronized void addToArray(Long diff) {
         arr.add(diff);
 
     }
 
-    public synchronized void setSequence(long l){
+    public synchronized void setSequence(long l) {
         this.sequence = l;
 
     }
 
-    public synchronized void setEvent(DebsEvent db){
+    public synchronized void setEvent(DebsEvent db) {
         this.event = db;
 
     }
 
-    public   synchronized  void  publishEvent(double d){
+    public synchronized void publishEvent(double d) {
         event = buffer.get(sequence);
         event.setProbability(d);
         buffer.publish(sequence);
 
     }
-
 
 
 }

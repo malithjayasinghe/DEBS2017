@@ -61,11 +61,11 @@ public class SparQLProcessor {
                     ResultSet results = qexec.execSelect();
                     results = ResultSetFactory.copyResults(results);
                     for (; results.hasNext(); ) {
-                       QuerySolution soln = results.nextSolution();
-                        Resource time = soln.getResource("time"); // Get a result variable - must be a resource
-                        Resource property = soln.getResource("property");
-                        Resource machine = soln.getResource("machine");
-                        Literal value = soln.getLiteral("value");
+                       QuerySolution solution = results.nextSolution();
+                        Resource time = solution.getResource("time"); // Get a result variable - must be a resource
+                        Resource property = solution.getResource("property");
+                        Resource machine = solution.getResource("machine");
+                        Literal value = solution.getLiteral("value");
                         if (!value.toString().contains("#string")) {
                            writer.write(machine.getLocalName() + "," + time.getLocalName() + "," + property.getLocalName() + "," + value.getFloat() + "\n");
                         }

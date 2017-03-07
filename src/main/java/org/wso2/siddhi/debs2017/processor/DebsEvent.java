@@ -36,7 +36,6 @@ public class DebsEvent {
 
     private String probThresh;
 
-
     public double getProbability() {
         return probability;
     }
@@ -44,11 +43,6 @@ public class DebsEvent {
     public void setProbability(double probability) {
         this.probability = probability;
     }
-
-
-
-
-
 
     public long getIj_time() {
         return ij_time;
@@ -105,8 +99,6 @@ public class DebsEvent {
     public void setSentTime(String sentTime) {
         this.sentTime = sentTime;
     }
-
-
 
 
 }

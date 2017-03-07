@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 /**
  * Created by sachini on 1/27/17.
+ * NOT USED
  */
 public class AnomalyDetection {
     private HashMap<String, Double> thresholdPerDimension = new HashMap<>();

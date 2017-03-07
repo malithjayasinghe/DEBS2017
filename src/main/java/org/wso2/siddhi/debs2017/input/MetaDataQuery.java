@@ -48,13 +48,13 @@ public class MetaDataQuery {
             ResultSet results = qexec.execSelect();
             results = ResultSetFactory.copyResults(results);
             for (; results.hasNext(); ) {
-                QuerySolution soln = results.nextSolution();
-                Resource property = soln.getResource("dimension");
-                Resource machine = soln.getResource("machine");
-                Resource model_ = soln.getResource("model");
-                Literal cluster = soln.getLiteral("clusters");
-                Resource state = soln.getResource("isStateful");
-                Literal thresh = soln.getLiteral("threshold");
+                QuerySolution solution = results.nextSolution();
+                Resource property = solution.getResource("dimension");
+                Resource machine = solution.getResource("machine");
+                Resource model_ = solution.getResource("model");
+                Literal cluster = solution.getLiteral("clusters");
+                Resource state = solution.getResource("isStateful");
+                Literal thresh = solution.getLiteral("threshold");
                 str.add(data);
                 DebsMetaData db = new DebsMetaData(machine.getLocalName(), model_.getLocalName(), property.getLocalName()
                         , cluster.getInt(), state.getLocalName(), thresh.getDouble(), 50);

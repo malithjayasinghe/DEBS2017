@@ -33,56 +33,31 @@ public class DebsEventHandler implements EventHandler<DebsEvent> {
 
     private final long ordinal;
     private final long num;
-    //public static int count= 0;
     private final SiddhiQuery sq;
-    //private RingBuffer<DebsEvent> buffer;
-
-
-
 
 
     @Override
     public void onEvent(DebsEvent debsEvent, long sequence, boolean b) throws Exception {
-        //System.out.println(debsEvent.getMachine().substring(15));
-
 
         long machine = Long.parseLong(debsEvent.getMachine().substring(15));
-
         long dimension = Long.parseLong(debsEvent.getDimension().substring(1));
-
         if (dimension % num == ordinal) {
-            //addCount();
 
-
-            //settingt the event to be altered
+            //setting the event to be altered
             sq.setEvent(debsEvent);
-
             //setting the buffer sequence
             sq.setSequence(sequence);
-
             sq.publish(new Object[]{debsEvent.getMachine(), debsEvent.gettStamp(), debsEvent.getuTime(),
                     debsEvent.getDimension(), debsEvent.getValue(), debsEvent.getIj_time()});
         }
 
-
-
     }
-
 
 
     public DebsEventHandler(long id, long numOfCon, RingBuffer<DebsEvent> buffer){
         this.num = numOfCon;
         this.ordinal = id;
-       // this.buffer = buffer;
         this.sq = new SiddhiQuery(buffer);
-
-    }
-
-    public static synchronized void addCount()
-    {
-
-
-       // count++;
 
     }
 
