@@ -1,4 +1,4 @@
-package org.wso2.siddhi.debs2017.markov_chain;
+package org.wso2.siddhi.debs2017.markovchain;
 
 import java.util.HashMap;
 

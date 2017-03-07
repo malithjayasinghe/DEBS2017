@@ -25,6 +25,7 @@ public class DebsEvent {
     private long ij_time;
     private String sentTime;
     private double probability;
+    private String probThresh;
 
     public String getProbThresh() {
         return probThresh;
@@ -34,7 +35,7 @@ public class DebsEvent {
         this.probThresh = probThresh;
     }
 
-    private String probThresh;
+
 
     public double getProbability() {
         return probability;

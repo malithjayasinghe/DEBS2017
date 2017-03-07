@@ -92,6 +92,9 @@ public class SiddhiQuery {
         });
     }
 
+
+
+
     public void publish(Object[] obj) {
         try {
             inputHandler.send(obj);
@@ -106,16 +109,23 @@ public class SiddhiQuery {
 
     }
 
+    //setting the sequence from the ringbuffer
     public synchronized void setSequence(long l) {
         this.sequence = l;
 
     }
 
+    //setting the event read from the ringbuffer
     public synchronized void setEvent(DebsEvent db) {
         this.event = db;
 
     }
 
+
+    /**
+     *@param d probability of the event sequence in the window
+     *publishing the debsevent back tot he ring buffer after setting the probability
+     */
     public synchronized void publishEvent(double d) {
         event = buffer.get(sequence);
         event.setProbability(d);

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 */
 public class MetaDataQuery {
     private static ArrayList<String> str = new ArrayList<String>();
-    public static void main(String[] args) {
+    public static void run() {
         String data = "";
         Model model = RDFDataMgr.loadModel("sample_metadata_1machine.nt");
         String queryString =
@@ -57,7 +57,7 @@ public class MetaDataQuery {
                 Literal thresh = solution.getLiteral("threshold");
                 str.add(data);
                 DebsMetaData db = new DebsMetaData(machine.getLocalName(), model_.getLocalName(), property.getLocalName()
-                        , cluster.getInt(), state.getLocalName(), thresh.getDouble(), 50);
+                        , cluster.getInt(), thresh.getDouble(), 50);
                 DebsMetaData.storeValues(db);
 
             }
@@ -65,12 +65,6 @@ public class MetaDataQuery {
             e.printStackTrace();
         }
 
-        System.out.println(DebsMetaData.meta.size());
-        for (String key : DebsMetaData.meta.keySet()) {
-            DebsMetaData dmm = DebsMetaData.meta.get(key);
-            System.out.println(dmm.getMachineNumebr() + " " + dmm.getDimension() + " " + dmm.getModel() + " " + dmm.getClusterCenters() + " "
-                    + dmm.getProbabilityThreshold() + " " + dmm.getWindowLength() + " " + dmm.getDimensionState());
-        }
 
     }
 }

@@ -5,15 +5,16 @@ package org.wso2.siddhi.debs2017.Output;
  */
 
 import com.hp.hpl.jena.rdf.model.*;
-import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import com.hp.hpl.jena.vocabulary.*;
 import org.apache.jena.riot.RDFFormat;
 import org.wso2.siddhi.debs2017.processor.DebsEvent;
-import org.wso2.siddhi.debs2017.processor.DebsOutputEvent;
-
 import java.util.ArrayList;
 
+
+/**
+ * class to generate an alert when anomaly detected
+ * an rdf model is created
+ */
 public class AlertGenerator {
     private static int anomalyCount = 1;
     private String probThresh;
@@ -76,9 +77,9 @@ public class AlertGenerator {
 
 
 
-       // RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
-         System.out.println("Anomaly"+ machineNumber + " "+ timestamp + " " + dimension);
-        //System.out.println("Anomaly");
+       //RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
+       System.out.println("Anomaly"+ machineNumber + " "+ timestamp + " " + dimension);
+
 
     }
 }

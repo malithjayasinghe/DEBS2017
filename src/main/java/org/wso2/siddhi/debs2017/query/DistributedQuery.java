@@ -47,10 +47,10 @@ public class DistributedQuery {
 
         // Get the ring buffer from the Disruptor to be used for publishing.
         RingBuffer<DebsEvent> ringBuffer = disruptor.getRingBuffer();
-        DebsEventHandler lh1 = new DebsEventHandler(0,4, ringBuffer);
-        DebsEventHandler lh2 = new DebsEventHandler(1, 4, ringBuffer);
-        DebsEventHandler lh3 = new DebsEventHandler(2, 4,ringBuffer);
-        DebsEventHandler lh4 = new DebsEventHandler(3, 4,ringBuffer);
+        DebsEventHandler lh1 = new DebsEventHandler(0,4, ringBuffer,1);
+        DebsEventHandler lh2 = new DebsEventHandler(1, 4,ringBuffer,1);
+        DebsEventHandler lh3 = new DebsEventHandler(2, 4,ringBuffer,1);
+        DebsEventHandler lh4 = new DebsEventHandler(3, 4,ringBuffer,1);
 
         //thread to detect the anomaly
         DebsAnomalyGenerator lh5 = new DebsAnomalyGenerator();

@@ -1,10 +1,7 @@
-package org.wso2.siddhi.debs2017.markov_chain;
-
-import org.wso2.siddhi.query.api.expression.condition.In;
+package org.wso2.siddhi.debs2017.markovchain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  * Created by sachini on 1/27/17.
