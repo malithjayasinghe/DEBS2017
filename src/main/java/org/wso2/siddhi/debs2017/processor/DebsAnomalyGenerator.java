@@ -3,6 +3,7 @@ package org.wso2.siddhi.debs2017.processor;
 import com.lmax.disruptor.EventHandler;
 import org.wso2.siddhi.debs2017.Output.AlertGenerator;
 import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
+import org.wso2.siddhi.debs2017.query.Main;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,7 @@ public class DebsAnomalyGenerator implements EventHandler<DebsEvent> {
         if(arr.size() == DebsDataPublisher.superCount){
             long endtime = System.currentTimeMillis();
             System.out.println("endtime"+endtime);
-            long totaltime =(endtime-Main.starttime)/1000;
+            long totaltime =(endtime- Main.starttime)/1000;
             System.out.println("\nTotaltime:" +(totaltime));
             System.out.println("Throughput:"+(arr.size()/totaltime));
             long sum =0;

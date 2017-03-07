@@ -94,7 +94,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.wso2.siddhi.debs2017.processor.Main</mainClass>
+              <mainClass>org.wso2.siddhi.debs2017.query.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
