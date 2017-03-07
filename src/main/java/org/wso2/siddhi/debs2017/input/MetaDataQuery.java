@@ -1,4 +1,5 @@
 package org.wso2.siddhi.debs2017.input;
+
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -28,11 +29,9 @@ import java.util.ArrayList;
 */
 public class MetaDataQuery {
     private static ArrayList<String> str = new ArrayList<String>();
-
-
     public static void main(String[] args) {
-        String data ="";
-        Model model = RDFDataMgr.loadModel("sample_metadata_1machine.nt") ;
+        String data = "";
+        Model model = RDFDataMgr.loadModel("sample_metadata_1machine.nt");
         String queryString =
                 "SELECT ?machine ?model ?dimension ?clusters ?isStateful ?threshold WHERE { " +
                         "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
@@ -43,87 +42,35 @@ public class MetaDataQuery {
                         "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty>?dimension ." +
                         "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
                         "}";
-        Query query = QueryFactory.create(queryString) ;
+        Query query = QueryFactory.create(queryString);
         try {
             QueryExecution qexec = QueryExecutionFactory.create(query, model);
-            ResultSet results = qexec.execSelect() ;
-            results = ResultSetFactory.copyResults(results) ;
-
-            //ResultSetFormatter.out(System.out, results, query) ;
-
-            for ( ; results.hasNext() ; )
-            {
-                QuerySolution soln = results.nextSolution() ;
-                // RDFNode x = soln.get("time") ;       // Get a result variable by name.
-                //   Resource time = soln.getResource("time") ; // Get a result variable - must be a resource
+            ResultSet results = qexec.execSelect();
+            results = ResultSetFactory.copyResults(results);
+            for (; results.hasNext(); ) {
+                QuerySolution soln = results.nextSolution();
                 Resource property = soln.getResource("dimension");
                 Resource machine = soln.getResource("machine");
                 Resource model_ = soln.getResource("model");
                 Literal cluster = soln.getLiteral("clusters");
                 Resource state = soln.getResource("isStateful");
                 Literal thresh = soln.getLiteral("threshold");
-                // Literal value = soln.getLiteral("value") ;
-                //    Literal timeStamp = soln.getLiteral("timeStamp");// Get a result variable - must be a literal
-
-
-                //  if (value.toString().contains("#string")) {
-
-                //} else {
-
-
                 str.add(data);
-                DebsMetaData db = new DebsMetaData(machine.getLocalName(),model_.getLocalName(),property.getLocalName()
-                        ,cluster.getInt(),state.getLocalName(),thresh.getDouble(),50);
+                DebsMetaData db = new DebsMetaData(machine.getLocalName(), model_.getLocalName(), property.getLocalName()
+                        , cluster.getInt(), state.getLocalName(), thresh.getDouble(), 50);
                 DebsMetaData.storeValues(db);
-               // data = machine.getLocalName()+","+model_.getLocalName()+","+property.getLocalName()+","+cluster.getInt()+","+state.getLocalName()+","+thresh.getDouble();
-               // System.out.println(data);
 
-                //data = machine.getLocalName()+","+time.getLocalName()+","+timeStamp.getValue()+","+property.getLocalName()+","+value.getFloat();
-
-
-
-//                }
-
-
-
-                // System.out.println(r);
             }
-        }catch(Exception e)
-        {
-            System.out.print(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
 
         System.out.println(DebsMetaData.meta.size());
-        for(String key: DebsMetaData.meta.keySet()){
+        for (String key : DebsMetaData.meta.keySet()) {
             DebsMetaData dmm = DebsMetaData.meta.get(key);
-            System.out.println(dmm.getMachineNumebr()+ " " + dmm.getDimension()+ " " + dmm.getModel()+ " "+ dmm.getClusterCenters()+ " "
-            + dmm.getProbabilityThreshold() + " " + dmm.getWindowLength() + " " + dmm.getDimensionState());
+            System.out.println(dmm.getMachineNumebr() + " " + dmm.getDimension() + " " + dmm.getModel() + " " + dmm.getClusterCenters() + " "
+                    + dmm.getProbabilityThreshold() + " " + dmm.getWindowLength() + " " + dmm.getDimensionState());
         }
 
-
-        /*for (int i = 0; i<120; i++){
-            if(dataArr[i]==null){
-                dataArr[i] =0.0F;
-            }
-            data = data+","+dataArr[i];
-        }
-        str.add(data);
-        File file = new File("src/main/resources/rdfData_extract_100m_time.csv");
-        FileWriter writer = null;
-        // creates the file
-        try {
-            file.createNewFile();
-            writer = new FileWriter(file);
-            for (int i =1; i<str.size(); i++){
-
-                writer.write(str.get(i)+"\n");
-            }
-
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 }
