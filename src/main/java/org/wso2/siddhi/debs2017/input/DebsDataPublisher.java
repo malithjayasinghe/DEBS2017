@@ -1,8 +1,8 @@
 package org.wso2.siddhi.debs2017.input;
 
+import com.lmax.disruptor.RingBuffer;
 import org.apache.log4j.Logger;
-import org.wso2.siddhi.core.stream.input.InputHandler;
-import org.wso2.siddhi.debs2017.processor.DebsEventProducer;
+import org.wso2.siddhi.debs2017.processor.DebsEvent;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -27,19 +27,22 @@ public class DebsDataPublisher {
 
     private String fileName;
     private static final Logger log = Logger.getLogger(DataPublisher.class);
-    private DebsEventProducer prod;
+
     public static int count;
     public static int superCount;
+    private final RingBuffer<DebsEvent> ringBuffer;
 
     /**
      * The constructor
      *
      * @param fileName the file name to read the data
      */
-    public DebsDataPublisher(String fileName, DebsEventProducer producer) {
+    public DebsDataPublisher(String fileName, RingBuffer<DebsEvent> ringBuffer)
+    {
+        this.ringBuffer = ringBuffer;
 
         this.fileName = fileName;
-        this.prod = producer;
+
 
 
     }
@@ -60,12 +63,30 @@ public class DebsDataPublisher {
                     String machineName = scanner.next();
                     String timeStamp = scanner.next();
                     String sentTime = scanner.next();
-                    long timeValue = UnixConverter.getUnixTime(sentTime);
+
 
                     String property = scanner.next();
                     double value = Double.parseDouble(scanner.next());
 
-                    prod.onData(machineName, timeStamp, timeValue, property, value, System.currentTimeMillis(), sentTime);
+
+                    long sequence = ringBuffer.next();  // Grab the next sequence
+                    try {
+                        DebsEvent event = ringBuffer.get(sequence); // Get the entry in the Disruptor
+                        event.setMachine(machineName);
+                        event.settStamp(timeStamp);
+                        event.setuTime(UnixConverter.getUnixTime(sentTime));
+                        event.setDimension(property);
+                        event.setValue(value);
+                        event.setIj_time(System.currentTimeMillis());
+                        event.setSentTime(sentTime);
+                        // for the sequence
+
+                    } finally {
+
+                        ringBuffer.publish(sequence);
+
+
+                    }
                     count++;
 
                 }

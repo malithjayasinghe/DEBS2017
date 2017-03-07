@@ -60,10 +60,10 @@ public class DistributedQuery {
 
         // Start the Disruptor, starts all threads running
         disruptor.start();
-        DebsEventProducer producer = new DebsEventProducer(ringBuffer);
+
 
         //read from file
-        DebsDataPublisher dp = new DebsDataPublisher("data_rdf10.csv", producer);
+        DebsDataPublisher dp = new DebsDataPublisher("data_rdf10.csv", ringBuffer);
         dp.publish();
 
 
