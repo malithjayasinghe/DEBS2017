@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class Main {
+public class DistributedQuery {
     public static long starttime;
     public static void main(String[] args) {
 

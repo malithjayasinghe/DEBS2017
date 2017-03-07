@@ -114,7 +114,7 @@ public class SiddhiQuery {
                  /*   if(arr.size() ==DebsDataPublisher.superCount){
                         long endtime = System.currentTimeMillis();
                         System.out.println("endtime"+endtime);
-                        long totaltime =(endtime-Main.starttime)/1000;
+                        long totaltime =(endtime-DistributedQuery.starttime)/1000;
                         System.out.println("\nTotaltime:" +(totaltime));
                         System.out.println("Throughput:"+(arr.size()/totaltime));
                         long sum =0;
