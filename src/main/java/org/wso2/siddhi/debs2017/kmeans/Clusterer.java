@@ -1,9 +1,8 @@
 package org.wso2.siddhi.debs2017.kmeans;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -25,67 +24,53 @@ public class Clusterer {
     private int noOfClusters;
     private int maxIter;
     private ArrayList<Double> data;
+
     private int dataSize;
     private ArrayList<Double>[] clusterGroup;
-    private double[] center;
-    private double[] centerOld;
+    private ArrayList<Double> center;
+    private ArrayList<Double> centerOld;
     private ArrayList<Double> kDist;
 
-    /**
-     * The constructor
-     *
-     * @param numberOfCulsters The number of clusters
-     * @param maxIter maximum number of iterations to be used
-     * @param dataSet the array containing the values to be clustered
-     */
-    public Clusterer(int numberOfCulsters, int maxIter, ArrayList<Double> dataSet) {
 
-        this.noOfClusters = numberOfCulsters;
+    public Clusterer(int noOfClusters, int maxIter, ArrayList<Double> dataSet) {
+
+        this.noOfClusters = noOfClusters;
         this.maxIter = maxIter;
         this.data = dataSet;
 
+        this.center = new ArrayList<>();
+        this.centerOld = new ArrayList<>();
+        this.clusterGroup = new ArrayList[this.noOfClusters];
 
         //check if the no. of data points are less than the no. of clusters
         this.dataSize = data.size();
-
         if (this.noOfClusters > dataSize) {
             this.noOfClusters = dataSize;
         }
 
         //get the first k distinct values from the data. This will be used to initialize the cluster centers
-        int kCount = 0;
-
-        ArrayList<Double> kDist = new ArrayList<>();
+        int noOfDistinctValues = 0;
+        ArrayList<Double> distinctValues = new ArrayList<>();
 
         for (int i = 0; i < dataSize; i++) {
-            if (!kDist.contains(data.get(i))) {
-                kDist.add(data.get(i));
-                kCount++;
+            if (!distinctValues.contains(data.get(i))) {
+                distinctValues.add(data.get(i));
+                center.add(data.get(i));
+                this.clusterGroup[i] = new ArrayList<>();
+
             }
-            if (kCount == noOfClusters) {
+            if (center.size() == this.noOfClusters) {
                 break;
             }
         }
 
 
         // if k values are not found, k should be the same as the no of distinct values found
-        if (kCount < noOfClusters) {
-            noOfClusters = kCount;
-        }
-
-        this.clusterGroup = new ArrayList[noOfClusters];
-        this.center = new double[noOfClusters];
-        this.centerOld = new double[noOfClusters];
-
-
-        //initialize the cluster centers to first k distinct value and creating the groups to hold all cluster values.
-        for (int i = 0; i < noOfClusters; i++) {
-            this.center[i] = kDist.get(i);
-            this.clusterGroup[i] = new ArrayList<>();
-        }
+        this.noOfClusters = center.size();
 
 
     }
+
 
     /**
      * Perform clustering
@@ -93,29 +78,34 @@ public class Clusterer {
      */
     public void cluster() {
         int iter = 0;
+
         do {
             assignToCluster();
-            reinitializeCluster(iter);
-            if (!Arrays.equals(center, centerOld)) {
+
+            reinitializeCluster();
+
+
+            if (!center.equals(centerOld)) {
                 for (int i = 0; i < clusterGroup.length; i++) {
                     clusterGroup[i].removeAll(clusterGroup[i]);
 
                 }
             }
             iter++;
-        } while (!Arrays.equals(center, centerOld) && iter < maxIter);
+
+
+        } while (!center.equals(centerOld) && iter < maxIter);
     }
 
     /**
      * reinitialize the cluster centres and store the old ones
      *
-     * @param iter : current no. of iterations
      */
-    private void reinitializeCluster(int iter) {
+    private void reinitializeCluster() {
         for (int i = 0; i < noOfClusters; i++) {
-            centerOld[i] = center[i];
+            centerOld.add(i, center.get(i));
             if (!clusterGroup[i].isEmpty()) {
-                center[i] = average(clusterGroup[i]);
+                center.set(i, average(clusterGroup[i]));
             }
         }
     }
@@ -138,19 +128,24 @@ public class Clusterer {
      * calculates the nearest center to each data point and adds the data to the cluster of respective center
      */
     private void assignToCluster() {
+
         double[] difference;
         double dataItem, cenVal, diff;
+
         for (int i = 0; i < dataSize; i++) {
             difference = new double[noOfClusters];
             dataItem = data.get(i);
             for (int j = 0; j < noOfClusters; j++) {
-                cenVal = center[j];
+                cenVal = center.get(j);
                 diff = Math.abs(cenVal - dataItem);
                 difference[j] = diff;
 
             }
             int minIndex = getMinIndex(difference);
+
+
             clusterGroup[minIndex].add(dataItem);
+
         }
     }
 
@@ -163,11 +158,14 @@ public class Clusterer {
      */
     private int getMinIndex(double[] diff) {
         int minIndex = 0;
+
         for (int i = 1; i < noOfClusters; i++) {
             if (diff[minIndex] > diff[i]) {
                 minIndex = i;
             }
+
         }
+
         return minIndex;
     }
 
@@ -178,13 +176,18 @@ public class Clusterer {
      */
     public int getCenter(double value) {
         double[] minDist = new double[noOfClusters];
-        //sort the array
-        Arrays.sort(center);
+
+
+        //sort the arraylist
+        Collections.sort(center);
+
         //get distance to each
         for (int i = 0; i < noOfClusters; i++) {
-            minDist[i] = (Math.abs(center[i] - value));
+            minDist[i] = (Math.abs(center.get(i) - value));
 
         }
+
         return getMinIndex(minDist) + 1;
+
     }
 }
