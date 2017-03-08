@@ -1,3 +1,22 @@
+/*
+ *
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ *
+ */
+
 package org.wso2.siddhi.debs2017.input;
 
 import org.apache.log4j.Logger;
@@ -7,9 +26,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
 
-/**
- * Created by temp on 1/25/17.
- */
+
 public class DataPublisher {
 
     private String fileName;
@@ -19,10 +36,10 @@ public class DataPublisher {
     /**
      * The constructor
      *
-     * @param fileName the file name to read the data
+     * @param fileName     the file name to read the data
      * @param inputHandler the inputhandler of the execution plan
      */
-    public DataPublisher(String fileName, InputHandler inputHandler){
+    public DataPublisher(String fileName, InputHandler inputHandler) {
 
         this.fileName = fileName;
         this.inputHandler = inputHandler;
@@ -41,8 +58,7 @@ public class DataPublisher {
 
                 Scanner scanner = new Scanner(line);
                 scanner.useDelimiter(",");
-                while(scanner.hasNext())
-                {
+                while (scanner.hasNext()) {
 
                     String machineName = scanner.next();
                     String timeStamp = scanner.next();
@@ -54,12 +70,12 @@ public class DataPublisher {
                     try {
                         inputHandler.send(new Object[]{machineName, timeStamp, timeValue, property, value});
 
-                    }catch (InterruptedException e){
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.info(e);
         }

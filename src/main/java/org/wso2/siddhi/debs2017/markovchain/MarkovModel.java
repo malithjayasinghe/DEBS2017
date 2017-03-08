@@ -1,3 +1,22 @@
+/*
+ *
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ *
+ */
+
 package org.wso2.siddhi.debs2017.markovchain;
 
 import java.util.ArrayList;
@@ -9,23 +28,22 @@ import java.util.HashMap;
 public class MarkovModel {
 
 
-
     private int currentCenter = 0;
-    private int previousCenter= 0;
+    private int previousCenter = 0;
     private int exPrevCenter = 0;
     private int exCurrCenter = 0;
 
     /**
      * hash map to keep track of the event count of the center transitions
      **/
-    private HashMap<Integer, HashMap<Integer,Integer>> transitionEventCount  = new HashMap<>();
+    private HashMap<Integer, HashMap<Integer, Integer>> transitionEventCount = new HashMap<>();
 
     /**
      * arraylist to maintain the current events in the time window for which probability sequence is checked
      */
     private ArrayList<Integer> eventOrder = new ArrayList<>();
 
-    private HashMap<Integer,Integer> totalTransitions;
+    private HashMap<Integer, Integer> totalTransitions;
     private double totalProbability;
 
     /**
@@ -35,23 +53,22 @@ public class MarkovModel {
      */
 
 
+    public void updateModel() {
 
-    public void updateModel(){
+        if (transitionEventCount.containsKey(previousCenter)) {
 
-        if(transitionEventCount.containsKey(previousCenter)){
-
-           HashMap<Integer,Integer> temp =  transitionEventCount.get(previousCenter);
-           if(temp.containsKey(currentCenter)){
-               temp.put(currentCenter,temp.get(currentCenter)+1);
-               transitionEventCount.put(previousCenter,temp);
-           }else{
-               temp.put(currentCenter,1);
-               transitionEventCount.put(previousCenter,temp);
-           }
+            HashMap<Integer, Integer> temp = transitionEventCount.get(previousCenter);
+            if (temp.containsKey(currentCenter)) {
+                temp.put(currentCenter, temp.get(currentCenter) + 1);
+                transitionEventCount.put(previousCenter, temp);
+            } else {
+                temp.put(currentCenter, 1);
+                transitionEventCount.put(previousCenter, temp);
+            }
 
 
-        }else {
-            HashMap<Integer,Integer> hm = new HashMap<>();
+        } else {
+            HashMap<Integer, Integer> hm = new HashMap<>();
             hm.put(currentCenter, 1);
             transitionEventCount.put(previousCenter, hm);
 
@@ -61,13 +78,14 @@ public class MarkovModel {
 
     /**
      * reduce the event count as events expire from the external time window
-     *@param curr the cluster center that is expired
-     *@param prev the cluster center that is before the expired center
-    **/
-    public void reduceCount(int prev, int curr){
+     *
+     * @param curr the cluster center that is expired
+     * @param prev the cluster center that is before the expired center
+     **/
+    public void reduceCount(int prev, int curr) {
         totalTransitions = transitionEventCount.get(prev);
-        totalTransitions.put(curr,totalTransitions.get(curr)-1);
-        if(totalTransitions.get(curr) == 0)
+        totalTransitions.put(curr, totalTransitions.get(curr) - 1);
+        if (totalTransitions.get(curr) == 0)
             totalTransitions.remove(curr);
     }
 
@@ -86,60 +104,75 @@ public class MarkovModel {
         double eventCount = 0;
 
 
+        for (int i = 1; i < eventOrder.size(); i++) {
 
-            for (int i = 1; i < eventOrder.size(); i++) {
+            if (previousEvent == 0 && currentEvent == 0) {
+                previousEvent = eventOrder.get(0);
+                currentEvent = eventOrder.get(1);
+            } else {
+                previousEvent = currentEvent;
+                currentEvent = eventOrder.get(i);
+            }
+            //get the event count for  the transitions between two particular centers
+            double currentEventCount = transitionEventCount.get(previousEvent).get(currentEvent);
 
-                if (previousEvent == 0 && currentEvent == 0) {
-                    previousEvent = eventOrder.get(0);
-                    currentEvent = eventOrder.get(1);
-                } else {
-                    previousEvent = currentEvent;
-                    currentEvent = eventOrder.get(i);
-                }
-                //get the event count for  the transitions between two particular centers
-                double currentEventCount = transitionEventCount.get(previousEvent).get(currentEvent);
+            // retreive the hashmap to get all the transitions from a particular center
+            totalTransitions = transitionEventCount.get(previousEvent);
 
-                // retreive the hashmap to get all the transitions from a particular center
-                totalTransitions = transitionEventCount.get(previousEvent);
+            // traverse the retrieved hashmap to get the count of all transitions from a particular center
+            for (Integer key : totalTransitions.keySet()) {
+                eventCount = eventCount + totalTransitions.get(key);
+            }
 
-                // traverse the retrieved hashmap to get the count of all transitions from a particular center
-                for (Integer key : totalTransitions.keySet()) {
-                    eventCount = eventCount + totalTransitions.get(key);
-                }
-
-                if (eventCount > 0 && currentEventCount >0) {
-                    currentProbability = currentProbability * (currentEventCount / eventCount);
-                }
-                eventCount = 0;
+            if (eventCount > 0 && currentEventCount > 0) {
+                currentProbability = currentProbability * (currentEventCount / eventCount);
+            }
+            eventCount = 0;
 
 
         }
-            totalProbability = currentProbability;
-      }
+        totalProbability = currentProbability;
+    }
 
-    public double gettotalProbability(){
+    public double gettotalProbability() {
         return totalProbability;
     }
 
-    public int getPreviousCenter(){return previousCenter;}
+    public int getPreviousCenter() {
+        return previousCenter;
+    }
 
-    public int getCurrentCenter(){return currentCenter;}
+    public int getCurrentCenter() {
+        return currentCenter;
+    }
 
-    public void setCurrentCenter(int center){
+    public void setCurrentCenter(int center) {
         currentCenter = center;
     }
 
-    public void setPreviousCenter(int center){ previousCenter = center;}
+    public void setPreviousCenter(int center) {
+        previousCenter = center;
+    }
 
-    public int getExPrevCenter(){return exPrevCenter;}
+    public int getExPrevCenter() {
+        return exPrevCenter;
+    }
 
-    public int getExCurrCenter(){return exCurrCenter;}
+    public int getExCurrCenter() {
+        return exCurrCenter;
+    }
 
-    public void setExPrevCenter(int center){ exPrevCenter = center;}
+    public void setExPrevCenter(int center) {
+        exPrevCenter = center;
+    }
 
-    public void setExCurrCenter(int center){exCurrCenter = center; }
+    public void setExCurrCenter(int center) {
+        exCurrCenter = center;
+    }
 
-    public void setEventOrder(ArrayList<Integer> arr){eventOrder = arr;}
+    public void setEventOrder(ArrayList<Integer> arr) {
+        eventOrder = arr;
+    }
 
 
 }

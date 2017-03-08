@@ -29,6 +29,7 @@ import java.util.ArrayList;
 */
 public class MetaDataQuery {
     private static ArrayList<String> str = new ArrayList<String>();
+
     public static void run() {
         String data = "";
         Model model = RDFDataMgr.loadModel("sample_metadata_1machine.nt");

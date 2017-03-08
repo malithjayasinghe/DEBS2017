@@ -27,9 +27,10 @@ public class MarkovAggregator extends AttributeAggregator {
 
     /**
      * arraylist to maintain the events in the current window
-     * */
+     */
     private ArrayList<Integer> arr = new ArrayList<>();
     MarkovExecution markovExecution = new MarkovExecution();
+
     @Override
     protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
 
@@ -44,14 +45,14 @@ public class MarkovAggregator extends AttributeAggregator {
     public Object processAdd(Object data) {
 
 
-           arr.add((int) data);
+        arr.add((int) data);
 
-           /**
-            * @param data cluster center value from the stream
-            * @param arr event transition for current window
-            * */
+        /**
+         * @param data cluster center value from the stream
+         * @param arr event transition for current window
+         * */
 
-           return markovExecution.execute((int) data, arr);
+        return markovExecution.execute((int) data, arr);
 
 
     }
@@ -69,10 +70,8 @@ public class MarkovAggregator extends AttributeAggregator {
      * */
     public Object processRemove(Object o) {
         arr.remove(0);
-        if(arr.size()>=2)
-        markovExecution.removeEvent((int) o, arr.get(0));
-
-
+        if (arr.size() >= 2)
+            markovExecution.removeEvent((int) o, arr.get(0));
 
 
         return null;

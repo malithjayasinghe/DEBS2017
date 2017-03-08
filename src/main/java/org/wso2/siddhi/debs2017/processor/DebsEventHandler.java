@@ -39,12 +39,12 @@ public class DebsEventHandler implements EventHandler<DebsEvent> {
 
     @Override
     public void onEvent(DebsEvent debsEvent, long sequence, boolean b) throws Exception {
-
-        if(distributor == 0 ) {
-             partition = Long.parseLong(debsEvent.getMachine().substring(15));
-        }else {
+        if (distributor == 0) {
+            partition = Long.parseLong(debsEvent.getMachine().substring(15));
+        } else {
             partition = Long.parseLong(debsEvent.getDimension().substring(1));
         }
+
         if (partition % num == ordinal) {
 
             //setting the event to be altered
@@ -58,11 +58,11 @@ public class DebsEventHandler implements EventHandler<DebsEvent> {
     }
 
     /**
-     * @param  id thread id
-     * @param  numOfCon no. of threads
-     * @param  distributor parameter to distribute events into threads for processing
-     * */
-    public DebsEventHandler(long id, long numOfCon, RingBuffer<DebsEvent> buffer, int distributor){
+     * @param id          thread id
+     * @param numOfCon    no. of threads
+     * @param distributor parameter to distribute events into threads for processing
+     */
+    public DebsEventHandler(long id, long numOfCon, RingBuffer<DebsEvent> buffer, int distributor) {
         this.num = numOfCon;
         this.ordinal = id;
         this.sq = new SiddhiQuery(buffer);

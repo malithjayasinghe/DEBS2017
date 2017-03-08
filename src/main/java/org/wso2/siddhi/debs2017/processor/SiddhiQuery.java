@@ -93,8 +93,6 @@ public class SiddhiQuery {
     }
 
 
-
-
     public void publish(Object[] obj) {
         try {
             inputHandler.send(obj);
@@ -123,8 +121,8 @@ public class SiddhiQuery {
 
 
     /**
-     *@param d probability of the event sequence in the window
-     *publishing the debsevent back tot he ring buffer after setting the probability
+     * @param d probability of the event sequence in the window
+     *          publishing the debsevent back tot he ring buffer after setting the probability
      */
     public synchronized void publishEvent(double d) {
         event = buffer.get(sequence);
