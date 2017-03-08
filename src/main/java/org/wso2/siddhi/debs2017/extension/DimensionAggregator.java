@@ -3,7 +3,8 @@ package org.wso2.siddhi.debs2017.extension;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.selector.attribute.aggregator.AttributeAggregator;
-import org.wso2.siddhi.debs2017.kmeans.WSO2KmeansClustering;
+import org.wso2.siddhi.debs2017.kmeans.Clusterer;
+
 import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.util.ArrayList;
@@ -23,8 +24,9 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class DimensionAggregator extends AttributeAggregator{
+public class DimensionAggregator extends AttributeAggregator {
     private ArrayList<Double> arr = new ArrayList<>();
+
     protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
 
     }
@@ -34,12 +36,12 @@ public class DimensionAggregator extends AttributeAggregator{
     }
 
     public Object processAdd(Object data) {
-
-        WSO2KmeansClustering test = new WSO2KmeansClustering(25, 100, arr);
+        Clusterer cluster = new Clusterer(25, 100, arr);
         // Do the clustering on the elements present in the array list and return the center it belongs to
-        arr.add((Double)data );
-
-        return test.getCenter((Double)data);
+        cluster.cluster();
+        int center = cluster.getCenter((Double) data);
+        arr.add((Double) data);
+        return center;
     }
 
     public Object processAdd(Object[] objects) {

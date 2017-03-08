@@ -24,12 +24,11 @@ public class Clusterer {
     private int noOfClusters;
     private int maxIter;
     private ArrayList<Double> data;
-
     private int dataSize;
     private ArrayList<Double>[] clusterGroup;
     private ArrayList<Double> center;
     private ArrayList<Double> centerOld;
-    private ArrayList<Double> kDist;
+
 
 
     public Clusterer(int noOfClusters, int maxIter, ArrayList<Double> dataSet) {
@@ -47,11 +46,9 @@ public class Clusterer {
         if (this.noOfClusters > dataSize) {
             this.noOfClusters = dataSize;
         }
-
         //get the first k distinct values from the data. This will be used to initialize the cluster centers
         int noOfDistinctValues = 0;
         ArrayList<Double> distinctValues = new ArrayList<>();
-
         for (int i = 0; i < dataSize; i++) {
             if (!distinctValues.contains(data.get(i))) {
                 distinctValues.add(data.get(i));
@@ -64,11 +61,8 @@ public class Clusterer {
             }
         }
 
-
         // if k values are not found, k should be the same as the no of distinct values found
         this.noOfClusters = center.size();
-
-
     }
 
 
@@ -81,10 +75,7 @@ public class Clusterer {
 
         do {
             assignToCluster();
-
             reinitializeCluster();
-
-
             if (!center.equals(centerOld)) {
                 for (int i = 0; i < clusterGroup.length; i++) {
                     clusterGroup[i].removeAll(clusterGroup[i]);
@@ -92,7 +83,6 @@ public class Clusterer {
                 }
             }
             iter++;
-
 
         } while (!center.equals(centerOld) && iter < maxIter);
     }
