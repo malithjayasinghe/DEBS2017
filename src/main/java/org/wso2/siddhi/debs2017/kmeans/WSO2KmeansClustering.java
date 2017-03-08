@@ -19,6 +19,7 @@ import java.util.Arrays;
 * limitations under the License.
 */
 
+//NOT USED
 public class WSO2KmeansClustering {
 
 
