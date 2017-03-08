@@ -1,8 +1,5 @@
 package org.wso2.siddhi.debs2017.Output;
 
-/**
- * Created by sachini on 2/6/17.
- */
 
 import com.hp.hpl.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
