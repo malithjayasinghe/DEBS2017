@@ -103,5 +103,33 @@ public class ClustererTestCase {
 
 
     }
+
+    @org.junit.Test
+    public void Test5() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 05");
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        //input.add(8.0);
+        Clusterer test =new Clusterer(3, 10, input);
+        // log.info("Test case 1 result : "+test.getCenter());
+        // System.out.println(test.getCenter(8.0));
+        test.cluster();
+        Assert.assertEquals(test.getCenter(7.0), 1);
+
+
+    }
 }
 
