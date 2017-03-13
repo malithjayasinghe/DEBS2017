@@ -180,4 +180,21 @@ public class Clusterer {
         return getMinIndex(minDist) + 1;
 
     }
+
+    public int[] getCenter(ArrayList<Double> data){
+        int [] output = new int[data.size()];
+        double[] minDist = new double[noOfClusters];
+
+        for(int i=0; i<data.size(); i++){
+
+            for (int j = 0; j < noOfClusters; j++) {
+                minDist[j] = (Math.abs(center.get(j) - data.get(i)));
+
+            }
+
+            output[i] = getMinIndex(minDist) +1;
+        }
+
+        return output;
+    }
 }

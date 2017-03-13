@@ -131,5 +131,83 @@ public class ClustererTestCase {
 
 
     }
+    @org.junit.Test
+    public void Test6() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 06");
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        input.add(7.0);
+        //input.add(8.0);
+        Clusterer test =new Clusterer(3, 10, input);
+        test.cluster();
+        input.add(8.0);
+        int [] output = test.getCenter(input);
+
+        for(int i =0; i<output.length; i++){
+           Assert.assertEquals(1, output[i]);
+        }
+
+
+    }
+
+    @org.junit.Test
+    public void Test7() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 06");
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(1.0);
+        input.add(8.0);
+        input.add(2.0);
+        input.add(7.0);
+        input.add(5.0);
+        Clusterer test =new Clusterer(2, 100, input);
+        test.cluster();
+        input.add(6.0);
+        int [] output = test.getCenter(input);
+        int [] actual = {1,2,1,2,2,2};
+
+        for(int i =0; i<output.length; i++){
+
+            Assert.assertEquals(actual[i], output[i]);
+        }
+
+
+    }
+
+    @org.junit.Test
+    public void Test8() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 08");
+        ArrayList<Double> input = new ArrayList<>();
+
+        input.add(8.0);
+        input.add(2.0);
+        input.add(7.0);
+        input.add(5.0);
+        input.add(6.0);
+        Clusterer test =new Clusterer(2, 100, input);
+        test.cluster();
+
+        input.add(1.0);
+        int [] output = test.getCenter(input);
+        int [] actual = {1,2,1,1,1,2};
+
+        for(int i =0; i<output.length; i++){
+
+            Assert.assertEquals(actual[i], output[i]);
+        }
+
+
+    }
 }
 
