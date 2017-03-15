@@ -209,5 +209,42 @@ public class ClustererTestCase {
 
 
     }
+
+    @org.junit.Test
+    public void Test10() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 08");
+        ArrayList<Double> input = new ArrayList<>();
+
+        input.add(-0.0);
+
+        Clusterer test =new Clusterer(2, 100, input);
+        test.cluster();
+
+
+            Assert.assertEquals(1, test.getCenter(0.0));
+
+
+
+    }
+
+    @org.junit.Test
+    public void Test11() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 11");
+        ArrayList<Double> input = new ArrayList<>();
+
+
+        input.add(0.09);
+        input.add(0.09);
+        input.add(0.07);
+
+        Clusterer test =new Clusterer(5, 100, input);
+        test.cluster();
+
+
+        Assert.assertEquals(1, test.getCenter(0.06));
+
+
+
+    }
 }
 
