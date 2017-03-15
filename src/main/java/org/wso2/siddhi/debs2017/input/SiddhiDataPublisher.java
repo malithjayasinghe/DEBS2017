@@ -32,8 +32,8 @@ public class SiddhiDataPublisher {
 
     private String fileName;
     private static  BufferedReader bufferedReader;
-    String line;
-    Scanner scanner;
+    private String line;
+    private Scanner scanner;
     private SiddhiClient siddhiClient;
     public  static boolean IS_END = false;
 
@@ -43,20 +43,6 @@ public class SiddhiDataPublisher {
      *
      * @param fileName the file name to read the data
      */
-    public SiddhiDataPublisher(String fileName, SiddhiClient siddhiClient) {
-
-
-        this.fileName = fileName;
-        this.siddhiClient = siddhiClient;
-        try {
-            this.bufferedReader = new BufferedReader(new FileReader(fileName));
-        } catch (Exception e) {
-
-        }
-
-
-    }
-
     public SiddhiDataPublisher(String fileName) {
 
         this.fileName = fileName;
@@ -87,7 +73,7 @@ public class SiddhiDataPublisher {
                     double value = Double.parseDouble(scanner.next());
 
 
-                   return new Event(System.currentTimeMillis(), new Object[]{machineName, timeStamp, property, sentTime, value});
+                   return new Event(System.currentTimeMillis(), new Object[]{machineName, timeStamp, sentTime, UnixConverter.getUnixTime(sentTime),property, value, System.currentTimeMillis()});
 
 
 

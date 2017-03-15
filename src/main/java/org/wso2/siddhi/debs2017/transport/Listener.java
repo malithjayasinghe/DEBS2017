@@ -63,7 +63,6 @@ public class Listener  implements StreamListener {
         public void onEvents(Event[] events) {
 
             for(int i =0; i<events.length; i++){
-                System.out.println(events[i]);
                 long sequence = this.ringBuffer.next();  // Grab the next sequence
                 try
                 {

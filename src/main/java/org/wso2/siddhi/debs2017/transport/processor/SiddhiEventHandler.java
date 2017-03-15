@@ -2,7 +2,9 @@ package org.wso2.siddhi.debs2017.transport.processor;
 
 
 import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.transport.processor.SiddhiQuery;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -21,12 +23,36 @@ import org.wso2.siddhi.core.event.Event;
 */
 public class SiddhiEventHandler implements EventHandler<Event> {
 
+    private final long ID;
+    private final long NUM;
+    private final SiddhiQuery sq;
+
 
     @Override
     public void onEvent (Event event , long sequence, boolean b) throws Exception {
-       // System.out.println(Thread.currentThread()+"\t"+event);
+        Object[] o = event.getData();
+        long partition = Long.parseLong(o[4].toString().substring(1));
+        if(partition%NUM==ID){
+
+            //setting the event to be altered
+            sq.setEvent(event);
+            //setting the buffer sequence
+            sq.setSequence(sequence);
+
+
+            sq.publish(event);
+        }
 
     }
+
+
+    public SiddhiEventHandler(long id, long num, RingBuffer<Event> ringBuffer){
+        this.ID = id;
+        this.NUM = num;
+        this.sq = new SiddhiQuery(ringBuffer);
+    }
+
+
 
 
 }

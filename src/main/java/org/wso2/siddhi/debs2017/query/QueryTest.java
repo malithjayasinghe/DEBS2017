@@ -46,8 +46,8 @@ public class QueryTest {
                 "insert into inStreamA;\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) \n" +
                 "begin " +
-                    "from inStreamA#window.externalTime(uTime , 5) \n" +//externalTime( tstamp , 10)
-                    "select machine, tstamp, dimension, debs2017:markov(value) as center \n" +
+                    "from inStreamA#window.externalTime(uTime , 10) \n" +//externalTime( tstamp , 10)
+                    "select machine, tstamp, dimension, debs2017:test(value) as center \n" +
                     "insert into outputStream; " +
                 "end");
 
@@ -59,7 +59,7 @@ public class QueryTest {
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
 
                 for(Event ev : events){
-                    System.out.println(ev.getData()[0]+"\t"+ ev.getData()[1]+"\t"+ ev.getData()[2]+"\t"+ ev.getData()[3]);
+                  System.out.println(ev.getData()[0]+"\t"+ ev.getData()[1]+"\t"+ ev.getData()[2]+"\t"+ ev.getData()[3]);
 
 
                 }
@@ -69,6 +69,7 @@ public class QueryTest {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
 
         try {
+            inputHandler.send(new Object[]{"m1","t1",1485859203100L,"d1", 0.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203101L,"d1", 1.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203102L,"d1", 2.0});
             inputHandler.send(new Object[]{"m1","t1",1485859203103L,"d1", 3.0});

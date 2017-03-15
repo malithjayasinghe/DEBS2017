@@ -30,7 +30,7 @@ public class UnixTimeTestCase {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new FileReader("rdfData_extract_100m_time.csv"));
+            reader = new BufferedReader(new FileReader("data_rdf10.csv"));
 
             String line = null;
             Scanner scanner = null;

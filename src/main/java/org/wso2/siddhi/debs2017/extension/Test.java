@@ -37,8 +37,9 @@ public class Test extends AttributeAggregator {
 
     @Override
     public Object processAdd(Object data) {
+        System.out.println("Test-------------------Add---");
         Double blah = (double)data;
-        //System.out.println("Test----------------------"+blah);
+       // System.out.println("Test----------------------"+blah);
 
         arr.add((Double) data);
         System.out.println(arr);
@@ -56,6 +57,7 @@ public class Test extends AttributeAggregator {
 
     @Override
     public Object processRemove(Object o) {
+        System.out.println("_____________________-Remove___________________--");
         arr.remove(0);
         return null;
     }
