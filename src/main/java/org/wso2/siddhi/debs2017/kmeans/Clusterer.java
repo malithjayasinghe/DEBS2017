@@ -39,21 +39,26 @@ public class Clusterer {
 
         this.center = new ArrayList<>();
         this.centerOld = new ArrayList<>();
-        this.clusterGroup = new ArrayList[this.noOfClusters];
+
 
         //check if the no. of data points are less than the no. of clusters
         this.dataSize = data.size();
         if (this.noOfClusters > dataSize) {
             this.noOfClusters = dataSize;
         }
+
+        this.clusterGroup = new ArrayList[this.noOfClusters];
         //get the first k distinct values from the data. This will be used to initialize the cluster centers
-        int noOfDistinctValues = 0;
+
+        int distinctCount =0;
         ArrayList<Double> distinctValues = new ArrayList<>();
         for (int i = 0; i < dataSize; i++) {
             if (!distinctValues.contains(data.get(i))) {
+
                 distinctValues.add(data.get(i));
                 center.add(data.get(i));
-                this.clusterGroup[i] = new ArrayList<>();
+                this.clusterGroup[distinctCount] = new ArrayList<>();
+                distinctCount++;
 
             }
             if (center.size() == this.noOfClusters) {
@@ -61,6 +66,10 @@ public class Clusterer {
             }
         }
 
+
+        //for (int i =0; i<this.noOfClusters; i++){
+           // this.clusterGroup[i] = new ArrayList<>();
+        //}
         // if k values are not found, k should be the same as the no of distinct values found
         this.noOfClusters = center.size();
     }
@@ -78,7 +87,7 @@ public class Clusterer {
             reinitializeCluster();
             if (!center.equals(centerOld)) {
                 for (int i = 0; i < clusterGroup.length; i++) {
-                    clusterGroup[i].removeAll(clusterGroup[i]);
+                    clusterGroup[i] = new ArrayList<>();
 
                 }
             }
