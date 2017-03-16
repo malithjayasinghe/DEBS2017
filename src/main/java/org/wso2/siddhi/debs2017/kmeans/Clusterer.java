@@ -206,4 +206,21 @@ public class Clusterer {
 
         return output;
     }
+
+    public ArrayList<Integer> getCenterA(ArrayList<Double> data){
+        ArrayList<Integer> output = new ArrayList<>();
+        double[] minDist = new double[noOfClusters];
+
+        for(int i=0; i<data.size(); i++){
+
+            for (int j = 0; j < noOfClusters; j++) {
+                minDist[j] = (Math.abs(center.get(j) - data.get(i)));
+
+            }
+
+            output.add(getMinIndex(minDist) +1);
+        }
+
+        return output;
+    }
 }
