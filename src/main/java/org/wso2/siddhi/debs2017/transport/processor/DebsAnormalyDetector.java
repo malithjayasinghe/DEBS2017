@@ -6,6 +6,7 @@ import org.wso2.siddhi.debs2017.Output.AlertGenerator;
 import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
 import org.wso2.siddhi.debs2017.processor.DebsEvent;
 import org.wso2.siddhi.debs2017.query.DistributedQuery;
+import org.wso2.siddhi.tcp.transport.TcpNettyClient;
 
 import java.util.ArrayList;
 
@@ -25,25 +26,37 @@ import java.util.ArrayList;
 * limitations under the License.
 */
 public class DebsAnormalyDetector implements EventHandler<Event> {
-    private static ArrayList<Long> arr = new ArrayList<>();
+   // private static ArrayList<Long> arr = new ArrayList<>();
+    private TcpNettyClient siddhiClient;
+    static int count =0;
+    static int synccount =0;
 
     @Override
     public void onEvent(Event event, long l, boolean b) throws Exception {
 
         Object [] o = event.getData();
-        addToArray(System.currentTimeMillis() - Long.parseLong(o[3].toString()));
+       // addToArray(System.currentTimeMillis() - Long.parseLong(o[3].toString()));
 
-        System.out.println(arr.size());
+       // System.out.println(arr.size());
 
         double prbability = Double.parseDouble(o[5].toString());
         if (prbability < 0.3 && prbability >= 0) {
-            System.out.println(" Machine" + o[0] + "\t" + "Timestamp" +  o[1]  +
-                    "\t" + "Dimension" + o[4] + "\t" + "Anomaly" + prbability);
-            //debsEvent.setProbThresh("0.5");
+//            System.out.println(" Machine" + o[0] + "\t" + "Timestamp" +  o[1]  +
+//                    "\t" + "Dimension" + o[4] + "\t" + "Anomaly" + prbability);
+//            //debsEvent.setProbThresh("0.5");
             //AlertGenerator ag = new AlertGenerator(debsEvent);
             //ag.generateAlert();
 
         }
+
+        Event [] events = {event};
+
+        System.out.println("-----"+event);
+        count++;
+        //System.out.println();
+        //siddhiClient.send("output", events);
+        send(events);
+        System.out.println(count+"-------"+synccount);
 
 
 //        if (arr.size() == DebsDataPublisher.superCount) {
@@ -63,8 +76,18 @@ public class DebsAnormalyDetector implements EventHandler<Event> {
 
     }
 
+    private synchronized void send(Event[] events) {
+        siddhiClient.send("output", events);
+        synccount++;
+    }
+
     private static synchronized void addToArray(Long diff) {
-        arr.add(diff);
+        //arr.add(diff);
+
+    }
+    public DebsAnormalyDetector(){
+        this.siddhiClient = new TcpNettyClient();
+        this.siddhiClient.connect("localhost", 8000);
 
     }
 }
