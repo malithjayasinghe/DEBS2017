@@ -25,69 +25,34 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class DebsAnormalyDetector implements EventHandler<Event> {
-   // private static ArrayList<Long> arr = new ArrayList<>();
+public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
+
     private TcpNettyClient siddhiClient;
-    static int count =0;
-    static int synccount =0;
+
 
     @Override
-    public void onEvent(Event event, long l, boolean b) throws Exception {
+    public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
 
-        Object [] o = event.getData();
-       // addToArray(System.currentTimeMillis() - Long.parseLong(o[3].toString()));
+        System.out.println(wrapper.getEvent());
+        Object [] o = wrapper.getEvent().getData();
 
-       // System.out.println(arr.size());
+        //double prbability = Double.parseDouble(o[5].toString());
 
-        double prbability = Double.parseDouble(o[5].toString());
-        if (prbability < 0.3 && prbability >= 0) {
-//            System.out.println(" Machine" + o[0] + "\t" + "Timestamp" +  o[1]  +
-//                    "\t" + "Dimension" + o[4] + "\t" + "Anomaly" + prbability);
-//            //debsEvent.setProbThresh("0.5");
-            //AlertGenerator ag = new AlertGenerator(debsEvent);
-            //ag.generateAlert();
+        send(wrapper.getEvent());
 
-        }
+    }
+
+    private synchronized void send(Event event) {
+
+      // Event ev = new Event(event.getTimestamp(), event.getData());
 
         Event [] events = {event};
-
-        System.out.println("-----"+event);
-        count++;
-        //System.out.println();
-        //siddhiClient.send("output", events);
-        send(events);
-        System.out.println(count+"-------"+synccount);
-
-
-//        if (arr.size() == DebsDataPublisher.superCount) {
-//            long endtime = System.currentTimeMillis();
-//            System.out.println("endtime" + endtime);
-//            long totaltime = (endtime - DistributedQuery.starttime) / 1000;
-//            System.out.println("\nTotaltime:" + (totaltime));
-//            System.out.println("Throughput:" + (arr.size() / totaltime));
-//            long sum = 0;
-//            for (int i = 0; i < arr.size(); i++) {
-//                sum = sum + arr.get(i);
-//            }
-//            System.out.println("Total Lat:" + (sum));
-//            System.out.println("Avg Lat:" + (sum / arr.size()));
-//            System.out.println("Data:" + arr.size());
-//        }
-
-    }
-
-    private synchronized void send(Event[] events) {
         siddhiClient.send("output", events);
-        synccount++;
     }
 
-    private static synchronized void addToArray(Long diff) {
-        //arr.add(diff);
-
-    }
     public DebsAnormalyDetector(){
         this.siddhiClient = new TcpNettyClient();
-        this.siddhiClient.connect("localhost", 8000);
+       this.siddhiClient.connect("localhost", 8000);
 
     }
 }

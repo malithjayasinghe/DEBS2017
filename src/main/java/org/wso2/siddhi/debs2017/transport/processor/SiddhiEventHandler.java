@@ -21,7 +21,7 @@ import org.wso2.siddhi.debs2017.transport.processor.SiddhiQuery;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SiddhiEventHandler implements EventHandler<Event> {
+public class SiddhiEventHandler implements EventHandler<EventWrapper> {
 
     private final long ID;
     private final long NUM;
@@ -29,24 +29,23 @@ public class SiddhiEventHandler implements EventHandler<Event> {
 
 
     @Override
-    public void onEvent (Event event , long sequence, boolean b) throws Exception {
-        Object[] o = event.getData();
+    public void onEvent (EventWrapper wrapper , long sequence, boolean b) throws Exception {
+
+
+        Object[] o = wrapper.getEvent().getData();
         long partition = Long.parseLong(o[4].toString().substring(1));
         if(partition%NUM==ID){
 
-            //setting the event to be altered
-            sq.setEvent(event);
             //setting the buffer sequence
-            sq.setSequence(sequence);
+           sq.setSequence(sequence);
 
 
-            sq.publish(event);
+           sq.publish(wrapper.getEvent());
         }
 
     }
 
-
-    public SiddhiEventHandler(long id, long num, RingBuffer<Event> ringBuffer){
+    public SiddhiEventHandler(long id, long num, RingBuffer<EventWrapper> ringBuffer){
         this.ID = id;
         this.NUM = num;
         this.sq = new SiddhiQuery(ringBuffer);

@@ -32,15 +32,14 @@ public class SiddhiQuery {
     private final String query;
     private final String inStreamDefinition;
     private final SiddhiManager siddhiManager;
-    private ExecutionPlanRuntime executionPlanRuntime;
-    private static ArrayList<Long> arr = new ArrayList<>();
-    //private static int count = 0;
-    private RingBuffer<Event> buffer;
+    private ExecutionPlanRuntime executionPlanRuntime;;
+
+    private RingBuffer<EventWrapper> buffer;
     private long sequence;
-    private Event event;
 
 
-    public SiddhiQuery(RingBuffer<Event> buffer) {
+
+    public SiddhiQuery(RingBuffer<EventWrapper> buffer) {
 
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
                 "define stream inStream (machine string, tstamp_id string, tstamp string,  uTime long, dimension string, " +
@@ -89,16 +88,6 @@ public class SiddhiQuery {
 
 
 
-
-    /*public void publish(Object[] obj) {
-        try {
-            inputHandler.send(obj);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }*/
-
     public void publish(Event obj) {
         try {
            // inputHandler.send(obj.getData());
@@ -109,10 +98,6 @@ public class SiddhiQuery {
 
     }
 
-    public static synchronized void addToArray(Long diff) {
-        arr.add(diff);
-
-    }
 
     //setting the sequence from the ringbuffer
     public synchronized void setSequence(long l) {
@@ -120,11 +105,7 @@ public class SiddhiQuery {
 
     }
 
-    //setting the event read from the ringbuffer
-   public synchronized void setEvent(Event db) {
-        //this.event = db;
 
-   }
 
 
     /**
@@ -132,9 +113,14 @@ public class SiddhiQuery {
      *          publishing the debsevent back tot he ring buffer after setting the probability
      */
     private synchronized void publishEvent(Event ev) {
-        event = buffer.get(sequence);
-        event.setData(ev.getData());
-        buffer.publish(sequence);
+        try{
+            EventWrapper wrapper = buffer.get(sequence);
+            wrapper.setEvent(ev);
+        } finally {
+            buffer.publish(sequence);
+        }
+
+
 
     }
 

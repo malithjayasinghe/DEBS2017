@@ -27,7 +27,7 @@ public class UnixTimeTestCase {
 
     @org.junit.Test
     public void Test1() throws InterruptedException {
-        BufferedReader reader = null;
+       /* BufferedReader reader = null;
 
         try {
             reader = new BufferedReader(new FileReader("data_rdf10.csv"));
@@ -67,6 +67,6 @@ public class UnixTimeTestCase {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }

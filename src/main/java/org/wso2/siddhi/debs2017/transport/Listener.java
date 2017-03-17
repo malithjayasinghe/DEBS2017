@@ -3,6 +3,7 @@ package org.wso2.siddhi.debs2017.transport;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.transport.processor.EventWrapper;
 import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 
@@ -29,15 +30,10 @@ import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 public class Listener  implements StreamListener {
        // private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.callback.LogStreamListener.class);
         private StreamDefinition streamDefinition;
-        private AtomicLong count = new AtomicLong(0);
-        private Executor executor;
-        private int buffersize = 256;
-        private Disruptor<Event> disruptor;
-        private SiddhiEventHandler sh1;
-        private SiddhiEventHandler sh2;
-        private RingBuffer<Event> ringBuffer;
 
-        public Listener(StreamDefinition streamDefinition, RingBuffer<Event> ring) {
+        private RingBuffer<EventWrapper> ringBuffer;
+
+        public Listener(StreamDefinition streamDefinition, RingBuffer<EventWrapper> ring) {
 
             this.streamDefinition = streamDefinition;
 
@@ -56,18 +52,20 @@ public class Listener  implements StreamListener {
 
         @Override
         public void onEvent(Event event) {
-            //log.info( count.incrementAndGet()+ " " + event.getData());
+
         }
 
         @Override
         public void onEvents(Event[] events) {
 
+
             for(int i =0; i<events.length; i++){
                 long sequence = this.ringBuffer.next();  // Grab the next sequence
                 try
                 {
-                    Event newEvent = this.ringBuffer.get(sequence); // Get the entry in the Disruptor
-                    newEvent.setData(events[i].getData());
+                    EventWrapper wrapper = this.ringBuffer.get(sequence); // Get the entry in the Disruptor
+                    wrapper.setEvent(events[i]);
+
 
 
                 }

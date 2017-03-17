@@ -40,38 +40,27 @@ public class SiddhiClient {
         TcpNettyClient siddhiClient1 = new TcpNettyClient();
         TcpNettyClient siddhiClient2 = new TcpNettyClient();
         siddhiClient.connect("localhost", 8080);
-        //siddhiClient1.connect("localhost", 8081);
-       // siddhiClient2.connect("localhost", 8082);
+        siddhiClient1.connect("localhost", 8081);
+       siddhiClient2.connect("localhost", 8082);
 
-        SiddhiDataPublisher dp = new SiddhiDataPublisher("data_rdf10mac.csv");
+        SiddhiDataPublisher dp = new SiddhiDataPublisher("data_rdf10.csv");
         while(!dp.IS_END){
             Event event = dp.publishData();
             Object[] o = event.getData();
             if(o[0].toString().length()>15){
                 if((Integer.parseInt(o[0].toString().substring(15)))%3==0){
-//                   try {
-//                       Thread.sleep(1);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
                     siddhiClient.send("input", new Event[]{event});
                 } else if((Integer.parseInt(o[0].toString().substring(15)))%3==1){
-                   //siddhiClient1.send("input", new Event[]{event});
+                   siddhiClient1.send("input", new Event[]{event});
                 } else if((Integer.parseInt(o[0].toString().substring(15)))%3==2){
-                   // siddhiClient2.send("input", new Event[]{event});
+                   siddhiClient2.send("input", new Event[]{event});
                 }
             }
 
         }
 
 
-        //siddhiClient.send("Test", new Event[]{new Event(System.currentTimeMillis(), new Object[]{"a", "b", "c"})});
-//       siddhiClient.disconnect();
-//        siddhiClient1.disconnect();
-//        siddhiClient2.disconnect();
-//        siddhiClient.shutdown();
-//        siddhiClient.shutdown();
-//        siddhiClient2.shutdown();
+
 
 
     }

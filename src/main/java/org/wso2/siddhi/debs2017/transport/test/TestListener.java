@@ -7,6 +7,7 @@ import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,6 +30,10 @@ public class TestListener implements StreamListener {
 
     private StreamDefinition streamDefinition;
 
+    long starttime;
+    long endtime;
+    static ArrayList<Long > arr = new ArrayList<>();
+
 
     public TestListener(StreamDefinition streamDefinition) {
 
@@ -50,15 +55,36 @@ public class TestListener implements StreamListener {
 
     @Override
     public void onEvents(Event[] events) {
-        System.out.println("===================");
         print(events);
+        if(arr.size()==7412400){
+            System.out.println("Starttime "+starttime);
+            System.out.println("Endtime "+endtime);
+            System.out.println("Running in ms "+(endtime-starttime));
+            System.out.println("Throughput "+arr.size()/((endtime-starttime)/1000));
+            double sum =0;
+            for (int i =0; i<arr.size(); i++){
+                sum +=arr.get(i);
+            }
+            System.out.println("Average Latency"+(sum/arr.size()));
+
+
+        }
 
 
     }
 
-    private void print(Event[] events) {
+    private synchronized void print(Event[] events) {
+
+
         for(int i =0; i<events.length; i++){
-            System.out.println(events[i]);
+            arr.add(System.currentTimeMillis()-events[i].getTimestamp());
+            if (arr.size() ==1){
+               starttime= events[i].getTimestamp();
+            }
+            if (arr.size() == 7412400){
+                endtime = events[i].getTimestamp();
+            }
+
         }
     }
 }
