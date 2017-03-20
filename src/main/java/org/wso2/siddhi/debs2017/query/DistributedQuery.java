@@ -1,7 +1,9 @@
 package org.wso2.siddhi.debs2017.query;
 
+import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.SleepingWaitStrategy;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
@@ -43,20 +45,21 @@ public class DistributedQuery {
 
 
         // Construct the Disruptor
-        Disruptor<DebsEvent> disruptor = new Disruptor<>(DebsEvent::new, bufferSize, executor);
+      //Disruptor<DebsEvent> disruptor = new Disruptor<>(DebsEvent::new, bufferSize, executor);
 
+        Disruptor<DebsEvent> disruptor = new Disruptor<>(factory, bufferSize,executor, ProducerType.SINGLE, new YieldingWaitStrategy());
         // Get the ring buffer from the Disruptor to be used for publishing.
         RingBuffer<DebsEvent> ringBuffer = disruptor.getRingBuffer();
-        DebsEventHandler lh1 = new DebsEventHandler(0,4, ringBuffer,1);
-        DebsEventHandler lh2 = new DebsEventHandler(1, 4,ringBuffer,1);
-        DebsEventHandler lh3 = new DebsEventHandler(2, 4,ringBuffer,1);
-        DebsEventHandler lh4 = new DebsEventHandler(3, 4,ringBuffer,1);
+        DebsEventHandler lh1 = new DebsEventHandler(0,3, ringBuffer,1);
+        DebsEventHandler lh2 = new DebsEventHandler(1, 3,ringBuffer,1);
+       DebsEventHandler lh3 = new DebsEventHandler(2, 3,ringBuffer,1);
+     //  DebsEventHandler lh4 = new DebsEventHandler(3, 4,ringBuffer,1);
 
         //thread to detect the anomaly
         DebsAnomalyGenerator lh5 = new DebsAnomalyGenerator();
         // Connect the handler
-        disruptor.handleEventsWith(lh1, lh2,lh3,lh4);
-        disruptor.after(lh1,lh2,lh3,lh4).handleEventsWith(lh5);
+        disruptor.handleEventsWith(lh1, lh2,lh3);
+        disruptor.after(lh1,lh2).handleEventsWith(lh5);
 
         // Start the Disruptor, starts all threads running
         disruptor.start();

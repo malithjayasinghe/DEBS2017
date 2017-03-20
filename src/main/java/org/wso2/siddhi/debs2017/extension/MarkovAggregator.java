@@ -3,8 +3,10 @@ package org.wso2.siddhi.debs2017.extension;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.selector.attribute.aggregator.AttributeAggregator;
-import org.wso2.siddhi.debs2017.markovchain.MarkovExecution;
+import org.wso2.siddhi.debs2017.markovchain.MarkovModel;
+import org.wso2.siddhi.debs2017.markovchain.MarkoveModified;
 import org.wso2.siddhi.query.api.definition.Attribute;
+
 
 import java.util.ArrayList;
 
@@ -29,8 +31,9 @@ public class MarkovAggregator extends AttributeAggregator {
      * arraylist to maintain the events in the current window
      */
     private ArrayList<Integer> arr = new ArrayList<>();
-    MarkovExecution markovExecution = new MarkovExecution();
-
+     private  int windowfull = 0;
+     private  double probability;
+     MarkoveModified markoveModified = new MarkoveModified();
     @Override
     protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
 
@@ -43,16 +46,20 @@ public class MarkovAggregator extends AttributeAggregator {
 
     @Override
     public Object processAdd(Object data) {
-
-
         arr.add((int) data);
+        if(windowfull > 0){
+          //  System.out.println(arr);
+            probability = markoveModified.updateProbability(arr);
+            markoveModified.execute((int)data);
 
-        /**
-         * @param data cluster center value from the stream
-         * @param arr event transition for current window
-         * */
+        }else{
+            markoveModified.execute((int)data);
+           // System.out.println(arr);
+            probability = -1;
+        }
+        return probability;
 
-        return markovExecution.execute((int) data, arr);
+
 
 
     }
@@ -69,9 +76,11 @@ public class MarkovAggregator extends AttributeAggregator {
      * reduce the event transition count for the expired event
      * */
     public Object processRemove(Object o) {
+        windowfull++;
         arr.remove(0);
         if (arr.size() >= 2)
-            markovExecution.removeEvent((int) o, arr.get(0));
+
+           markoveModified.reduceCount((int) o, arr.get(0));
 
 
         return null;

@@ -32,6 +32,10 @@ public class DataPublisher {
     private String fileName;
     private static final Logger log = Logger.getLogger(DataPublisher.class);
     private InputHandler inputHandler;
+    public  static  int count;
+   public static int supercount;
+   public static long startime;
+   boolean start = false;
 
     /**
      * The constructor
@@ -55,7 +59,10 @@ public class DataPublisher {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-
+                if(start == false){
+                    startime = System.currentTimeMillis();
+                    start = true;
+                }
                 Scanner scanner = new Scanner(line);
                 scanner.useDelimiter(",");
                 while (scanner.hasNext()) {
@@ -67,14 +74,19 @@ public class DataPublisher {
 
                     String property = scanner.next();
                     double value = Double.parseDouble(scanner.next());
+                    long addedTime = System.currentTimeMillis();
                     try {
-                        inputHandler.send(new Object[]{machineName, timeStamp, timeValue, property, value});
 
+                        inputHandler.send(new Object[]{machineName, timeStamp, timeValue, property, addedTime,value});
+                        //machine string, tstamp string, uTime long, dimension string, addedTime long, " +
+                        //"value double
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    count++;
                 }
             }
+            supercount = count;
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e);

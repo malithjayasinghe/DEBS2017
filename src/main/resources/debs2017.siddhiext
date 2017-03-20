@@ -19,3 +19,4 @@
 cluster=org.wso2.siddhi.debs2017.extension.DimensionAggregator
 markov=org.wso2.siddhi.debs2017.extension.MarkovAggregator
 test=org.wso2.siddhi.debs2017.extension.Test
+markovnew=org.wso2.siddhi.debs2017.extension.MarkovFunction

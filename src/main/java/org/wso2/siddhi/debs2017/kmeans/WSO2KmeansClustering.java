@@ -235,7 +235,7 @@ public class WSO2KmeansClustering {
         input.add(5.0);
 
         WSO2KmeansClustering test =new WSO2KmeansClustering(2, 10, input);
-        System.out.println(test.getCenter(1.0));
+        System.out.println(test.getEventCount(1.0));
     }*/
 
 

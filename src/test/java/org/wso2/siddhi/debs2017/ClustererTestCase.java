@@ -96,8 +96,8 @@ public class ClustererTestCase {
         //input.add(7.0);
         //input.add(8.0);
         Clusterer test =new Clusterer(3, 10, input);
-        // log.info("Test case 1 result : "+test.getCenter());
-        // System.out.println(test.getCenter(8.0));
+        // log.info("Test case 1 result : "+test.getEventCount());
+        // System.out.println(test.getEventCount(8.0));
         test.cluster();
         Assert.assertEquals(test.getCenter(8.0), 1);
 
@@ -211,39 +211,81 @@ public class ClustererTestCase {
     }
 
     @org.junit.Test
+    public void Test9() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 08");
+        ArrayList<Double> input = new ArrayList<>();
+
+        input.add(0.0);
+        input.add(0.0);
+        input.add(0.0);
+        input.add(0.0);
+        input.add(0.0);
+        Clusterer test = new Clusterer(2, 100, input);
+        test.cluster();
+
+        input.add(0.0);
+        int[] output = test.getCenter(input);
+        int[] actual = {1, 1, 1, 1, 1, 1};
+
+        for (int i = 0; i < output.length; i++) {
+
+            Assert.assertEquals(actual[i], output[i]);
+        }
+    }
+
+    @org.junit.Test
     public void Test10() throws InterruptedException {
         log.info("ClustererTestCase TestCase 08");
         ArrayList<Double> input = new ArrayList<>();
 
-        input.add(-0.0);
-
-        Clusterer test =new Clusterer(2, 100, input);
+        input.add(0.0);
+        input.add(0.0);
+        input.add(0.0);
+        input.add(0.0);
+        input.add(0.0);
+        Clusterer test = new Clusterer(2, 100, input);
         test.cluster();
 
 
             Assert.assertEquals(1, test.getCenter(0.0));
 
-
-
     }
 
     @org.junit.Test
     public void Test11() throws InterruptedException {
-        log.info("ClustererTestCase TestCase 11");
+        log.info("ClustererTestCase TestCase 08");
         ArrayList<Double> input = new ArrayList<>();
 
-
-        input.add(0.09);
-        input.add(0.09);
-        input.add(0.07);
-
-        Clusterer test =new Clusterer(5, 100, input);
+        Clusterer test = new Clusterer(2, 100, input);
         test.cluster();
 
 
-        Assert.assertEquals(1, test.getCenter(0.06));
+        Assert.assertEquals(1, test.getCenter(0.0));
+
+    }
+    @org.junit.Test
+    public void Test12() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 08");
+        ArrayList<Double> input = new ArrayList<>();
+
+        Clusterer test = new Clusterer(2, 100, input);
+        test.cluster();
 
 
+        Assert.assertEquals(1, test.getCenter(-0.0));
+
+    }
+
+    @org.junit.Test
+    public void Test13() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 08");
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(0.0);
+        Clusterer test = new Clusterer(2, 100, input);
+        test.cluster();
+
+
+        Assert.assertEquals(1, test.getCenter(-1.0));
 
     }
 }

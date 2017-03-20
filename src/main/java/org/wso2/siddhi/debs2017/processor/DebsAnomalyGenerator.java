@@ -37,8 +37,8 @@ public class DebsAnomalyGenerator implements EventHandler<DebsEvent> {
 
 
         if (debsEvent.getProbability() < 0.3 && debsEvent.getProbability() >= 0) {
-            System.out.println(" Machine" + debsEvent.getMachine() + "\t" + "Timestamp" + debsEvent.gettStamp() +
-                    "\t" + "Dimension" + debsEvent.getDimension() + "\t" + "Anomaly" + debsEvent.getProbability());
+          // System.out.println(" Machine" + debsEvent.getMachine() + "\t" + "Timestamp" + debsEvent.gettStamp() +
+            //      "\t" + "Dimension" + debsEvent.getDimension() + "\t" + "Anomaly" + debsEvent.getProbability());
             debsEvent.setProbThresh("0.5");
             AlertGenerator ag = new AlertGenerator(debsEvent);
             ag.generateAlert();
@@ -52,7 +52,7 @@ public class DebsAnomalyGenerator implements EventHandler<DebsEvent> {
             long totaltime = (endtime - DistributedQuery.starttime) / 1000;
             System.out.println("\nTotaltime:" + (totaltime));
             System.out.println("Throughput:" + (arr.size() / totaltime));
-            long sum = 0;
+            double sum = 0;
             for (int i = 0; i < arr.size(); i++) {
                 sum = sum + arr.get(i);
             }

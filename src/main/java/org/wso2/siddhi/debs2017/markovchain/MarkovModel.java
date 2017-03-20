@@ -53,7 +53,7 @@ public class MarkovModel {
      */
 
 
-    public void updateModel() {
+    private void updateModel() {
 
         if (transitionEventCount.containsKey(previousCenter)) {
 
@@ -82,7 +82,7 @@ public class MarkovModel {
      * @param curr the cluster center that is expired
      * @param prev the cluster center that is before the expired center
      **/
-    public void reduceCount(int prev, int curr) {
+    private void reduceCount(int prev, int curr) {
         totalTransitions = transitionEventCount.get(prev);
         totalTransitions.put(curr, totalTransitions.get(curr) - 1);
         if (totalTransitions.get(curr) == 0)
@@ -95,7 +95,7 @@ public class MarkovModel {
      * calculate the current probability for a particular transition
      * multiply each transition probability to get the total combined probability
      */
-    public void updateProbability() {
+    private void updateProbability() {
 
 
         double currentProbability = 1;
@@ -134,45 +134,109 @@ public class MarkovModel {
         totalProbability = currentProbability;
     }
 
-    public double gettotalProbability() {
+    private double gettotalProbability() {
         return totalProbability;
     }
 
-    public int getPreviousCenter() {
+    private int getPreviousCenter() {
         return previousCenter;
     }
 
-    public int getCurrentCenter() {
+    private int getCurrentCenter() {
         return currentCenter;
     }
 
-    public void setCurrentCenter(int center) {
+    private void setCurrentCenter(int center) {
         currentCenter = center;
     }
 
-    public void setPreviousCenter(int center) {
+    private void setPreviousCenter(int center) {
         previousCenter = center;
     }
 
-    public int getExPrevCenter() {
+    private int getExPrevCenter() {
         return exPrevCenter;
     }
 
-    public int getExCurrCenter() {
+    private int getExCurrCenter() {
         return exCurrCenter;
     }
 
-    public void setExPrevCenter(int center) {
+    private void setExPrevCenter(int center) {
         exPrevCenter = center;
     }
 
-    public void setExCurrCenter(int center) {
+    private void setExCurrCenter(int center) {
         exCurrCenter = center;
     }
 
-    public void setEventOrder(ArrayList<Integer> arr) {
+    private void setEventOrder(ArrayList<Integer> arr) {
         eventOrder = arr;
     }
+
+
+    public  double execute(int center, ArrayList<Integer> arr){
+        /**
+         *  passing the event sequence in the current time window  to calculate the  combined probability
+         * */
+        setEventOrder(arr);
+
+
+        /**
+         * initialize the current center and previous center
+         *
+         * */
+
+        if (getCurrentCenter() == 0 && getPreviousCenter() == 0) {
+
+            setPreviousCenter(center);
+
+            return -1;
+
+        } else if (getCurrentCenter() == 0) {
+
+            setCurrentCenter(center);
+            updateModel();
+            return 1;
+
+        } else {
+            /**
+             * if both centers are initilaized set the previous center to existing current center
+             * set the current center to the latest event retrieved from the stream
+             * update the event count
+             * calcualte the current probability and return
+             * */
+
+            setPreviousCenter(getCurrentCenter());
+            setCurrentCenter(center);
+            updateModel();
+            updateProbability();
+            return gettotalProbability();
+
+
+        }
+    }
+
+    /**
+     * remove the expired event from the hashmap maintaining the event count
+     *
+     * @param curr the expired event from the time window
+     * @param prev the event before the expired event
+     */
+
+    public void removeEvent(int prev, int curr) {
+
+        setExPrevCenter(prev);
+        setExCurrCenter(curr);
+        reduceCount(getExPrevCenter(), getExCurrCenter());
+
+    }
+
+
+
+
+
+
 
 
 }

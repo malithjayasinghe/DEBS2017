@@ -70,7 +70,7 @@ public class WSO2KmeansclusteringTestCase {
         input.add(7.0);
         //input.add(8.0);
         WSO2KmeansClustering test =new WSO2KmeansClustering(3, 10, input);
-        // log.info("Test case 1 result : "+test.getCenter());
+        // log.info("Test case 1 result : "+test.getEventCount());
         Assert.assertEquals(test.getCenter(8.0), 1);
 
 
@@ -83,8 +83,8 @@ public class WSO2KmeansclusteringTestCase {
         //input.add(7.0);
         //input.add(8.0);
         WSO2KmeansClustering test =new WSO2KmeansClustering(3, 10, input);
-        // log.info("Test case 1 result : "+test.getCenter());
-        // System.out.println(test.getCenter(8.0));
+        // log.info("Test case 1 result : "+test.getEventCount());
+        // System.out.println(test.getEventCount(8.0));
         Assert.assertEquals(test.getCenter(8.0), 1);
 
 
