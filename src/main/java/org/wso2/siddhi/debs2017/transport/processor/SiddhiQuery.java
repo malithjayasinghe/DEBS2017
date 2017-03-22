@@ -32,7 +32,7 @@ public class SiddhiQuery {
     private final String query;
     private final String inStreamDefinition;
     private final SiddhiManager siddhiManager;
-    private ExecutionPlanRuntime executionPlanRuntime;;
+    private ExecutionPlanRuntime executionPlanRuntime;
 
     private RingBuffer<EventWrapper> buffer;
     private long sequence;
@@ -43,22 +43,22 @@ public class SiddhiQuery {
 
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
                 "define stream inStream (machine string, tstamp_id string, tstamp string,  uTime long, dimension string, " +
-                "value double, ij_time long);";
+                "value double);";
 
         this.query = ("" +
                 "\n" +
                 "from inStream " +
-                "select machine,tstamp_id, tstamp, dimension, str:concat(machine, '-', dimension) as partitionId, uTime ,value, ij_time " +
+                "select machine,tstamp_id, tstamp, dimension, str:concat(machine, '-', dimension) as partitionId, uTime ,value " +
                 "insert into inStreamA;" +
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
                 "from inStreamA#window.externalTime(uTime , 50) \n" +
-                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:cluster(value) as center, ij_time " +
+                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:cluster(value) as center " +
                 " insert into #outputStream; " + //inner stream
                 "\n" +
-                "from #outputStream#window.externalTime(uTime , 50) " +
-                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:markov(center) as probability, ij_time " +
+                "from #outputStream " +
+                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:markovnew(center) as probability " +
                 "insert into detectAnomaly " +
                 "end;");
 

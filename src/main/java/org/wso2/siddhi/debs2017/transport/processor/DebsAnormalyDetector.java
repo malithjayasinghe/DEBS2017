@@ -33,8 +33,8 @@ public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
     @Override
     public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
 
-        System.out.println(wrapper.getEvent());
-        Object [] o = wrapper.getEvent().getData();
+        //System.out.println(wrapper.getEvent());
+        //Object [] o = wrapper.getEvent().getData();
 
         //double prbability = Double.parseDouble(o[5].toString());
 
@@ -43,8 +43,6 @@ public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
     }
 
     private synchronized void send(Event event) {
-
-      // Event ev = new Event(event.getTimestamp(), event.getData());
 
         Event [] events = {event};
         siddhiClient.send("output", events);

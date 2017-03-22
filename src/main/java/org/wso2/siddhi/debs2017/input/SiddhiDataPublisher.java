@@ -73,7 +73,7 @@ public class SiddhiDataPublisher {
                     double value = Double.parseDouble(scanner.next());
 
 
-                   return new Event(System.currentTimeMillis(), new Object[]{machineName, timeStamp, sentTime, UnixConverter.getUnixTime(sentTime),property, value, System.currentTimeMillis()});
+                   return new Event(System.currentTimeMillis(), new Object[]{machineName, timeStamp, sentTime, UnixConverter.getUnixTime(sentTime),property, value});
 
 
 

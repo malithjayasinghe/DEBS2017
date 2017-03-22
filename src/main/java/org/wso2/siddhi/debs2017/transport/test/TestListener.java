@@ -30,9 +30,9 @@ public class TestListener implements StreamListener {
 
     private StreamDefinition streamDefinition;
 
-    long starttime;
-    long endtime;
-    static ArrayList<Long > arr = new ArrayList<>();
+    private long starttime;
+    private long endtime;
+    private static ArrayList<Long > arr = new ArrayList<>();
 
 
     public TestListener(StreamDefinition streamDefinition) {
@@ -65,6 +65,7 @@ public class TestListener implements StreamListener {
             for (int i =0; i<arr.size(); i++){
                 sum +=arr.get(i);
             }
+            System.out.println("Total Latency"+sum);
             System.out.println("Average Latency"+(sum/arr.size()));
 
 
@@ -75,16 +76,15 @@ public class TestListener implements StreamListener {
 
     private synchronized void print(Event[] events) {
 
-
-        for(int i =0; i<events.length; i++){
-            arr.add(System.currentTimeMillis()-events[i].getTimestamp());
+            arr.add(System.currentTimeMillis()-events[0].getTimestamp());
+            System.out.println(events[0]);
             if (arr.size() ==1){
-               starttime= events[i].getTimestamp();
+               starttime= events[0].getTimestamp();
             }
-            if (arr.size() == 7412400){
-                endtime = events[i].getTimestamp();
+            if (arr.size() == 7412400) {
+                endtime = events[0].getTimestamp();
             }
+            System.out.println(arr.size());
 
-        }
     }
 }
