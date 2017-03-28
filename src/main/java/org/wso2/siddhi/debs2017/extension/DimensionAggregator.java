@@ -26,7 +26,7 @@ import java.util.ArrayList;
 */
 public class DimensionAggregator extends AttributeAggregator {
     private ArrayList<Double> arr = new ArrayList<>();
-    private ArrayList<Integer> centers = new ArrayList<>();
+
 
     protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
 
@@ -37,17 +37,15 @@ public class DimensionAggregator extends AttributeAggregator {
     }
 
     public Object processAdd(Object data) {
-
+        arr.add((Double) data);
         Clusterer cluster = new Clusterer(25, 100, arr);
 
         // Do the clustering on the elements present in the array list and return the center it belongs to
         cluster.cluster();
 
-        arr.add((Double) data);
+
        // int center = cluster.getCenter((Double) data);
-         centers = cluster.getCenterA(arr);
-
-
+        ArrayList<Integer> centers = cluster.getCenterA(arr);
 
         return centers;
     }

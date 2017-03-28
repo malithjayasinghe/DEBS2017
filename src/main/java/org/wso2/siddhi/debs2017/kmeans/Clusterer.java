@@ -86,6 +86,7 @@ public class Clusterer {
             assignToCluster();
             reinitializeCluster();
             if (!center.equals(centerOld)) {
+                centerOld = new ArrayList<>();
                 for (int i = 0; i < clusterGroup.length; i++) {
                     clusterGroup[i] = new ArrayList<>();
 

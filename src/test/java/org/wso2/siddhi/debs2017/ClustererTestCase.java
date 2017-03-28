@@ -164,7 +164,7 @@ public class ClustererTestCase {
 
     @org.junit.Test
     public void Test7() throws InterruptedException {
-        log.info("ClustererTestCase TestCase 06");
+        log.info("ClustererTestCase TestCase 07");
         ArrayList<Double> input = new ArrayList<>();
         input.add(1.0);
         input.add(8.0);
