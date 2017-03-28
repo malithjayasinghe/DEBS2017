@@ -30,7 +30,7 @@ public class MarkoveNewTestCase {
     //private int[] center = {1,2,2,2,2,3,2,3,2,3,2,1};
     private int[] center = {1,2,2,2,2,3,2,3,2,3,2};
 
-    private  double[] results = {0, 0.0493827160, 0.148148148,1,1,0};
+    private  double[] results = {0.10546875, 0.10546875, 0.03456, 0.03456,0.015625,0.015625};
 
     private ArrayList<Integer> centers = new ArrayList<>();
     int shift = 0;
@@ -48,28 +48,15 @@ public class MarkoveNewTestCase {
                 prob = markovnew.updateProbability(centers);
                 System.out.println(prob);
 
-              //  Assert.assertEquals(results[i],prob,0.0000001);
+                Assert.assertEquals(results[i-5],prob,0.0);
 
             }
 
 
 
-            }
-
-
         }
 
 
-
-
-    @org.junit.Test
-    public void Test2() throws InterruptedException{
-        for (int i = 0; i < center.length; i++) {
-            centers.add(center[i]);
-
-        }
-        System.out.println(centers);
-        markovnew.execute(centers);
-        System.out.println(markovnew.updateProbability(centers));
     }
+
 }

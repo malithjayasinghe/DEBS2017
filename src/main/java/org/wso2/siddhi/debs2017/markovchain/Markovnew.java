@@ -194,7 +194,7 @@ public class Markovnew {
         previousCenter =0;
         currentCenter = 0;
 
-        for(int i = 1; i <eventOrder.size()-1; i++){
+        for(int i = 1; i <eventOrder.size(); i++){
             /**
              * initialize the current center and previous center
              */
