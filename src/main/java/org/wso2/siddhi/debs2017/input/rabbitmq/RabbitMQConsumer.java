@@ -34,7 +34,7 @@ public class RabbitMQConsumer {
 
 
 
-    public void consume(String host, String queue) {
+    public void consume(String queue, String host, String host1, int port1, String host2, int port2, String host3, int port3) {
         TASK_QUEUE_NAME = queue;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(host);
@@ -46,7 +46,7 @@ public class RabbitMQConsumer {
             connection = factory.newConnection();
             channel = connection.createChannel();
 
-            consumer = new SparQLProcessor(channel, "localhost", 8080, "localhost", 8081,"localhost", 8082);
+            consumer = new SparQLProcessor(channel, host1, port1, host2, port2, host3, port3);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
 

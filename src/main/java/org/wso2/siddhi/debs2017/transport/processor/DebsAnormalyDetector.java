@@ -6,7 +6,7 @@ import org.wso2.siddhi.debs2017.Output.AlertGenerator;
 import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
 import org.wso2.siddhi.debs2017.processor.DebsEvent;
 import org.wso2.siddhi.debs2017.query.DistributedQuery;
-import org.wso2.siddhi.tcp.transport.TcpNettyClient;
+import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
 
 import java.util.ArrayList;
 
@@ -48,9 +48,9 @@ public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
         siddhiClient.send("output", events);
     }
 
-    public DebsAnormalyDetector(){
+    public DebsAnormalyDetector(String host, int port){
         this.siddhiClient = new TcpNettyClient();
-       this.siddhiClient.connect("localhost", 8000);
+       this.siddhiClient.connect(host, port);
 
     }
 }

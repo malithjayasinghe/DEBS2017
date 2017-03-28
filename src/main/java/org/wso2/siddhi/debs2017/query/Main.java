@@ -20,14 +20,30 @@ import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 public class Main {
 
     public static void main(String[] args) {
-        RabbitMQConsumer con = new RabbitMQConsumer();
-        try {
 
-            con.consume("localhost", "test123");
+        if(args.length==8){
+            String queue = args [0];
+            String rmqHost = args [1];
+            String client1host = args [2];
+            int client1port = Integer.parseInt(args[3]);
+            String client2host = args [4];
+            int client2port = Integer.parseInt(args[5]);
+            String client3host = args [6];
+            int client3port = Integer.parseInt(args[7]);
+
+            RabbitMQConsumer con = new RabbitMQConsumer();
+            try {
+
+                con.consume(queue, rmqHost, client1host, client1port, client2host, client2port, client3host, client3port);
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Expected 8 parameters: queue name, rmq host, client1 host, client1 port, client2 host, client2 port, client3 host, client3 port");
         }
+
+
     }
 }

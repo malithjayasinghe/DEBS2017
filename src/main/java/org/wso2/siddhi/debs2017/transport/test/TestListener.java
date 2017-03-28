@@ -56,7 +56,7 @@ public class TestListener implements StreamListener {
     @Override
     public void onEvents(Event[] events) {
         print(events);
-        if(arr.size()==74124){
+        if(arr.size()%74124==0){
             System.out.println("Starttime "+starttime);
             System.out.println("Endtime "+endtime);
             System.out.println("Running in ms "+(endtime-starttime));
@@ -77,14 +77,14 @@ public class TestListener implements StreamListener {
     private synchronized void print(Event[] events) {
 
             arr.add(System.currentTimeMillis()-events[0].getTimestamp());
-            System.out.println(events[0]);
+            //System.out.println(events[0]);
             if (arr.size() ==1){
                starttime= events[0].getTimestamp();
             }
-            if (arr.size() == 74124) {
+            if (arr.size()%74124==0) {
                 endtime = events[0].getTimestamp();
             }
-            System.out.println(arr.size());
+
 
     }
 }

@@ -20,7 +20,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.executor.math.mod.ModExpressionExecutorLong;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
-import org.wso2.siddhi.tcp.transport.TcpNettyClient;
+import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

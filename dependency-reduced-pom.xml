@@ -121,6 +121,17 @@
       <name>University Leipzig, AKSW Maven2 Repository</name>
       <url>http://maven.aksw.org/repository/snapshots</url>
     </repository>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+      <id>wso2.snapshots</id>
+      <name>WSO2 Snapshot Repository</name>
+      <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
