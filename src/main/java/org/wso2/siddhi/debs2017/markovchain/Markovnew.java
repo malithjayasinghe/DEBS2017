@@ -135,26 +135,26 @@ public class Markovnew {
         int previousEvent = 0;
         double eventprobability = 1;
         double transitionalProb;
-
+/*
         int seqprev = eventOrder.size()-2;
         int seqlast = eventOrder.size()-1;
         int eventPrev = eventOrder.get(seqprev);
-        int eventLAST = eventOrder.get(seqlast);
-
-        // check whether there are any transitions from the previous center
-        if( !totalTransitions.containsKey(eventPrev)){
-            totalProbability = 0.0;
-        }
-        //check whether a transition exist for the last event transition
-        else if(transitionEventCount.get(eventPrev).get(eventLAST) == null){
-            totalProbability = 0.0;
-        }else {
+        int eventLAST = eventOrder.get(seqlast);*/
+//
+//        // check whether there are any transitions from the previous center
+//        if( !totalTransitions.containsKey(eventPrev)){
+//            totalProbability = 0.0;
+//        }
+//        //check whether a transition exist for the last event transition
+//        else if(transitionEventCount.get(eventPrev).get(eventLAST) == null){
+//            totalProbability = 0.0;
+//        }else {
 
         //calculate the transitiona; probability for the sequence of cluster center transitions
-            for (int i = 1; i < eventOrder.size(); i++) {
+            for (int i = eventOrder.size()-5; i < eventOrder.size(); i++) {
                 if (previousEvent == 0 && currentEvent == 0) {
-                    previousEvent = eventOrder.get(0);
-                    currentEvent = eventOrder.get(1);
+                    currentEvent = eventOrder.get(i);
+                    previousEvent = eventOrder.get(i-1);
                     EventProbability event = transitionEventCount.get(previousEvent).get(currentEvent);
                     transitionalProb = event.getProbability();
 
@@ -173,7 +173,7 @@ public class Markovnew {
             }
 
             totalProbability = eventprobability;
-        }
+       // }
 
         return totalProbability;
     }

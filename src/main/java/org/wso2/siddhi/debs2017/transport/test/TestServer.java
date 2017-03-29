@@ -37,7 +37,8 @@ public class TestServer {
                     attribute("sentTime", Attribute.Type.STRING).
                     attribute("uTime", Attribute.Type.LONG).
                     attribute("dimension",Attribute.Type.STRING).
-                    attribute("value", Attribute.Type.DOUBLE);
+                    attribute("value", Attribute.Type.DOUBLE).
+                    attribute("node",Attribute.Type.INT);
             //attribute("ij_timestamp", Attribute.Type.LONG);
 
             TcpNettyServer tcpNettyServer = new TcpNettyServer();

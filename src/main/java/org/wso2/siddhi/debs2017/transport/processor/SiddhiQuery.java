@@ -43,22 +43,22 @@ public class SiddhiQuery {
 
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
                 "define stream inStream (machine string, tstamp_id string, tstamp string,  uTime long, dimension string, " +
-                "value double);";
+                "value double, node int);";
 
         this.query = ("" +
                 "\n" +
                 "from inStream " +
-                "select machine,tstamp_id, tstamp, dimension, str:concat(machine, '-', dimension) as partitionId, uTime ,value " +
+                "select machine,tstamp_id, tstamp, dimension, str:concat(machine, '-', dimension) as partitionId, uTime ,value, node " +
                 "insert into inStreamA;" +
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
-                "from inStreamA#window.externalTime(uTime , 50) \n" +
-                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:cluster(value) as center " +
+                "from inStreamA#window.externalTime(uTime , 100) \n" +
+                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:cluster(value) as center, node " +
                 " insert into #outputStream; " + //inner stream
                 "\n" +
-                "from #outputStream " +
-                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:markovnew(center) as probability " +
+                "from #outputStream#window.externalTime(uTime , 100) \n " +
+                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:markovnew(center) as probability, node " +
                 "insert into detectAnomaly " +
                 "end;");
 

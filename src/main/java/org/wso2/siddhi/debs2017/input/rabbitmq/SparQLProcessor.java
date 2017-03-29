@@ -105,13 +105,22 @@ public class SparQLProcessor extends DefaultConsumer {
                 if (!value.toString().contains("#string")) {
 
                     int machineNo = Integer.parseInt(machine.getLocalName().substring(15));
-                    Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
-                            time.getLocalName(),timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()), property.getLocalName(), value.getDouble()});
+//                    Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
+//                            time.getLocalName(),timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()), property.getLocalName(), value.getDouble()});
                     if (machineNo % 3 == 0) {
+                        Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
+                                time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                property.getLocalName(), value.getDouble(), 0});
                         siddhiClient.send("input", new Event[]{event});
                     } else if (machineNo % 3 == 1) {
+                        Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
+                                time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                property.getLocalName(), value.getDouble(), 1});
                         siddhiClient1.send("input", new Event[]{event});
                     } else if (machineNo % 3 % 3 == 2) {
+                        Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
+                                time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                property.getLocalName(), value.getDouble(), 2});
                         siddhiClient2.send("input", new Event[]{event});
                     }
 
