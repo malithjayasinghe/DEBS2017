@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.siddhi.debs2017.input;
+package org.wso2.siddhi.debs2017.input.metadata;
 
 import java.util.HashMap;
 
@@ -30,19 +30,12 @@ public class DebsMetaData {
 
     private String machineNumber;
     private int clusterCenters;
-    private int windowLength;
     private double probabilityThreshold;
     private String dimension;
 
     /**
-     * the type of machine i.e molding or assembley
-     **/
-    private String model;
-
-
-    /**
      * hashmap to store the meatdata
-     * key - combination of machine number anfd dimension
+     * key - combination of machine number and dimension
      * value DebsMetaData object
      */
 
@@ -51,24 +44,20 @@ public class DebsMetaData {
 
     /**
      * @param machineNumber        uniquely identify the machine
-     * @param model                type of machine i.e molding or injecting
      * @param dimension            property of the machine
      * @param clusterCenters       cluster centers per dimension for the particular machine
      * @param probabilityThreshold threshold to decide whether the sequence is an anomaly
-     * @param windowLength         time duartion for which the window exist
+     *
      */
 
-    public DebsMetaData(String machineNumber, String model, String dimension, int clusterCenters,
-                        double probabilityThreshold, int windowLength) {
-        this.model = model;
+    public DebsMetaData(String machineNumber, String dimension, int clusterCenters,
+                        double probabilityThreshold) {
         this.machineNumber = machineNumber;
         this.clusterCenters = clusterCenters;
-        this.windowLength = windowLength;
         this.probabilityThreshold = probabilityThreshold;
         this.dimension = dimension;
 
     }
-
 
     /**
      * @param dm the DebsMetaData object to be store din the hashmap
@@ -76,7 +65,7 @@ public class DebsMetaData {
      */
 
     public static void storeValues(DebsMetaData dm) {
-        String mapKey = dm.getMachineNumebr() + "_" + dm.getDimension();
+        String mapKey = dm.getMachineNumebr() + dm.getDimension();
         meta.put(mapKey, dm);
     }
 
@@ -86,14 +75,6 @@ public class DebsMetaData {
 
     public void setClusterCenters(int clusterCenters) {
         this.clusterCenters = clusterCenters;
-    }
-
-    public int getWindowLength() {
-        return windowLength;
-    }
-
-    public void setWindowLength(int windowLength) {
-        this.windowLength = windowLength;
     }
 
     public double getProbabilityThreshold() {
@@ -120,13 +101,6 @@ public class DebsMetaData {
         this.dimension = dimension;
     }
 
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
 
 
 }

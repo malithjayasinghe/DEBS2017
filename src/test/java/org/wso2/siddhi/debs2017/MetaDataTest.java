@@ -6,8 +6,8 @@ package org.wso2.siddhi.debs2017;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
-import org.wso2.siddhi.debs2017.input.DebsMetaData;
-import  org.wso2.siddhi.debs2017.input.MetaDataQuery;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.MetaDataQuery;
 
 
 public class MetaDataTest {
@@ -23,14 +23,18 @@ public class MetaDataTest {
     @org.junit.Test
     public void Test1() throws InterruptedException {
         log.info("Meta data test case TestCase");
-        MetaDataQuery.run();
+        MetaDataQuery.run("molding_machine_1M.metadata.nt");
 
         System.out.println(DebsMetaData.meta.size());
         for(String key: DebsMetaData.meta.keySet()){
             DebsMetaData dmm = DebsMetaData.meta.get(key);
-            System.out.println(dmm.getMachineNumebr()+ " " + dmm.getDimension()+ " " + dmm.getModel()+ " "+ dmm.getClusterCenters()+ " "
-                    + dmm.getProbabilityThreshold() + " " + dmm.getWindowLength() );
+            System.out.println(dmm.getMachineNumebr()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "
+                    + dmm.getProbabilityThreshold() );
         }
+
+        System.out.println(DebsMetaData.meta.get("Machine_59"+"_59_5").getProbabilityThreshold());
     }
+
+
 
 }
