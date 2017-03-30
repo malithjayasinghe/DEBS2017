@@ -37,33 +37,24 @@ public class Test extends AttributeAggregator {
 
     @Override
     public Object processAdd(Object data) {
-        System.out.println("Test-------------------Add---");
-        Double blah = (double)data;
-       // System.out.println("Test----------------------"+blah);
-
-        arr.add((Double) data);
-        System.out.println(arr);
-        //System.out.println(arr);
-        //WSO2KmeansClustering test = new WSO2KmeansClustering(2, 10, arr);
-        return 0;
-       // return 0;
+        return null;
     }
 
     @Override
     public Object processAdd(Object[] objects) {
-
+       arr.add((Double)objects[0]);
+        System.out.println(objects[1]+"\t"+arr);
         return null;
     }
 
     @Override
     public Object processRemove(Object o) {
-        System.out.println("_____________________-Remove___________________--");
-        arr.remove(0);
         return null;
     }
 
     @Override
     public Object processRemove(Object[] objects) {
+        arr.remove(0);
         return null;
     }
 
