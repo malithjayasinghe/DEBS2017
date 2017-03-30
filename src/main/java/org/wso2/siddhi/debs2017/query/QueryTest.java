@@ -12,6 +12,8 @@ import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 import org.wso2.siddhi.debs2017.input.DataPublisher;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.MetaDataQuery;
 
 import java.util.ArrayList;
 
@@ -46,21 +48,21 @@ public class QueryTest {
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inStreamDefinition = "@config(async = 'true') \n" +
-                "define stream inStream (machine string, tstamp string, uTime long, dimension string, value int);";
+                "define stream inStream (machine string, tstamp string, uTime long, dimension string, value double, center int);";
 
         String query = ("" +
                 "\n" +
                 "from inStream\n" +
-                "select machine, tstamp, dimension, uTime, str:concat(machine, '-', dimension) as partitionId, value \n" +
+                "select machine, tstamp, dimension, uTime, str:concat(machine, '-', dimension) as partitionId, value, center \n" +
                 "insert into inStreamA;\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) \n" +
                 "begin " +
-                "from inStreamA#window.externalTime(uTime , 10) \n" +
-                "select machine, tstamp, uTime, dimension, debs2017:cluster(value) as center " +
+                "from inStreamA#window.externalTime(uTime , 11) \n" +
+                "select machine, tstamp, uTime, dimension, debs2017:cluster(value, center) as center " +
                 " insert into #outputStream; " + //inner stream
                 "\n" +
-                "from #outputStream#window.externalTime(uTime , 10) \n" +
-                "select machine, tstamp, dimension, debs2017:markovnew(center) as probability " +
+                "from #outputStream \n" +
+                "select machine, tstamp, dimension, debs2017:markovnew(center, 11) as probability " +
                 "insert into detectAnomaly " +
                 "end");
 
@@ -80,6 +82,11 @@ public class QueryTest {
         });
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
+
+        //extract metadata
+        MetaDataQuery.run("molding_machine_1M.metadata.nt");
+
+        //run sparql
         sparql();
         try {
 
@@ -88,33 +95,11 @@ public class QueryTest {
               //  String abc = arr.get(i)[0]+"\t"+arr.get(i)[1]+"\t"+arr.get(i)[2]+"\t"+arr.get(i)[4];
                 //System.out.println(abc);
             }
-//            inputHandler.send(new Object[]{"m1","t1",1485859203100L,"d1", 0.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203101L,"d1", 1.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203102L,"d1", 2.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203103L,"d1", 3.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203104L,"d1", 4.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203105L,"d1", 5.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203106L,"d1", 6.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203107L,"d1", 7.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203108L,"d1", 8.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203109L,"d1", 9.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203110L,"d1", 10.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203111L,"d1", 11.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203112L,"d1", 12.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203113L,"d1", 13.0});
-//            inputHandler.send(new Object[]{"m1","t1",1485859203114L,"d1", 14.0});
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         executionPlanRuntime.start();
-
-
-
-
-
-
-
 
 
 
@@ -134,7 +119,7 @@ public class QueryTest {
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-             //    "ORDER BY (?timestamp)"+
+                 "ORDER BY (?timestamp)"+
                 "";
 
 
@@ -155,13 +140,19 @@ public class QueryTest {
                 Resource machine = solution.getResource("machine");
                 Literal timestamp = solution.getLiteral("timestamp");
                 Literal value = solution.getLiteral("value");
-                if (!value.toString().contains("#string") && property.getLocalName().equals("_59_5")) {
-                    long abc = arr.size();
-                    System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
-                   // System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+abc+"\t"+property.getLocalName()+"\t"+value.getDouble());
 
-                    arr.add(new Object[]{machine.getLocalName(), time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), property.getLocalName(), value.getDouble()});
-                    //arr.add(new Object[]{machine.getLocalName(), time.getLocalName(), abc, property.getLocalName(), value.getDouble()});
+                String machineName = machine.getLocalName();
+                String dimension = property.getLocalName();
+                if (DebsMetaData.meta.keySet().contains(machineName+dimension) &&  !value.toString().contains("#string")) { //&& property.getLocalName().equals("_59_5")
+                        if(property.getLocalName().equals("_59_31")){
+                            // System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getDouble());
+                            arr.add(new Object[]{machineName, time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), dimension, value.getDouble(),
+                                    DebsMetaData.meta.get(machineName+dimension).getClusterCenters()});
+                            //long abc = arr.size();
+                            //System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+abc+"\t"+property.getLocalName()+"\t"+value.getDouble());
+                            //arr.add(new Object[]{machine.getLocalName(), time.getLocalName(), abc, property.getLocalName(), value.getDouble()});
+
+                        }
 
                 }
             }

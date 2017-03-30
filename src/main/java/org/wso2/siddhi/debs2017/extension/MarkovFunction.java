@@ -39,7 +39,19 @@ public class MarkovFunction extends FunctionExecutor {
 
     @Override
     protected Object execute(Object[] objects) {
-        return null;
+        centers = (ArrayList<Integer>)objects[0];
+        if(centers.size()==((Integer)objects[1])){
+            markovnew.execute(centers);
+            //get the total probability
+            probability =  markovnew.updateProbability(centers);
+
+
+        } else {
+            return null;
+        }
+        return probability;
+
+
     }
 
     @Override

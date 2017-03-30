@@ -10,7 +10,7 @@ import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MetaDataQuery;
 
 
-public class MetaDataTest {
+public class MetaDataTestCase {
 
     private static final Logger log = Logger.getLogger(MetaDataQuery.class);
 
@@ -32,7 +32,7 @@ public class MetaDataTest {
                     + dmm.getProbabilityThreshold() );
         }
 
-        System.out.println(DebsMetaData.meta.get("Machine_59"+"_59_5").getProbabilityThreshold());
+        System.out.println(DebsMetaData.meta.get("Machine_59"+"_59_104").getProbabilityThreshold());
     }
 
 
