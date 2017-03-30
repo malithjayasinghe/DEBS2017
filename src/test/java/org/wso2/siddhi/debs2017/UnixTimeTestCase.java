@@ -27,46 +27,46 @@ public class UnixTimeTestCase {
 
     @org.junit.Test
     public void Test1() throws InterruptedException {
-        BufferedReader reader = null;
-
-        try {
-            reader = new BufferedReader(new FileReader("data_rdf10mac.csv"));
-
-            String line = null;
-            Scanner scanner = null;
-
-            int index = 0;
-            while ((line = reader.readLine()) != null) {
-
-                scanner = new Scanner(line);
-                scanner.useDelimiter(",");
-
-                while (scanner.hasNext()) {
-                    index++;
-                    String data = scanner.next();
-                    if(index==3){
-
-
-
-                        System.out.println(data+"\t"+ UnixConverter.getUnixTime(data));
-                    }
-
-
-
-
-
-                }
-                index =0;
-
-            }
-
-            //close reader
-            reader.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        BufferedReader reader = null;
+//
+//        try {
+//            reader = new BufferedReader(new FileReader("data_rdf10mac.csv"));
+//
+//            String line = null;
+//            Scanner scanner = null;
+//
+//            int index = 0;
+//            while ((line = reader.readLine()) != null) {
+//
+//                scanner = new Scanner(line);
+//                scanner.useDelimiter(",");
+//
+//                while (scanner.hasNext()) {
+//                    index++;
+//                    String data = scanner.next();
+//                    if(index==3){
+//
+//
+//
+//                        System.out.println(data+"\t"+ UnixConverter.getUnixTime(data));
+//                    }
+//
+//
+//
+//
+//
+//                }
+//                index =0;
+//
+//            }
+//
+//            //close reader
+//            reader.close();
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

@@ -2,10 +2,6 @@ package org.wso2.siddhi.debs2017.transport.processor;
 
 import com.lmax.disruptor.EventHandler;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.Output.AlertGenerator;
-import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
-import org.wso2.siddhi.debs2017.processor.DebsEvent;
-import org.wso2.siddhi.debs2017.query.DistributedQuery;
 import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
 
 import java.util.ArrayList;

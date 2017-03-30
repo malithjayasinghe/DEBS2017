@@ -1,14 +1,13 @@
 package org.wso2.siddhi.debs2017.input.rabbitmq;
 
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 /*
@@ -29,8 +28,7 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMQConsumer {
 
     private static String TASK_QUEUE_NAME = "";
-    static int count =0;
-    String msg;
+    static ExecutorService executors = Executors.newFixedThreadPool(8);
 
 
 
@@ -42,8 +40,7 @@ public class RabbitMQConsumer {
         final Channel channel;
         final Consumer consumer;
         try {
-
-            connection = factory.newConnection();
+            connection = factory.newConnection(executors);
             channel = connection.createChannel();
 
             consumer = new SparQLProcessor(channel, host1, port1, host2, port2, host3, port3);

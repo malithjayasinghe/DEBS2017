@@ -48,7 +48,7 @@ public class SparQLProcessor extends DefaultConsumer {
     private TcpNettyClient siddhiClient = new TcpNettyClient();
     private TcpNettyClient siddhiClient1 = new TcpNettyClient();
     private TcpNettyClient siddhiClient2 = new TcpNettyClient();
-
+  //  static  int count =0;
 
     private final static String queryString = "" +
             "SELECT ?observation ?machine ?time ?timestamp ?dimension ?value" +
@@ -85,6 +85,8 @@ public class SparQLProcessor extends DefaultConsumer {
      * @param message the message which contains RDF triples
      */
     public void excuteQuery(String message) {
+        //count++;
+        //System.out.println(count);
 
         try {
             Model model = ModelFactory.createDefaultModel().read(IOUtils.toInputStream(message, "UTF-8"), null, "TURTLE");

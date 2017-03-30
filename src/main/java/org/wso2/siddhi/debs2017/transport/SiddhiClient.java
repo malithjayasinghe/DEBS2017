@@ -13,7 +13,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.Logger;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.SiddhiDataPublisher;
-import org.wso2.siddhi.tcp.transport.TcpNettyClient;
+
 
 
 /*

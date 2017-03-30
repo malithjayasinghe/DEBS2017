@@ -35,7 +35,7 @@ import java.util.UUID;
 */
 public class TcpNettyClient {
 
-    private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.TcpNettyClient.class);
+    private static final Logger log = Logger.getLogger(TcpNettyClient.class);
 
     private EventLoopGroup group;
     private Bootstrap bootstrap;

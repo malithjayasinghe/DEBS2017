@@ -33,7 +33,7 @@ import org.wso2.siddhi.tcp.transport.utils.StreamTypeHolder;
 */
 public class TcpNettyServer {
 
-    private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.TcpNettyServer.class);
+    private static final Logger log = Logger.getLogger(TcpNettyServer.class);
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private StreamTypeHolder streamInfoHolder = new StreamTypeHolder();

@@ -1,11 +1,19 @@
 package org.wso2.siddhi.debs2017.query;
 
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.riot.RDFDataMgr;
 import org.wso2.siddhi.core.ExecutionPlanRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 import org.wso2.siddhi.debs2017.input.DataPublisher;
+import org.wso2.siddhi.debs2017.input.UnixConverter;
+
+import java.util.ArrayList;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -24,6 +32,7 @@ import org.wso2.siddhi.debs2017.input.DataPublisher;
 */
 public class QueryTest {
 
+    ArrayList<Object[]> arr = new ArrayList<>();
     public static void main(String[] args) {
         QueryTest q = new QueryTest();
         q.run();
@@ -46,20 +55,24 @@ public class QueryTest {
                 "insert into inStreamA;\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) \n" +
                 "begin " +
-                    "from inStreamA#window.externalTime(uTime , 10) \n" +//externalTime( tstamp , 10)
-                    "select machine, tstamp, dimension, debs2017:test(value) as center \n" +
-                    "insert into outputStream; " +
+                "from inStreamA#window.externalTime(uTime , 10) \n" +
+                "select machine, tstamp, uTime, dimension, debs2017:cluster(value) as center " +
+                " insert into #outputStream; " + //inner stream
+                "\n" +
+                "from #outputStream#window.externalTime(uTime , 10) \n" +
+                "select machine, tstamp, dimension, debs2017:markovnew(center) as probability " +
+                "insert into detectAnomaly " +
                 "end");
 
         System.out.println(inStreamDefinition + query);
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("outputStream", new StreamCallback() {
+        executionPlanRuntime.addCallback("detectAnomaly", new StreamCallback() {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
 
                 for(Event ev : events){
-                  System.out.println(ev.getData()[0]+"\t"+ ev.getData()[1]+"\t"+ ev.getData()[2]+"\t"+ ev.getData()[3]);
+                  System.out.println(ev.getData()[0]+"\t"+ ev.getData()[1]+"\t"+ ev.getData()[2]+"\t"+ ev.getData()[3]+"\n");
 
 
                 }
@@ -67,23 +80,29 @@ public class QueryTest {
         });
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
-
+        sparql();
         try {
-            inputHandler.send(new Object[]{"m1","t1",1485859203100L,"d1", 0.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203101L,"d1", 1.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203102L,"d1", 2.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203103L,"d1", 3.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203104L,"d1", 4.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203105L,"d1", 5.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203106L,"d1", 6.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203107L,"d1", 7.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203108L,"d1", 8.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203109L,"d1", 9.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203110L,"d1", 10.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203111L,"d1", 11.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203112L,"d1", 12.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203113L,"d1", 13.0});
-            inputHandler.send(new Object[]{"m1","t1",1485859203114L,"d1", 14.0});
+
+            for(int i =0; i<arr.size(); i++){
+                inputHandler.send(arr.get(i));
+              //  String abc = arr.get(i)[0]+"\t"+arr.get(i)[1]+"\t"+arr.get(i)[2]+"\t"+arr.get(i)[4];
+                //System.out.println(abc);
+            }
+//            inputHandler.send(new Object[]{"m1","t1",1485859203100L,"d1", 0.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203101L,"d1", 1.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203102L,"d1", 2.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203103L,"d1", 3.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203104L,"d1", 4.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203105L,"d1", 5.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203106L,"d1", 6.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203107L,"d1", 7.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203108L,"d1", 8.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203109L,"d1", 9.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203110L,"d1", 10.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203111L,"d1", 11.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203112L,"d1", 12.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203113L,"d1", 13.0});
+//            inputHandler.send(new Object[]{"m1","t1",1485859203114L,"d1", 14.0});
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -100,4 +119,58 @@ public class QueryTest {
 
 
     }
+
+    private void sparql() {
+         String queryString = "" +
+                "SELECT ?observation ?machine ?time ?timestamp ?dimension ?value" +
+                " WHERE {" +
+                "?observation <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup> ." +
+                "?observation <http://www.agtinternational.com/ontologies/I4.0#machine> ?machine ." +
+                "?observation <http://purl.oclc.org/NET/ssnx/ssn#observationResultTime> ?time ." +
+                "?time <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?timestamp ." +
+                "?observation <http://www.agtinternational.com/ontologies/I4.0#contains> ?obGroup ." +
+                "?obGroup <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?dimension ." +
+                "?obGroup <http://purl.oclc.org/NET/ssnx/ssn#observationResult> ?output ." +
+                "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
+                "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
+                "}" +
+             //    "ORDER BY (?timestamp)"+
+                "";
+
+
+
+        try {
+            Model model = RDFDataMgr.loadModel("molding_machine_1M.nt");
+
+            com.hp.hpl.jena.query.Query query = QueryFactory.create(queryString);
+            QueryExecution qexec = QueryExecutionFactory.create(query, model);
+            ResultSet results = qexec.execSelect();
+            results = ResultSetFactory.copyResults(results);
+            for (; results.hasNext(); ) {
+                QuerySolution solution = results.nextSolution();
+                Resource ob = solution.getResource("observation");
+
+                Resource time = solution.getResource("time"); // Get a result variable - must be a resource
+                Resource property = solution.getResource("dimension");
+                Resource machine = solution.getResource("machine");
+                Literal timestamp = solution.getLiteral("timestamp");
+                Literal value = solution.getLiteral("value");
+                if (!value.toString().contains("#string") && property.getLocalName().equals("_59_5")) {
+                    long abc = arr.size();
+                    System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
+                   // System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+abc+"\t"+property.getLocalName()+"\t"+value.getDouble());
+
+                    arr.add(new Object[]{machine.getLocalName(), time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), property.getLocalName(), value.getDouble()});
+                    //arr.add(new Object[]{machine.getLocalName(), time.getLocalName(), abc, property.getLocalName(), value.getDouble()});
+
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 }

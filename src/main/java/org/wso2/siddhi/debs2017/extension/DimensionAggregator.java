@@ -46,8 +46,8 @@ public class DimensionAggregator extends AttributeAggregator {
 
        // int center = cluster.getCenter((Double) data);
         ArrayList<Integer> centers = cluster.getCenterA(arr);
-       /* System.out.println(arr);
-        System.out.println(centers);*/
+       // System.out.println(arr);
+       // System.out.println(centers);
         return centers;
     }
 
@@ -58,11 +58,13 @@ public class DimensionAggregator extends AttributeAggregator {
 
     public Object processRemove(Object o) {
         //removes expired events
+       // System.out.println("remove");
         arr.remove(0);
         return null;
     }
 
     public Object processRemove(Object[] objects) {
+       // System.out.println("remove");
         return null;
     }
 
