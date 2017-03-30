@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TestListener implements StreamListener {
 
     private StreamDefinition streamDefinition;
+    private int currentnode=0;
 
     private long starttime;
     private long endtime;
@@ -60,19 +61,22 @@ public class TestListener implements StreamListener {
 
     @Override
     public void onEvents(Event[] events) {
-       // print(events);
+        print(events);
            Event newEvent = events[0];
-        int node =(Integer)newEvent.getData()[6];
-        if(node == 0)
-            node0.add(newEvent);
-        else if(node == 1)
-            node1.add(newEvent);
-        else
-            node2.add(newEvent);
+        //   assignToarray(newEvent);
 
-        if(node0.size() >0 && node1.size()>0 && node2.size()>0) {
-            sortList();
-        }
+               /* int node =(Integer)newEvent.getData()[6];
+                if(node == 0)
+                    node0.add(newEvent);
+                else if(node == 1)
+                    node1.add(newEvent);
+                else
+                    node2.add(newEvent);*/
+
+              //  if(node0.size() >0 && node1.size()>0 && node2.size()>0) {
+                    sortList();
+                //}
+
 
         /*if(arr.size()%74124==0){
             System.out.println("Starttime "+starttime);
@@ -106,33 +110,77 @@ public class TestListener implements StreamListener {
 
     }
 
-    private synchronized void sortList(){
+    private synchronized void sortList() {
         //currentEvent = node0.get(0);
-        arrivedEvents[0] = node0.get(0);
-        arrivedEvents[1] = node1.get(0);
-        arrivedEvents[2] = node2.get(0);
-        currentEvent = arrivedEvents[0];
-        int currentnode=0;
-        for(int i =0; i < arrivedEvents.length; i++){
-            for (int j = i+1; j<arrivedEvents.length-1;j++){
-                if(getTime(currentEvent)>getTime(arrivedEvents[j])){
-                    currentEvent = arrivedEvents[j];
-                    currentnode = j;
-                }
-            }
-        }
 
-        if(currentnode == 0) {
+   if(arrivedEvents.length == 3) {
+       for (int i = 0; i < arrivedEvents.length; i++) {
+           for (int j = 1; j < arrivedEvents.length - i; j++) {
+               if (getTime(currentEvent) > getTime(arrivedEvents[j])) {
+                   currentEvent = arrivedEvents[j];
+                   arrivedEvents[j] = arrivedEvents[j-1];
+                   arrivedEvents[j - 1] = currentEvent;
+                   currentnode = j;
+               }
+           }
+       }
+   }else if(arrivedEvents.length == 2){
+      // if(getTime(arrivedEvents[1] > getTime(arrivedEvents[2]))){
+           System.out.println();
+       }
+
+       removeEvent(currentnode);
+
+
+        System.out.println(currentEvent);
+
+    }
+
+
+ /*   private synchronized void assignToarray(Event e){
+        if(arrivedEvents.length == 0 ){
+            arrivedEvents[0] = e;
+        }else if(arrivedEvents.length == 1){
+            arrivedEvents[1] = e;
+        }else  if(arrivedEvents.length == 2){
+            arrivedEvents[2] = e;
+        }else if(arrivedEvents.length == 3){
+            arrivedEvents[0] = e;
+        }
+    }*/
+
+      private synchronized void assignToArray() {
+          if (node0.size() > 0 && node1.size() > 0 && node2.size() > 0) {
+              arrivedEvents[0] = node0.get(0);
+              arrivedEvents[1] = node1.get(0);
+              arrivedEvents[2] = node2.get(0);
+              currentEvent = arrivedEvents[0];
+          } else if (node0.size() == 0 && node1.size() != 0 && node2.size() != 0) {
+              if (getTime(node1.get(0)) < getTime(node2.get(0))) {
+                  System.out.println(node1.get(0));
+                  removeEvent(1);
+              } else {
+                  System.out.println(node2.get(0));
+                  removeEvent(2);
+              }
+
+              //}else if(node1)
+          }
+      }
+
+
+
+
+    private  void removeEvent(int n){
+        if(n == 0) {
             node0.remove(0);
         }
-        else if(currentnode == 1 ) {
+        else if(n == 1 ) {
             node1.remove(0);
         }
         else {
             node2.remove(0);
         }
-        System.out.println(currentEvent);
-
     }
 
 

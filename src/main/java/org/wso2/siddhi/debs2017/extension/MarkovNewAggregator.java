@@ -34,7 +34,7 @@ public class MarkovNewAggregator extends AttributeAggregator {
 
             //get the total probability
             probability =  markovnew.updateProbability(centers);
-
+            System.out.println("Prob"+ probability);
 
 
         }
