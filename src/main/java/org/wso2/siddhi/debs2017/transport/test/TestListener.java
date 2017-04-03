@@ -3,12 +3,14 @@ package org.wso2.siddhi.debs2017.transport.test;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.transport.SortingThread;
 import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 /*
@@ -33,17 +35,19 @@ public class TestListener implements StreamListener {
 
     private long starttime;
     private long endtime;
-    private static ArrayList<Long > arr = new ArrayList<>();
-    private static ArrayList<Event> node0 = new ArrayList<>();
-    private static ArrayList<Event> node1 = new ArrayList<>();
-    private static ArrayList<Event> node2 = new ArrayList<>();
-    private static Event currentEvent;
-    private static Event[] arrivedEvents = new Event[3];
+    public static  LinkedBlockingQueue<Event> lbqueue0 = new LinkedBlockingQueue<Event>();
+    public static LinkedBlockingQueue<Event> lbqueue1 = new LinkedBlockingQueue<Event>();
+    public static LinkedBlockingQueue<Event> lbqueue2 = new LinkedBlockingQueue<Event>();
 
+    private ArrayList<Long> arr = new ArrayList<>();
+
+    Event currentEvent;
 
     public TestListener(StreamDefinition streamDefinition) {
 
         this.streamDefinition = streamDefinition;
+        SortingThread sorter = new SortingThread();
+        sorter.start();
 
 
     }
@@ -61,21 +65,27 @@ public class TestListener implements StreamListener {
 
     @Override
     public void onEvents(Event[] events) {
-        print(events);
+       // print(events);
            Event newEvent = events[0];
-        //   assignToarray(newEvent);
-
-               /* int node =(Integer)newEvent.getData()[6];
+           int node =(Integer)newEvent.getData()[6];
                 if(node == 0)
-                    node0.add(newEvent);
+                    try {
+                        lbqueue0.put(newEvent);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 else if(node == 1)
-                    node1.add(newEvent);
+                    try {
+                        lbqueue1.put(newEvent);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 else
-                    node2.add(newEvent);*/
-
-              //  if(node0.size() >0 && node1.size()>0 && node2.size()>0) {
-                    sortList();
-                //}
+                    try {
+                        lbqueue2.put(newEvent);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
 
         /*if(arr.size()%74124==0){
@@ -110,76 +120,42 @@ public class TestListener implements StreamListener {
 
     }
 
-    private synchronized void sortList() {
-        //currentEvent = node0.get(0);
-
-   if(arrivedEvents.length == 3) {
-       for (int i = 0; i < arrivedEvents.length; i++) {
-           for (int j = 1; j < arrivedEvents.length - i; j++) {
-               if (getTime(currentEvent) > getTime(arrivedEvents[j])) {
-                   currentEvent = arrivedEvents[j];
-                   arrivedEvents[j] = arrivedEvents[j-1];
-                   arrivedEvents[j - 1] = currentEvent;
-                   currentnode = j;
-               }
-           }
-       }
-   }else if(arrivedEvents.length == 2){
-      // if(getTime(arrivedEvents[1] > getTime(arrivedEvents[2]))){
-           System.out.println();
-       }
-
-       removeEvent(currentnode);
+   /* private synchronized void sortList() {
+        currentEvent = sortingList.get(0);
+     for(int i =1; i < sortingList.size(); i++){
+         if(getTime(currentEvent)> getTime(sortingList.get(i)))
+             currentEvent = sortingList.get(i);
+     }
 
 
-        System.out.println(currentEvent);
 
     }
 
 
- /*   private synchronized void assignToarray(Event e){
-        if(arrivedEvents.length == 0 ){
-            arrivedEvents[0] = e;
-        }else if(arrivedEvents.length == 1){
-            arrivedEvents[1] = e;
-        }else  if(arrivedEvents.length == 2){
-            arrivedEvents[2] = e;
-        }else if(arrivedEvents.length == 3){
-            arrivedEvents[0] = e;
-        }
-    }*/
 
-      private synchronized void assignToArray() {
-          if (node0.size() > 0 && node1.size() > 0 && node2.size() > 0) {
-              arrivedEvents[0] = node0.get(0);
-              arrivedEvents[1] = node1.get(0);
-              arrivedEvents[2] = node2.get(0);
-              currentEvent = arrivedEvents[0];
-          } else if (node0.size() == 0 && node1.size() != 0 && node2.size() != 0) {
-              if (getTime(node1.get(0)) < getTime(node2.get(0))) {
-                  System.out.println(node1.get(0));
-                  removeEvent(1);
-              } else {
-                  System.out.println(node2.get(0));
-                  removeEvent(2);
-              }
+      private synchronized void assignToList() {
+         if(lbqueue0.peek() != null)
+             sortingList.add(lbqueue0.peek());
+         if (lbqueue1.peek() != null)
+             sortingList.add(lbqueue1.peek());
+         if (lbqueue2.peek() != null)
+             sortingList.add(lbqueue2.peek());
 
-              //}else if(node1)
-          }
       }
+*/
 
 
 
-
-    private  void removeEvent(int n){
+    private  void removeEvent(Event e){
+        int n = (int)e.getData()[6];
         if(n == 0) {
-            node0.remove(0);
+            lbqueue0.poll();
         }
         else if(n == 1 ) {
-            node1.remove(0);
+            lbqueue1.poll();
         }
         else {
-            node2.remove(0);
+            lbqueue2.poll();
         }
     }
 
