@@ -20,6 +20,8 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.executor.math.mod.ModExpressionExecutorLong;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.MetaDataQueryMulti;
 import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
 
 import java.io.ByteArrayInputStream;
@@ -71,6 +73,7 @@ public class SparQLProcessor extends DefaultConsumer {
         siddhiClient.connect(host1, port1);
         siddhiClient1.connect(host2, port2);
         siddhiClient2.connect(host3, port3);
+        MetaDataQueryMulti.run("molding_machine_10M.metadata.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -105,26 +108,33 @@ public class SparQLProcessor extends DefaultConsumer {
                 Literal timestamp = solution.getLiteral("timestamp");
                 Literal value = solution.getLiteral("value");
                 if (!value.toString().contains("#string")) {
-
                     int machineNo = Integer.parseInt(machine.getLocalName().substring(15));
+                    String stateful = machine.getLocalName()+"_"+machineNo+property.getLocalName();
+
+                      if(DebsMetaData.meta.containsKey(stateful)) {
+
+                          int centers = DebsMetaData.meta.get(stateful).getClusterCenters();
+                          double probability = DebsMetaData.meta.get(stateful).getProbabilityThreshold();
+
 //                    Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
 //                            time.getLocalName(),timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()), property.getLocalName(), value.getDouble()});
-                    if (machineNo % 3 == 0) {
-                        Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
-                                time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
-                                property.getLocalName(), value.getDouble(), 0});
-                        siddhiClient.send("input", new Event[]{event});
-                    } else if (machineNo % 3 == 1) {
-                        Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
-                                time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
-                                property.getLocalName(), value.getDouble(), 1});
-                        siddhiClient1.send("input", new Event[]{event});
-                    } else if (machineNo % 3 % 3 == 2) {
-                        Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
-                                time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
-                                property.getLocalName(), value.getDouble(), 2});
-                        siddhiClient2.send("input", new Event[]{event});
-                    }
+                          if (machineNo % 3 == 0) {
+                              Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
+                                      time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                      property.getLocalName(), value.getDouble(), 0, centers, probability});
+                              siddhiClient.send("input", new Event[]{event});
+                          } else if (machineNo % 3 == 1) {
+                              Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
+                                      time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                      property.getLocalName(), value.getDouble(), 1, centers, probability});
+                              siddhiClient1.send("input", new Event[]{event});
+                          } else if (machineNo % 3 % 3 == 2) {
+                              Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
+                                      time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                      property.getLocalName(), value.getDouble(), 2, centers, probability});
+                              siddhiClient2.send("input", new Event[]{event});
+                          }
+                      }
 
                     // System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
                 }

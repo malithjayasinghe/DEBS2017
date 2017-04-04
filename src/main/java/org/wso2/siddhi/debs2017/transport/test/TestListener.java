@@ -65,7 +65,7 @@ public class TestListener implements StreamListener {
 
     @Override
     public void onEvents(Event[] events) {
-       // print(events);
+      // print(events);
            Event newEvent = events[0];
            int node =(Integer)newEvent.getData()[6];
                 if(node == 0)
@@ -107,9 +107,12 @@ public class TestListener implements StreamListener {
     }
 
     private synchronized void print(Event[] events) {
-
+            int count=0;
             arr.add(System.currentTimeMillis()-events[0].getTimestamp());
             System.out.println(events[0]);
+            count++;
+        System.out.println(count);
+
 //            if (arr.size() ==1){
 //               starttime= events[0].getTimestamp();
 //            }

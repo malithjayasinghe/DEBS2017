@@ -27,7 +27,8 @@ public class SortingThread extends Thread {
                   // System.out.println("Inner while loop 1");
                    if((System.currentTimeMillis() -  timeout)>=2){
                       break;
-                  }
+                  }else if(TestListener.lbqueue0.peek() != null)
+                   break;
                }
             }
             if (TestListener.lbqueue1.peek() != null) {
@@ -38,7 +39,9 @@ public class SortingThread extends Thread {
                    // System.out.println("inner while loop 2");
                     if((System.currentTimeMillis() -  timeout)>=2){
                         break;
-                    }
+
+                    }else if(TestListener.lbqueue0.peek() != null)
+                        break;
                 }
             }
 
@@ -50,7 +53,8 @@ public class SortingThread extends Thread {
                    // System.out.println("inner while loop 3");
                     if((System.currentTimeMillis() -  timeout)>=2){
                         break;
-                    }
+                    }else if(TestListener.lbqueue0.peek() != null)
+                        break;
                 }
             }
 

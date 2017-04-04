@@ -24,17 +24,19 @@ import java.util.ArrayList;
 public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
 
     private TcpNettyClient siddhiClient;
-
-
+    private double probability;
+    private double threshold;
     @Override
     public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
 
         //System.out.println(wrapper.getEvent());
-        //Object [] o = wrapper.getEvent().getData();
+        Object[] o = wrapper.getEvent().getData();
+         probability = Double.parseDouble(o[5].toString());
+         threshold  = Double.parseDouble(o[7].toString());
 
-        //double prbability = Double.parseDouble(o[5].toString());
-
-        send(wrapper.getEvent());
+         if(probability < threshold && probability > 0) {
+             send(wrapper.getEvent());
+         }
 
     }
 

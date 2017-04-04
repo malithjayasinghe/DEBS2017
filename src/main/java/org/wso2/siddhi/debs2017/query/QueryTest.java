@@ -57,12 +57,12 @@ public class QueryTest {
                 "insert into inStreamA;\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) \n" +
                 "begin " +
-                "from inStreamA#window.externalTime(uTime , 11) \n" +
+                "from inStreamA#window.externalTime(uTime , 10) \n" +
                 "select machine, tstamp, uTime, dimension, debs2017:cluster(value, center) as center " +
                 " insert into #outputStream; " + //inner stream
                 "\n" +
                 "from #outputStream \n" +
-                "select machine, tstamp, dimension, debs2017:markovnew(center, 11) as probability " +
+                "select machine, tstamp, dimension, debs2017:markovnew(center, 10) as probability " +
                 "insert into detectAnomaly " +
                 "end");
 
@@ -84,7 +84,7 @@ public class QueryTest {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
 
         //extract metadata
-        MetaDataQuery.run("molding_machine_1M.metadata.nt");
+        MetaDataQuery.run("molding_machine_10M.metadata.nt");
 
         //run sparql
         sparql();
@@ -125,7 +125,7 @@ public class QueryTest {
 
 
         try {
-            Model model = RDFDataMgr.loadModel("molding_machine_1M.nt");
+            Model model = RDFDataMgr.loadModel("molding_machine_10M.nt");
 
             com.hp.hpl.jena.query.Query query = QueryFactory.create(queryString);
             QueryExecution qexec = QueryExecutionFactory.create(query, model);
@@ -144,7 +144,7 @@ public class QueryTest {
                 String machineName = machine.getLocalName();
                 String dimension = property.getLocalName();
                 if (DebsMetaData.meta.keySet().contains(machineName+dimension) &&  !value.toString().contains("#string")) { //&& property.getLocalName().equals("_59_5")
-                        if(property.getLocalName().equals("_59_31")){
+                        if(property.getLocalName().equals("_59_5")){
                             // System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getDouble());
                             arr.add(new Object[]{machineName, time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), dimension, value.getDouble(),
                                     DebsMetaData.meta.get(machineName+dimension).getClusterCenters()});
