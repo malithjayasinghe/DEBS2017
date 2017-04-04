@@ -1,6 +1,8 @@
 package org.wso2.siddhi.debs2017.transport;
 
+import javafx.scene.control.Alert;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.Output.AlertGeneratMultiNode;
 import org.wso2.siddhi.debs2017.transport.test.TestListener;
 
 import java.util.ArrayList;
@@ -9,6 +11,9 @@ import java.util.ArrayList;
  * Created by sachini on 3/31/17.
  */
 public class SortingThread extends Thread {
+    static  boolean queue1 = false;
+    static boolean queue2 = false;
+    static boolean queue3 = false;
 
     static long timeout;
     static int count = 0;
@@ -25,8 +30,10 @@ public class SortingThread extends Thread {
                   // System.out.println("Inner while loop 1");
                    if((System.currentTimeMillis() -  timeout)>=2){
                       break;
-                  }else if(TestListener.lbqueue0.peek() != null)
-                   break;
+                  }else if(TestListener.lbqueue0.peek() != null) {
+                       sortingList.add(TestListener.lbqueue0.peek());
+                       break;
+                   }
                }
             }
             if (TestListener.lbqueue1.peek() != null) {
@@ -37,9 +44,10 @@ public class SortingThread extends Thread {
                    // System.out.println("inner while loop 2");
                     if((System.currentTimeMillis() -  timeout)>=2){
                         break;
-
-                    }else if(TestListener.lbqueue0.peek() != null)
+                    }else if(TestListener.lbqueue1.peek() != null) {
+                        sortingList.add(TestListener.lbqueue1.peek());
                         break;
+                    }
                 }
             }
 
@@ -51,14 +59,16 @@ public class SortingThread extends Thread {
                    // System.out.println("inner while loop 3");
                     if((System.currentTimeMillis() -  timeout)>=2){
                         break;
-                    }else if(TestListener.lbqueue0.peek() != null)
+                    }else if(TestListener.lbqueue2.peek() != null) {
+                       sortingList.add(TestListener.lbqueue2.peek());
                         break;
+                    }
                 }
             }
 
 
                 sort();
-          //  System.out.println("Inner while loop");
+
 
 
         }
@@ -94,10 +104,62 @@ public class SortingThread extends Thread {
                     currentEvent = sortingList.get(i);
             }
             sortingList.clear();
-            System.out.println(currentEvent);
+            AlertGeneratMultiNode ag = new AlertGeneratMultiNode(currentEvent);
+            ag.generateAlert();
+           // System.out.println(currentEvent);
             count++;
             System.out.println(count);
             removeEvent(currentEvent);
         }
     }
+
+
+   /* private void sortTerminate(){
+        while (true){
+            while (true){
+                if(queue1 == true){
+                    break;
+                }else if(TestListener.lbqueue0.peek()!=null){
+                    sortingList.add(TestListener.lbqueue0.peek());
+                    break;
+                }else if(TestListener.lbqueue0.peek() =="terminated"){
+                    queue1 = true;
+                    break;
+                }
+
+            }
+            while (true){
+                if(queue2 == true){
+                    break;
+                }else if(TestListener.lbqueue1.peek()!=null){
+                    sortingList.add(TestListener.lbqueue1.peek());
+                    break;
+                }else if(TestListener.lbqueue1.peek() =="terminated"){
+                    queue2 = true;
+                    break;
+                }
+
+            }
+            while (true){
+                if(queue3 == true){
+                    break;
+                }else if(TestListener.lbqueue2.peek()!=null){
+                    sortingList.add(TestListener.lbqueue1.peek());
+                    break;
+                }else if(TestListener.lbqueue2.peek() =="terminated"){
+                    queue3 = true;
+                    break;
+                }
+
+            }
+            sort();
+        }
+    }*/
+
+
+
+
+
+
+
 }

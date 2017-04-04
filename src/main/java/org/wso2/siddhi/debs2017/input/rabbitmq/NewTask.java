@@ -32,6 +32,8 @@ import java.util.concurrent.TimeoutException;
 */
 public class NewTask {
 
+//31.18000030517578
+    //31.18000030517578
 
 
         private static final String TASK_QUEUE_NAME = "test123";
@@ -70,7 +72,7 @@ public class NewTask {
                         String dataInLine = scanner.next();
                         if(dataInLine.contains("----")){
 
-
+                            if(data.length()>100){
                                 for(int i =0; i<5; i++){
 
                                     count++;
@@ -81,7 +83,7 @@ public class NewTask {
                                             MessageProperties.PERSISTENT_TEXT_PLAIN,
                                             data1.getBytes());
                                 }
-
+                            }
 
 
                             data = "";

@@ -26,6 +26,7 @@ public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
     private TcpNettyClient siddhiClient;
     private double probability;
     private double threshold;
+    static int count =0;
     @Override
     public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
 
@@ -35,13 +36,15 @@ public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
          threshold  = Double.parseDouble(o[4].toString());
 
          if(probability < threshold && probability > 0) {
+             System.out.println(probability);
              send(wrapper.getEvent());
          }
 
     }
 
     private synchronized void send(Event event) {
-
+        count++;
+        System.out.println(count);
         Event [] events = {event};
         siddhiClient.send("output", events);
     }

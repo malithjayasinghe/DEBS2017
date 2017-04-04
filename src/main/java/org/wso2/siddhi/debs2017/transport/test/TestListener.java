@@ -48,7 +48,7 @@ public class TestListener implements StreamListener {
 
         this.streamDefinition = streamDefinition;
         SortingThread sorter = new SortingThread();
-        //sorter.start();
+        sorter.start();
 
 
     }
@@ -66,31 +66,31 @@ public class TestListener implements StreamListener {
 
     @Override
     public void onEvents(Event[] events) {
-      print(events);
-//           Event newEvent = events[0];
-//           int node =(Integer)newEvent.getData()[5];
-//                if(node == 0)
-//                    try {
-//                        lbqueue0.put(newEvent);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                else if(node == 1)
-//                    try {
-//                        lbqueue1.put(newEvent);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                else
-//                    try {
-//                        lbqueue2.put(newEvent);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
+     // print(events);
+           Event newEvent = events[0];
+           int node =(Integer)newEvent.getData()[5];
+                if(node == 0)
+                    try {
+                        lbqueue0.put(newEvent);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                else if(node == 1)
+                    try {
+                        lbqueue1.put(newEvent);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                else
+                    try {
+                        lbqueue2.put(newEvent);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
 
 
-        if(arr.size()%100==0){
+       /* if(arr.size()%100==0){
             System.out.println("Starttime "+starttime);
             System.out.println("Endtime "+endtime);
             System.out.println("Running in ms "+(endtime-starttime));
@@ -105,7 +105,7 @@ public class TestListener implements StreamListener {
 
 
         }
-
+*/
 
     }
 
