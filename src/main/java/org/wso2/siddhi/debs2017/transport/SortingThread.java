@@ -9,9 +9,7 @@ import java.util.ArrayList;
  * Created by sachini on 3/31/17.
  */
 public class SortingThread extends Thread {
-    static long timeOut0 = 0;
-    static long timeout1 = 0;
-    static long timeout2 = 0;
+
     static long timeout;
     static int count = 0;
     private static ArrayList<Event> sortingList = new ArrayList<>();
@@ -76,7 +74,7 @@ public class SortingThread extends Thread {
 
 
     private void removeEvent(Event e) {
-        int n = (Integer)e.getData()[6];
+        int n = (Integer)e.getData()[5];
        // System.out.println(n +"removed index");
         if (n == 0) {
             TestListener.lbqueue0.poll();

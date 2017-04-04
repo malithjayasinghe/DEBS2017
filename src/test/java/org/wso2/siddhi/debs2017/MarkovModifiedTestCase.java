@@ -22,8 +22,7 @@ package org.wso2.siddhi.debs2017;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
-import org.wso2.siddhi.debs2017.input.SparQLProcessor;
-import org.wso2.siddhi.debs2017.markovchain.MarkovModel;
+
 import org.wso2.siddhi.debs2017.markovchain.MarkoveModified;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ import java.util.ArrayList;
  * Created by sachini on 3/9/17.
  */
 public class MarkovModifiedTestCase {
-    private static final Logger log = Logger.getLogger(SparQLProcessor.class);
+    private static final Logger log = Logger.getLogger(MarkovModifiedTestCase.class);
     private ArrayList<Integer> centers = new ArrayList<>();
     private int[] center = {1, 2, 3, 1, 4, 3, 1, 3, 2, 4,1,3,2,3,4,1,4,1,2,1};
     private  int[] center1 = {1,2,2,2,2,3,2,3,2,3,2,1};

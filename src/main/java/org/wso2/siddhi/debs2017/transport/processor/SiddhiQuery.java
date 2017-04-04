@@ -42,23 +42,23 @@ public class SiddhiQuery {
     public SiddhiQuery(RingBuffer<EventWrapper> buffer) {
 
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
-                "define stream inStream (machine string, tstamp_id string, tstamp string,  uTime long, dimension string, " +
-                "value double, node int, centers int, threshold double);";
+                "define stream inStream (machine string, time string, dimension string,  uTime long,  " +
+                "value double, centers int, threshold double, node int);";
 
         this.query = ("" +
                 "\n" +
                 "from inStream " +
-                "select machine,tstamp_id, tstamp, dimension, str:concat(machine, '-', dimension) as partitionId, uTime, value, node, centers, threshold " +
+                "select machine, time, dimension, str:concat(machine, '-', dimension) as partitionId, uTime, value, node, centers, threshold " +
                 "insert into inStreamA;" +
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
                 "from inStreamA#window.externalTime(uTime , 100) \n" +
-                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:cluster(value, centers) as center, node, threshold " +
+                "select machine, time, dimension, debs2017:cluster(value, centers) as center, node, threshold " +
                 " insert into #outputStream; " + //inner stream
                 "\n" +
                 "from #outputStream \n " +
-                "select machine,tstamp_id, tstamp, uTime, dimension, debs2017:markovnew(center,10) as probability, node, threshold " +
+                "select machine, time, dimension, debs2017:markovnew(center,10) as probability, threshold, node " +
                 "insert into detectAnomaly " +
                 "end;");
 

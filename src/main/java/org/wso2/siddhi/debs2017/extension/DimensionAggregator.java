@@ -53,7 +53,7 @@ public class DimensionAggregator extends AttributeAggregator {
 
     public Object processAdd(Object[] objects) {
         arr.add((Double) objects[0]);
-        Clusterer cluster = new Clusterer((Integer) objects[1], 50, arr);
+        Clusterer cluster = new Clusterer((Integer) objects[1], 50, arr);//(Integer) objects[1]
 
         // Do the clustering on the elements present in the array list and return the center it belongs to
         cluster.cluster();
@@ -61,10 +61,9 @@ public class DimensionAggregator extends AttributeAggregator {
 
         // int center = cluster.getCenter((Double) data);
         ArrayList<Integer> centers = cluster.getCenterA(arr);
-//        System.out.println(arr);
-//        System.out.println(centers);
+        //System.out.println(arr);
+        //System.out.println(centers);
         return centers;
-
 
     }
 
@@ -76,7 +75,7 @@ public class DimensionAggregator extends AttributeAggregator {
     }
 
     public Object processRemove(Object[] objects) {
-       arr.remove(0);
+        arr.remove(0);
         return null;
     }
 

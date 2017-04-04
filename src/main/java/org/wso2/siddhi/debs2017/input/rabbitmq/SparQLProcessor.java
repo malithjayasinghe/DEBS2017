@@ -119,19 +119,37 @@ public class SparQLProcessor extends DefaultConsumer {
 //                    Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
 //                            time.getLocalName(),timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()), property.getLocalName(), value.getDouble()});
                           if (machineNo % 3 == 0) {
-                              Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
-                                      time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
-                                      property.getLocalName(), value.getDouble(), 0, centers, probability});
+                              Event event = new Event(System.currentTimeMillis(), new Object[]{
+                                      machine.getLocalName(),
+                                      time.getLocalName(),
+                                      property.getLocalName(),
+                                      UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                      Math.round(value.getDouble() * 10000.0) / 10000.0, //
+                                      centers,
+                                      probability,
+                                      0});
                               siddhiClient.send("input", new Event[]{event});
                           } else if (machineNo % 3 == 1) {
-                              Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
-                                      time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
-                                      property.getLocalName(), value.getDouble(), 1, centers, probability});
+                              Event event = new Event(System.currentTimeMillis(), new Object[]{
+                                      machine.getLocalName(),
+                                      time.getLocalName(),
+                                      property.getLocalName(),
+                                      UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                      Math.round(value.getDouble() * 10000.0) / 10000.0, //
+                                      centers,
+                                      probability,
+                                      1});
                               siddhiClient1.send("input", new Event[]{event});
                           } else if (machineNo % 3 % 3 == 2) {
-                              Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
-                                      time.getLocalName(), timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()),
-                                      property.getLocalName(), value.getDouble(), 2, centers, probability});
+                              Event event = new Event(System.currentTimeMillis(), new Object[]{
+                                      machine.getLocalName(),
+                                      time.getLocalName(),
+                                      property.getLocalName(),
+                                      UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                      Math.round(value.getDouble() * 10000.0) / 10000.0, //
+                                      centers,
+                                      probability,
+                                      2});
                               siddhiClient2.send("input", new Event[]{event});
                           }
                       }

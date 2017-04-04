@@ -24,13 +24,12 @@ import org.apache.jena.base.Sys;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
-import org.wso2.siddhi.debs2017.input.SparQLProcessor;
 import org.wso2.siddhi.debs2017.markovchain.MarkovModel;
 
 import java.util.ArrayList;
 
 public class MarkovModelTestCase {
-    private static final Logger log = Logger.getLogger(SparQLProcessor.class);
+    private static final Logger log = Logger.getLogger(MarkovModel.class);
     private ArrayList<Integer> centers = new ArrayList<>();
     private int[] center = {1, 2, 3, 1, 4, 3, 1, 3, 2, 4,1,3,2,3,4,1,4,1,2,1};
     private  double[] results = {-1,1,1,1,0.25,0.25,1,0.25,0.0625,0.25,0.25,1,1,0.25,0.25,0.25,0.25,1,0.25,0.25};

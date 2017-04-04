@@ -34,12 +34,10 @@ public class TestServer {
             StreamDefinition streamDefinition = StreamDefinition.id("output").
                     attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
-                    attribute("sentTime", Attribute.Type.STRING).
-                    attribute("uTime", Attribute.Type.LONG).
                     attribute("dimension",Attribute.Type.STRING).
                     attribute("value", Attribute.Type.DOUBLE).
-                    attribute("node",Attribute.Type.INT).
-                    attribute("threshold",Attribute.Type.DOUBLE);
+                    attribute("threshold",Attribute.Type.DOUBLE).
+                    attribute("node",Attribute.Type.INT);
             //attribute("ij_timestamp", Attribute.Type.LONG);
 
             TcpNettyServer tcpNettyServer = new TcpNettyServer();

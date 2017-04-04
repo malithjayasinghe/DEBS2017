@@ -41,14 +41,13 @@ public class SiddhiServer {
             StreamDefinition streamDefinition = StreamDefinition.id("input").
                     attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
-                    attribute("sentTime", Attribute.Type.STRING).
-                    attribute("uTime", Attribute.Type.LONG).
                     attribute("dimension",Attribute.Type.STRING).
+                    attribute("uTime", Attribute.Type.LONG).
                     attribute("value", Attribute.Type.DOUBLE).
-                    attribute("node",Attribute.Type.INT).
                     attribute("centers",Attribute.Type.INT).
-                    attribute("threshold",Attribute.Type.DOUBLE);
-            // attribute("ij_timestamp", Attribute.Type.LONG);
+                    attribute("threshold",Attribute.Type.DOUBLE).
+                    attribute("node",Attribute.Type.INT);
+
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
 
 

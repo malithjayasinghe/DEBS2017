@@ -33,7 +33,7 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
 
 
         Object[] o = wrapper.getEvent().getData();
-        long partition = Long.parseLong(o[4].toString().substring(1));
+        long partition = Long.parseLong(o[2].toString().substring(1));
         if(partition%NUM==ID){
 
             //setting the buffer sequence

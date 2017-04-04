@@ -70,8 +70,8 @@ public class NewTask {
                         String dataInLine = scanner.next();
                         if(dataInLine.contains("----")){
 
-                            if(data.length()>100){
-                                for(int i =0; i<10; i++){
+
+                                for(int i =0; i<5; i++){
 
                                     count++;
                                     System.out.println(count);
@@ -81,7 +81,7 @@ public class NewTask {
                                             MessageProperties.PERSISTENT_TEXT_PLAIN,
                                             data1.getBytes());
                                 }
-                            }
+
 
 
                             data = "";

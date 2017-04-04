@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class MarkovFunction extends FunctionExecutor {
     Markovnew markovnew = new Markovnew();
     private ArrayList<Integer> centers;
-    private  double probability = -1.0;
+    private  double probability = -1;
     @Override
     protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
 
@@ -40,14 +40,14 @@ public class MarkovFunction extends FunctionExecutor {
     @Override
     protected Object execute(Object[] objects) {
         centers = (ArrayList<Integer>)objects[0];
-        if(centers.size()==((Integer)objects[1])){
+        if(centers.size()>=((Integer)objects[1])){
             markovnew.execute(centers);
             //get the total probability
             probability =  markovnew.updateProbability(centers);
 
 
         } else {
-            return probability;
+            return 2.0;
         }
         return probability;
 
@@ -58,7 +58,9 @@ public class MarkovFunction extends FunctionExecutor {
     protected Object execute(Object o) {
         centers = (ArrayList<Integer>)o;
 
-         if(centers.size() >=10){
+        if(centers.size() == 2)
+           probability = 1;
+       else if(centers.size() >2){
            //update the transitional probabilities
            markovnew.execute(centers);
 

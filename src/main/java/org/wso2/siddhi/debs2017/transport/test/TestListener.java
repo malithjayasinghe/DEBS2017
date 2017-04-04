@@ -38,6 +38,7 @@ public class TestListener implements StreamListener {
     public static  LinkedBlockingQueue<Event> lbqueue0 = new LinkedBlockingQueue<Event>();
     public static LinkedBlockingQueue<Event> lbqueue1 = new LinkedBlockingQueue<Event>();
     public static LinkedBlockingQueue<Event> lbqueue2 = new LinkedBlockingQueue<Event>();
+    static int count =0;
 
     private ArrayList<Long> arr = new ArrayList<>();
 
@@ -47,7 +48,7 @@ public class TestListener implements StreamListener {
 
         this.streamDefinition = streamDefinition;
         SortingThread sorter = new SortingThread();
-        sorter.start();
+        //sorter.start();
 
 
     }
@@ -65,30 +66,31 @@ public class TestListener implements StreamListener {
 
     @Override
     public void onEvents(Event[] events) {
-      // print(events);
-           Event newEvent = events[0];
-           int node =(Integer)newEvent.getData()[6];
-                if(node == 0)
-                    try {
-                        lbqueue0.put(newEvent);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                else if(node == 1)
-                    try {
-                        lbqueue1.put(newEvent);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                else
-                    try {
-                        lbqueue2.put(newEvent);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+      print(events);
+//           Event newEvent = events[0];
+//           int node =(Integer)newEvent.getData()[5];
+//                if(node == 0)
+//                    try {
+//                        lbqueue0.put(newEvent);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                else if(node == 1)
+//                    try {
+//                        lbqueue1.put(newEvent);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                else
+//                    try {
+//                        lbqueue2.put(newEvent);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
 
 
-        /*if(arr.size()%74124==0){
+
+        if(arr.size()%100==0){
             System.out.println("Starttime "+starttime);
             System.out.println("Endtime "+endtime);
             System.out.println("Running in ms "+(endtime-starttime));
@@ -99,26 +101,26 @@ public class TestListener implements StreamListener {
             }
             System.out.println("Total Latency"+sum);
             System.out.println("Average Latency"+(sum/arr.size()));
+            System.out.println("---------------------------------------------");
 
 
-        }*/
+        }
 
 
     }
 
     private synchronized void print(Event[] events) {
-            int count=0;
-            arr.add(System.currentTimeMillis()-events[0].getTimestamp());
-            System.out.println(events[0]);
-            count++;
-        System.out.println(count);
 
-//            if (arr.size() ==1){
-//               starttime= events[0].getTimestamp();
-//            }
-//            if (arr.size()%74124==0) {
-//                endtime = events[0].getTimestamp();
-//            }
+            count++;
+            System.out.println(count+"\t"+events[0]);
+            arr.add(System.currentTimeMillis()-events[0].getTimestamp());
+
+            if (arr.size() ==1){
+               starttime= events[0].getTimestamp();
+            }
+            if (arr.size()%100==0) {
+                endtime = events[0].getTimestamp();
+            }
 
 
     }
