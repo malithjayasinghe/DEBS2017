@@ -4,8 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
-import org.wso2.siddhi.debs2017.input.sparql.SparQLProcessor;
-
+import org.wso2.siddhi.debs2017.input.rabbitmq.SparQLProcessor;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
