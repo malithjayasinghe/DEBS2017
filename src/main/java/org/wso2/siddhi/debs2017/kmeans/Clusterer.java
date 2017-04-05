@@ -66,10 +66,6 @@ public class Clusterer {
             }
         }
 
-
-        //for (int i =0; i<this.noOfClusters; i++){
-           // this.clusterGroup[i] = new ArrayList<>();
-        //}
         // if k values are not found, k should be the same as the no of distinct values found
         this.noOfClusters = center.size();
     }
@@ -83,8 +79,6 @@ public class Clusterer {
         int iter = 0;
 
         do {
-            assignToCluster();
-            reinitializeCluster();
             if (!center.equals(centerOld)) {
                 centerOld = new ArrayList<>();
                 for (int i = 0; i < clusterGroup.length; i++) {
@@ -92,6 +86,9 @@ public class Clusterer {
 
                 }
             }
+            assignToCluster();
+            reinitializeCluster();
+
             iter++;
 
         } while (!center.equals(centerOld) && iter < maxIter);
@@ -138,15 +135,53 @@ public class Clusterer {
             for (int j = 0; j < noOfClusters; j++) {
                 cenVal = center.get(j);
                 diff = Math.abs(cenVal - dataItem);
+                diff =  Math.round(diff * 10000.0) / 10000.0;
                 difference[j] = diff;
 
             }
-            int minIndex = getMinIndex(difference);
 
 
-            clusterGroup[minIndex].add(dataItem);
+            ArrayList<Integer> minList = getMinIndexA(difference);
+
+            if(minList.size()==1){
+                clusterGroup[minList.get(0)].add(dataItem);
+            } else {
+
+                int minIndex = minList.get(0);
+                for (int j =1; j<minList.size(); j++){
+                    if(center.get(minIndex)<center.get(minList.get(j))) {
+                        minIndex = minList.get(j);
+                    }
+                }
+                clusterGroup[minIndex].add(dataItem);
+            }
 
         }
+
+
+
+    }
+
+    private ArrayList<Integer> getMinIndexA(double[] diff) {
+        int minIndex = 0;
+        ArrayList<Integer> minList = new ArrayList<>();
+
+        for (int i = 1; i < diff.length; i++) {
+            if (diff[minIndex] >  diff[i]) {
+               minIndex = i;
+            }
+        }
+        minList.add(minIndex);
+        for (int i = 0; i < diff.length; i++) {
+
+            if (diff[minIndex] ==  diff[i] && minIndex!= i) {
+                minList.add(i);
+            }
+
+        }
+
+
+        return minList;
     }
 
 
@@ -158,6 +193,7 @@ public class Clusterer {
      */
     private int getMinIndex(double[] diff) {
         int minIndex = 0;
+
 
         for (int i = 1; i < noOfClusters; i++) {
             if (diff[minIndex] > diff[i]) {
@@ -208,20 +244,39 @@ public class Clusterer {
         return output;
     }
 
+//    public ArrayList<Integer> getCenterA(ArrayList<Double> data){
+//        ArrayList<Integer> output = new ArrayList<>();
+//        double[] minDist = new double[noOfClusters];
+//
+//        for(int i=0; i<data.size(); i++){
+//
+//            for (int j = 0; j < noOfClusters; j++) {
+//                //Math.round(diff * 10000.0) / 10000.0;
+//                //center.get(j) - data.get(i)
+//                minDist[j] = Math.round(Math.abs(center.get(j) - data.get(i))*10000.0)/10000.0;
+//
+//            }
+//
+//            output.add(getMinIndex(minDist) +1);
+//        }
+//
+//        return output;
+//    }
+
     public ArrayList<Integer> getCenterA(ArrayList<Double> data){
         ArrayList<Integer> output = new ArrayList<>();
-        double[] minDist = new double[noOfClusters];
 
         for(int i=0; i<data.size(); i++){
 
             for (int j = 0; j < noOfClusters; j++) {
-                minDist[j] = (Math.abs(center.get(j) - data.get(i)));
 
+               if(clusterGroup[j].contains(data.get(i))){
+                   output.add(j+1);
+               }
             }
 
-            output.add(getMinIndex(minDist) +1);
-        }
 
+        }
         return output;
     }
 }
