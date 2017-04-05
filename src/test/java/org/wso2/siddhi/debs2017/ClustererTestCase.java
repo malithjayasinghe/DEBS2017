@@ -5,6 +5,7 @@ import org.junit.Assert;
 
 import org.wso2.siddhi.debs2017.kmeans.Clusterer;
 
+
 import java.util.ArrayList;
 
 /*
@@ -280,7 +281,7 @@ public class ClustererTestCase {
     public void Test13() throws InterruptedException {
         log.info("ClustererTestCase TestCase 08");
         ArrayList<Double> input = new ArrayList<>();
-        input.add(0.0);
+        input.add(0.0); //[3.08, 3.02, 3.22, 3.06, 3.0, 3.03, 3.06, 2.92, 2.99, 3.13
         Clusterer test = new Clusterer(2, 100, input);
         test.cluster();
 
@@ -288,5 +289,49 @@ public class ClustererTestCase {
         Assert.assertEquals(1, test.getCenter(-1.0));
 
     }
+
+    @org.junit.Test
+    public void Test14() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 08");
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(3.08); //[, , , , , , , , ,
+        input.add(3.02);
+        input.add(3.22);
+        input.add(3.06);
+        input.add(3.0);
+        input.add(3.03);
+        input.add(3.06);
+        input.add(2.92);
+        input.add(2.99);
+        input.add(3.13);
+        Clusterer test = new Clusterer(4, 50, input);
+        test.cluster();
+
+        System.out.println(test.getCenterA(input));
+
+       // Assert.assertEquals(1, test.getCenter(-1.0));
+
+    }
+
+    @org.junit.Test
+    public void Test15() throws InterruptedException {
+        log.info("ClustererTestCase TestCase 08");
+        ArrayList<Double> input = new ArrayList<>();
+        input.add(3.05); //[, , , , , , , , ,
+        input.add(3.01);
+        input.add(3.03);
+        input.add(3.07);
+        input.add(3.02);
+
+        Clusterer test = new Clusterer(4, 2, input);
+        test.cluster();
+
+        System.out.println(test.getCenterA(input));
+
+        // Assert.assertEquals(1, test.getCenter(-1.0));
+
+    }
+
+
 }
 

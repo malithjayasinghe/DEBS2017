@@ -1,6 +1,7 @@
 package org.wso2.siddhi.debs2017.input.sparql;
 
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -43,10 +45,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 */
 public class SparQLProcessor extends DefaultConsumer {
 
-    static int value = 1;
-    public  static  final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value);
+    static int value = 10;
+
+    static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
+    public  static  final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
     public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
-    private  static  int count =0;
+
 
 
     public SparQLProcessor(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3) {
@@ -57,25 +61,17 @@ public class SparQLProcessor extends DefaultConsumer {
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
         sort.start();
-        MetaDataQueryMulti.run("molding_machine_10M.metadata.nt");
+        MetaDataQueryMulti.run("molding_machine_10M.metadata_old.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
-        if(count==value){
-            count=0;
-        }
-        Runnable reader = new ReaderThread(msg, arrayList.get(count));
+        Runnable reader = new ReaderThread(msg);
         EXECUTOR.execute(reader);
-        count++;
-       // System.out.println(msg);
-       // excuteQuery(msg);
+
 
     }
 
-//    /**
-//     * @param message the message which contains RDF triples
-//     */
-//
+
 
 }

@@ -69,7 +69,7 @@ public class DebsMetaData {
         meta.put(mapKey, dm);
     }
 
-    public int getClusterCenters() {
+    public synchronized int getClusterCenters() {
         return clusterCenters;
     }
 
@@ -77,7 +77,7 @@ public class DebsMetaData {
         this.clusterCenters = clusterCenters;
     }
 
-    public double getProbabilityThreshold() {
+    public synchronized double getProbabilityThreshold() {
         return probabilityThreshold;
     }
 
@@ -85,7 +85,7 @@ public class DebsMetaData {
         this.probabilityThreshold = probabilityThreshold;
     }
 
-    public String getMachineNumebr() {
+    public synchronized String getMachineNumebr() {
         return machineNumber;
     }
 
@@ -93,7 +93,7 @@ public class DebsMetaData {
         this.machineNumber = machineNumebr;
     }
 
-    public String getDimension() {
+    public synchronized String getDimension() {
         return dimension;
     }
 

@@ -74,11 +74,11 @@ public class QueryTest {
 
                 for(Event ev : events){
 
-//                        double val = (double)ev.getData()[3];
-//                        if(val<0.005) {
-                            //System.out.println(ev.getData()[0] + "\t" + ev.getData()[1] + "\t" + ev.getData()[2] + "\t" + ev.getData()[3] + "\n");
+                        double val = (double)ev.getData()[3];
+                       if(val<0.005) {
+                            System.out.println(ev.getData()[0] + "\t" + ev.getData()[1] + "\t" + ev.getData()[2] + "\t" + ev.getData()[3] + "\n");
                             //0.004115226337448559
-                       // }
+                        }
 
 
                 }
@@ -150,16 +150,16 @@ public class QueryTest {
                 String machineName = machine.getLocalName();
                 String dimension = property.getLocalName();
                 if (DebsMetaData.meta.keySet().contains(machineName+dimension) &&  !value.toString().contains("#string")) { //&& property.getLocalName().equals("_59_5")
-                        if(property.getLocalName().equals("_59_106")){
+                       // if(property.getLocalName().equals("_59_66")) {
                             // System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getDouble());
                             arr.add(new Object[]{machineName, time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), dimension, value.getDouble(),
-                                    DebsMetaData.meta.get(machineName+dimension).getClusterCenters()});
+                                    DebsMetaData.meta.get(machineName + dimension).getClusterCenters()});
 //                            long abc = arr.size();
 //                            //System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+abc+"\t"+property.getLocalName()+"\t"+value.getDouble());
 //                            arr.add(new Object[]{machine.getLocalName(), time.getLocalName(), abc, property.getLocalName(), value.getDouble(),
 //                                    DebsMetaData.meta.get(machineName+dimension).getClusterCenters()});
+                       // }
 
-                        }
 
                 }
             }

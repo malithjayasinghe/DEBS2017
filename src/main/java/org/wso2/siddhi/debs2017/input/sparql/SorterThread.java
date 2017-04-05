@@ -56,8 +56,15 @@ public class SorterThread extends Thread {
     public void run(){
         while (true){
 
+//            try {
+//                System.out.println(arrayList.get(0).take());
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             for(int i=0; i<this.size; i++){
                 try {
+
+
                     if(arrayList.get(i).size()!=0){
                         arr.add(arrayList.get(i).peek());
                         arr2.add(i);
@@ -67,7 +74,8 @@ public class SorterThread extends Thread {
                         long timeout = System.currentTimeMillis();
                         while(true){
 
-                            if((System.currentTimeMillis() - timeout)>=5){
+                            if((System.currentTimeMillis() - timeout)>=3000){
+
                                 break;
                             }
                             if(arrayList.get(i).size()!=0){
@@ -84,7 +92,7 @@ public class SorterThread extends Thread {
                 }
             }
 
-            sort();
+          sort();
         }
     }
 

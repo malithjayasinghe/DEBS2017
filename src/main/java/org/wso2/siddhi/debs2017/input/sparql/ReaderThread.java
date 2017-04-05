@@ -47,6 +47,12 @@ public class ReaderThread implements Runnable {
         this.queue = queue;
 
     }
+    public ReaderThread(String data) {
+        this.data = data;
+
+
+    }
+
 
     static synchronized public int getCount() {
         return count;
@@ -54,6 +60,8 @@ public class ReaderThread implements Runnable {
 
     @Override
     public void run() {
+
+        this.queue = SparQLProcessor.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
@@ -105,7 +113,7 @@ public class ReaderThread implements Runnable {
                                 probability,
                                 0});
 
-                        queue.put(event);
+                        this.queue.put(event);
                     }
                     // System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
                 }
@@ -116,8 +124,6 @@ public class ReaderThread implements Runnable {
         }
     }
 
-    static synchronized void  incrimentCount(){
-        count++;
-    }
+
 
 }
