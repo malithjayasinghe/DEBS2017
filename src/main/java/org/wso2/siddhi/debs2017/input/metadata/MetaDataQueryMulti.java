@@ -38,7 +38,7 @@ public class MetaDataQueryMulti {
 
                     //System.out.println(machine.getLocalName()+"\t"+property.getLocalName()+"\t"+cluster.getInt()+"\t"+thresh.getDouble());
                     String dimension = property.getLocalName().replace("_59","_"+i);
-                    DebsMetaData db = new DebsMetaData("MoldingMachine_" + i, dimension
+                    DebsMetaData db = new DebsMetaData("Machine_" + i, dimension
                             , cluster.getInt(), thresh.getDouble());
                     DebsMetaData.storeValues(db);
                 }

@@ -53,7 +53,7 @@ public class SiddhiQuery {
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
-                "from inStreamA#window.externalTime(uTime , 100) \n" +
+                "from inStreamA#window.externalTime(uTime , 10) \n" +
                 "select machine, time, dimension, debs2017:cluster(value, centers) as center, node, threshold " +
                 " insert into #outputStream; " + //inner stream
                 "\n" +

@@ -31,13 +31,10 @@ public class SorterThread extends Thread {
     private ArrayList<Event> arr = new ArrayList<>();
     private ArrayList<Integer> arr2 = new ArrayList<>();
     private static int size;
-    private static int count =0;
     private TcpNettyClient siddhiClient = new TcpNettyClient();
     private TcpNettyClient siddhiClient1 = new TcpNettyClient();
     private TcpNettyClient siddhiClient2 = new TcpNettyClient();
 
-    File file = new File("/home/fathima/stuff4.txt");
-    FileWriter writer = null;
 
     public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, String host1, int port1, String host2, int port2, String host3, int port3){
         this.arrayList = arrayList;
@@ -46,12 +43,6 @@ public class SorterThread extends Thread {
         this.siddhiClient1.connect(host2, port2);
         this.siddhiClient2.connect(host3, port3);
 
-        try {
-            file.createNewFile();
-            writer = new FileWriter(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     public void run(){
         while (true){
@@ -105,8 +96,9 @@ public class SorterThread extends Thread {
 
     private void removeEvent(Event e, int queNo) {
 
-
-        int machineNo = Integer.parseInt(e.getData()[0].toString().substring(15));
+        //Machine_59
+        //MoldingMachine_59
+        int machineNo = Integer.parseInt(e.getData()[0].toString().substring(8));
 
             LinkedBlockingQueue<Event> linkedBlockingQueue = arrayList.get(queNo);
             if (machineNo % 3 == 0) {
@@ -122,31 +114,8 @@ public class SorterThread extends Thread {
                 linkedBlockingQueue.poll();
                 siddhiClient2.send("input", new Event[]{e});
             }
-        count++;
 
-        System.out.println(count+"\t"+e);
-        try {
-            writer.write(count+"\t"+e+"\n");
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        if(count%270==0){
-            System.out.println("\n\n===========================================");
-            try {
-                writer.write("\n\n===========================================");
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-        if(count==172530){
 
-            try {
-                writer.flush();
-                writer.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
     }
 
     private synchronized void sort() {

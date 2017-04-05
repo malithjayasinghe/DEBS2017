@@ -54,7 +54,7 @@ public class NewTask {
 
             try {
 
-                reader = new BufferedReader(new FileReader("frmattedData.txt"));//molding_machine_100M.nt rdfSample.txt
+                reader = new BufferedReader(new FileReader("frmattedData_63.nt"));//molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt
                 // read file line by line
                 String line = null;
                 Scanner scanner = null;
@@ -77,7 +77,8 @@ public class NewTask {
 
                                     count++;
                                     System.out.println(count);
-                                    String data1 = data.replace("MoldingMachine_57", "MoldingMachine_"+i);
+                                    String data1 = data.replace("Machine_59", "Machine_"+i).replace("_59_", "_"+i+"_");
+
                                     //data1 = "Hello World"+count;
                                     channel.basicPublish( "", TASK_QUEUE_NAME,
                                             MessageProperties.PERSISTENT_TEXT_PLAIN,

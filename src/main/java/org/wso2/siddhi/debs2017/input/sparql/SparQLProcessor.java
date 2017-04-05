@@ -61,7 +61,7 @@ public class SparQLProcessor extends DefaultConsumer {
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
         sort.start();
-        MetaDataQueryMulti.run("molding_machine_10M.metadata_old.nt");
+        MetaDataQueryMulti.run("molding_machine_10M.metadata.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {

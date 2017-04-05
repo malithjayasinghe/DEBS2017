@@ -96,8 +96,8 @@ public class ReaderThread implements Runnable {
                 if (!value.toString().contains("#string")) {
 
 
-                    int machineNo = Integer.parseInt(machine.getLocalName().substring(15));
-                    String stateful = machine.getLocalName()+"_"+machineNo+property.getLocalName();
+                   // int machineNo = Integer.parseInt(machine.getLocalName().substring(8));
+                    String stateful = property.getLocalName();
                     if(DebsMetaData.meta.containsKey(stateful)) {
 
                         int centers = DebsMetaData.meta.get(stateful).getClusterCenters();
@@ -115,7 +115,7 @@ public class ReaderThread implements Runnable {
 
                         this.queue.put(event);
                     }
-                    // System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
+                    System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
                 }
             }
 
