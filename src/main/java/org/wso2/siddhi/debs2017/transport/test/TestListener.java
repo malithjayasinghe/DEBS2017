@@ -3,6 +3,7 @@ package org.wso2.siddhi.debs2017.transport.test;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
 import org.wso2.siddhi.debs2017.transport.SortingThread;
 import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
@@ -44,10 +45,10 @@ public class TestListener implements StreamListener {
 
     Event currentEvent;
 
-    public TestListener(StreamDefinition streamDefinition) {
+    public TestListener(StreamDefinition streamDefinition, RabbitMQPublisher rmq) {
 
         this.streamDefinition = streamDefinition;
-        SortingThread sorter = new SortingThread();
+        SortingThread sorter = new SortingThread(rmq);
         sorter.start();
 
 
@@ -125,49 +126,5 @@ public class TestListener implements StreamListener {
 
     }
 
-   /* private synchronized void sortList() {
-        currentEvent = sortingList.get(0);
-     for(int i =1; i < sortingList.size(); i++){
-         if(getTime(currentEvent)> getTime(sortingList.get(i)))
-             currentEvent = sortingList.get(i);
-     }
 
-
-
-    }
-
-
-
-      private synchronized void assignToList() {
-         if(lbqueue0.peek() != null)
-             sortingList.add(lbqueue0.peek());
-         if (lbqueue1.peek() != null)
-             sortingList.add(lbqueue1.peek());
-         if (lbqueue2.peek() != null)
-             sortingList.add(lbqueue2.peek());
-
-      }
-*/
-
-
-
-    private  void removeEvent(Event e){
-        int n = (int)e.getData()[6];
-        if(n == 0) {
-            lbqueue0.poll();
-        }
-        else if(n == 1 ) {
-            lbqueue1.poll();
-        }
-        else {
-            lbqueue2.poll();
-        }
-    }
-
-
-    private synchronized int getTime(Event event){
-        String time = (String)event.getData()[1];
-        int timestamp = Integer.parseInt(time.substring(10));
-        return timestamp;
-    }
 }

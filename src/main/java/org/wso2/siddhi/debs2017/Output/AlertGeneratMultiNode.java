@@ -27,6 +27,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.wso2.siddhi.core.event.Event;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -48,14 +49,17 @@ public class AlertGeneratMultiNode {
     String wmm = "http://www.agtinternational.com/ontologies/WeidmullerMetadata#";
     String i40 = "http://www.agtinternational.com/ontologies/I4.0#";
     String IoTCore = "http://www.agtinternational.com/ontologies/IoTCore#";
+    private RabbitMQPublisher rabbitMQPublisher;
+    StringWriter out;
 
 
-    public AlertGeneratMultiNode(Event event) {
+    public AlertGeneratMultiNode(Event event, RabbitMQPublisher rabbitMQPublisher) {
         this.probThresh = Double.toString((Double)event.getData()[3]);
         this.timestamp = (String)event.getData()[1];
         this.dimension = (String)event.getData()[2];
         this.machineNumber = (String)event.getData()[0];
       //  this.timestampValue = (String)event.getData()[2];
+        this.rabbitMQPublisher = rabbitMQPublisher;
 
 
     }
@@ -89,9 +93,13 @@ public class AlertGeneratMultiNode {
 
         //alert.add(model);
 
-
+        anomalyCount ++;
         RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
+        String str ="N-TRIPLES";
+        out = new StringWriter();
+        model.write(out, str);
        //System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
+        rabbitMQPublisher.publish(out.toString());
 
 
     }

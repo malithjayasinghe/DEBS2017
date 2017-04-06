@@ -3,6 +3,7 @@ package org.wso2.siddhi.debs2017.transport;
 import javafx.scene.control.Alert;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.Output.AlertGeneratMultiNode;
+import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
 import org.wso2.siddhi.debs2017.transport.test.TestListener;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class SortingThread extends Thread {
     static int count = 0;
     private static ArrayList<Event> sortingList = new ArrayList<>();
     Event currentEvent;
+    private static RabbitMQPublisher rabbitMQPublisher;
 
     public void run() {
         while (true) {
@@ -104,7 +106,7 @@ public class SortingThread extends Thread {
                     currentEvent = sortingList.get(i);
             }
             sortingList.clear();
-            AlertGeneratMultiNode ag = new AlertGeneratMultiNode(currentEvent);
+            AlertGeneratMultiNode ag = new AlertGeneratMultiNode(currentEvent, rabbitMQPublisher);
             ag.generateAlert();
            // System.out.println(currentEvent);
             count++;
@@ -113,6 +115,9 @@ public class SortingThread extends Thread {
         }
     }
 
+    public SortingThread(RabbitMQPublisher rmq){
+        this.rabbitMQPublisher = rmq;
+    }
 
    /* private void sortTerminate(){
         while (true){

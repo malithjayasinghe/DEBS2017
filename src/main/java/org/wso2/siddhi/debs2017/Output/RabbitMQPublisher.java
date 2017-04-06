@@ -24,8 +24,15 @@ import java.util.concurrent.TimeoutException;
 */
 public class RabbitMQPublisher {
 
-    public void publish()  {
-        ConnectionFactory factory = new ConnectionFactory();
+    private  static String QUEUE ;
+    private  ConnectionFactory factory;
+    private  Connection connection = null;
+    private  Channel channel = null;
+
+    public void init()  {
+
+
+        factory = new ConnectionFactory();
 
         //set connection info
         factory.setHost("localhost");
@@ -33,7 +40,7 @@ public class RabbitMQPublisher {
         factory.setPassword("guest");
 
         //create connection
-        Connection connection = null;
+
         try {
             connection = factory.newConnection();
         } catch (IOException e) {
@@ -43,29 +50,13 @@ public class RabbitMQPublisher {
         }
 
         //create a channel
-        String qName = "test";
-        Channel channel = null;
+
         try {
             channel = connection.createChannel();
             //this line is required to initialize a queue
-            channel.queueDeclare(qName, false, false, false, null);
+            channel.queueDeclare(QUEUE, false, false, false, null);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        for (int i =0; true; i++) {
-            String message = "Hello World --"+i;
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // e.printStackTrace();
-            }
-            try {
-                channel.basicPublish("", qName, null, message.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Sent :"+message);
         }
 
         // channel.close();
@@ -73,4 +64,21 @@ public class RabbitMQPublisher {
 
 
     }
+
+    public RabbitMQPublisher(String queue){
+        QUEUE = queue;
+        init();
+    }
+
+    public void publish(String anomaly){
+
+        try {
+            channel.basicPublish("", QUEUE, null, anomaly.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
