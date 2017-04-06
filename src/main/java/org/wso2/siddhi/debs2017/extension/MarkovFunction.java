@@ -40,6 +40,7 @@ public class MarkovFunction extends FunctionExecutor {
     @Override
     protected Object execute(Object[] objects) {
         centers = (ArrayList<Integer>)objects[0];
+
         if(centers.size()>=((Integer)objects[1])){
             markovnew.execute(centers);
             //get the total probability

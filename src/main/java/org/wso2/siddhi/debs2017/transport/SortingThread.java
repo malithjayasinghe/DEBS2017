@@ -7,9 +7,7 @@ import org.wso2.siddhi.debs2017.transport.test.TestListener;
 
 import java.util.ArrayList;
 
-/**
- * Created by sachini on 3/31/17.
- */
+
 public class SortingThread extends Thread {
     static  boolean queue1 = false;
     static boolean queue2 = false;
@@ -22,58 +20,60 @@ public class SortingThread extends Thread {
 
     public void run() {
         while (true) {
-            if (TestListener.lbqueue0.peek() != null) {
-                sortingList.add(TestListener.lbqueue0.peek());
-            } else {
-                timeout = System.currentTimeMillis();
-               while(true){
-                  // System.out.println("Inner while loop 1");
-                   if((System.currentTimeMillis() -  timeout)>=2){
-                      break;
-                  }else if(TestListener.lbqueue0.peek() != null) {
-                       sortingList.add(TestListener.lbqueue0.peek());
-                       break;
-                   }
-               }
-            }
-            if (TestListener.lbqueue1.peek() != null) {
-                sortingList.add(TestListener.lbqueue1.peek());
-            } else {
-                timeout = System.currentTimeMillis();
-                while(true){
-                   // System.out.println("inner while loop 2");
-                    if((System.currentTimeMillis() -  timeout)>=2){
-                        break;
-                    }else if(TestListener.lbqueue1.peek() != null) {
-                        sortingList.add(TestListener.lbqueue1.peek());
-                        break;
+           // if(queue1 == false) {
+                if (TestListener.lbqueue0.peek() != null) {
+                    sortingList.add(TestListener.lbqueue0.peek());
+                } else {
+                    timeout = System.currentTimeMillis();
+                    while (true) {
+                        // System.out.println("Inner while loop 1");
+                        if ((System.currentTimeMillis() - timeout) >= 2) {
+                          //  queue1 = true;
+                            break;
+                        } else if (TestListener.lbqueue0.peek() != null) {
+                            sortingList.add(TestListener.lbqueue0.peek());
+                            break;
+                        }
                     }
                 }
-            }
-
-            if (TestListener.lbqueue2.peek() != null) {
-                sortingList.add(TestListener.lbqueue2.peek());
-            } else {
-                timeout = System.currentTimeMillis();
-                while(true){
-                   // System.out.println("inner while loop 3");
-                    if((System.currentTimeMillis() -  timeout)>=2){
-                        break;
-                    }else if(TestListener.lbqueue2.peek() != null) {
-                       sortingList.add(TestListener.lbqueue2.peek());
-                        break;
+           // }
+          //  if(queue2 == false) {
+                if (TestListener.lbqueue1.peek() != null) {
+                    sortingList.add(TestListener.lbqueue1.peek());
+                } else {
+                    timeout = System.currentTimeMillis();
+                    while (true) {
+                        // System.out.println("inner while loop 2");
+                        if ((System.currentTimeMillis() - timeout) >= 2) {
+                          //  queue2 = true;
+                            break;
+                        } else if (TestListener.lbqueue1.peek() != null) {
+                            sortingList.add(TestListener.lbqueue1.peek());
+                            break;
+                        }
                     }
                 }
-            }
+          //  }
 
+           // if(queue3 == false) {
+                if (TestListener.lbqueue2.peek() != null) {
+                    sortingList.add(TestListener.lbqueue2.peek());
+                } else {
+                    timeout = System.currentTimeMillis();
+                    while (true) {
+                        // System.out.println("inner while loop 3");
+                        if ((System.currentTimeMillis() - timeout) >= 2) {
+                            break;
+                        } else if (TestListener.lbqueue2.peek() != null) {
+                            sortingList.add(TestListener.lbqueue2.peek());
+                            break;
+                        }
+                    }
+                }
+          //  }
 
-                sort();
-
-
-
+            sort();
         }
-
-
     }
 
     private synchronized int getTime(Event event) {

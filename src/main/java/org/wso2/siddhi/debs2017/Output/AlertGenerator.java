@@ -87,6 +87,8 @@ public class AlertGenerator {
                 .add(timeStampRes, type, timeType)
                 .add(timeStampRes, timeValue, currentTime);
 
+        anomalyCount++;
+
         //alert.add(model);
 
 

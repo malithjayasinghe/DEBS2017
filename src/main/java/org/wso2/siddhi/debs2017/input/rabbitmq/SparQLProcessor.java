@@ -73,7 +73,7 @@ public class SparQLProcessor extends DefaultConsumer {
         siddhiClient.connect(host1, port1);
         siddhiClient1.connect(host2, port2);
         siddhiClient2.connect(host3, port3);
-        MetaDataQueryMulti.run("molding_machine_10M.metadata.nt");
+        MetaDataQueryMulti.run("molding_machine_old_10M.metadata.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
