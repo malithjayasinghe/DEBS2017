@@ -37,18 +37,7 @@ public class DimensionAggregator extends AttributeAggregator {
     }
 
     public Object processAdd(Object data) {
-        arr.add((Double) data);
-        Clusterer cluster = new Clusterer(13, 50, arr);
-
-        // Do the clustering on the elements present in the array list and return the center it belongs to
-        cluster.cluster();
-
-
-       // int center = cluster.getCenter((Double) data);
-        ArrayList<Integer> centers = cluster.getCenterA(arr);
-       // System.out.println(arr);
-       // System.out.println(centers);
-        return centers;
+        return null;
     }
 
     public Object processAdd(Object[] objects) {
@@ -68,9 +57,6 @@ public class DimensionAggregator extends AttributeAggregator {
     }
 
     public Object processRemove(Object o) {
-        //removes expired events
-       // System.out.println("remove");
-        arr.remove(0);
         return null;
     }
 
