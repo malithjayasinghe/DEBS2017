@@ -41,18 +41,9 @@ public class ReaderThread implements Runnable {
     private LinkedBlockingQueue<Event> queue;
 
 
-
-    public ReaderThread(String data, LinkedBlockingQueue<Event> queue) {
-        this.data = data;
-        this.queue = queue;
-
-    }
     public ReaderThread(String data) {
         this.data = data;
-
-
     }
-
 
     static synchronized public int getCount() {
         return count;
@@ -87,16 +78,12 @@ public class ReaderThread implements Runnable {
             results = ResultSetFactory.copyResults(results);
             for (; results.hasNext(); ) {
                 QuerySolution solution = results.nextSolution();
-
                 Resource time = solution.getResource("time"); // Get a result variable - must be a resource
                 Resource property = solution.getResource("dimension");
                 Resource machine = solution.getResource("machine");
                 Literal timestamp = solution.getLiteral("timestamp");
                 Literal value = solution.getLiteral("value");
                 if (!value.toString().contains("#string")) {
-
-
-                   // int machineNo = Integer.parseInt(machine.getLocalName().substring(8));
                     String stateful = property.getLocalName();
                     if(DebsMetaData.meta.containsKey(stateful)) {
 
@@ -115,7 +102,6 @@ public class ReaderThread implements Runnable {
 
                         this.queue.put(event);
                     }
-                    //System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
                 }
             }
 

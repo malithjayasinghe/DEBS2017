@@ -32,11 +32,8 @@ public class MultiNodeMetaDataQuery {
                 for (; results.hasNext(); ) {
                     QuerySolution solution = results.nextSolution();
                     Resource property = solution.getResource("dimension");
-                    Resource machine = solution.getResource("machine");
                     Literal cluster = solution.getLiteral("clusters");
                     Literal thresh = solution.getLiteral("threshold");
-
-                    //System.out.println(machine.getLocalName()+"\t"+property.getLocalName()+"\t"+cluster.getInt()+"\t"+thresh.getDouble());
                     String dimension = property.getLocalName().replace("_59","_"+i);
                     DebsMetaData db = new DebsMetaData("Machine_" + i, dimension
                             , cluster.getInt(), thresh.getDouble());
