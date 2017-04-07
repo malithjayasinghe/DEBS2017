@@ -45,15 +45,14 @@ public class RabbitMQPublisher {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("frmattedData_63.nt"));//molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt
             // read file line by line
-            String line = null;
-            Scanner scanner = null;
+            String line ;
+            Scanner scanner ;
             int count = 0;
             while ((line = reader.readLine()) != null) {
                 scanner = new Scanner(line);
                 while (scanner.hasNext()) {
                     String dataInLine = scanner.next();
                     if (dataInLine.contains("----")) {
-
                         if (data.length() > 100) {
                             for (int i = 0; i < 5; i++) {
                                 count++;
@@ -69,11 +68,9 @@ public class RabbitMQPublisher {
                         data += " " + dataInLine;
                         if (dataInLine.contains(".") && !dataInLine.contains("<")) {
                             data += "\n";
-
                         }
                     }
                 }
-
             }
 
         } catch (FileNotFoundException e) {
