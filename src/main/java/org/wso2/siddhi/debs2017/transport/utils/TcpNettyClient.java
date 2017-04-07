@@ -69,6 +69,7 @@ public class TcpNettyClient {
         }
     }
 
+
     public ChannelFuture send(String streamId, Event[] events) {
         EventComposite EventComposite = new EventComposite(sessionId, streamId, events);
         ChannelFuture cf = channel.writeAndFlush(EventComposite);

@@ -2,9 +2,7 @@ package org.wso2.siddhi.debs2017.transport.processor;
 
 import com.lmax.disruptor.EventHandler;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
-
-import java.util.ArrayList;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.

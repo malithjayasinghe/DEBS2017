@@ -3,7 +3,6 @@ package org.wso2.siddhi.debs2017.transport;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.Output.MultiNodeAlertGenerator;
 import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
-import org.wso2.siddhi.debs2017.transport.test.TestListener;
 
 import java.util.ArrayList;
 
@@ -22,8 +21,8 @@ public class SortingThread extends Thread {
     public void run() {
         while (true) {
            // if(queue1 == false) {
-                if (TestListener.lbqueue0.peek() != null) {
-                    sortingList.add(TestListener.lbqueue0.peek());
+                if (OutputListener.lbqueue0.peek() != null) {
+                    sortingList.add(OutputListener.lbqueue0.peek());
                 } else {
                     timeout = System.currentTimeMillis();
                     while (true) {
@@ -31,16 +30,16 @@ public class SortingThread extends Thread {
                         if ((System.currentTimeMillis() - timeout) >= 2) {
                           //  queue1 = true;
                             break;
-                        } else if (TestListener.lbqueue0.peek() != null) {
-                            sortingList.add(TestListener.lbqueue0.peek());
+                        } else if (OutputListener.lbqueue0.peek() != null) {
+                            sortingList.add(OutputListener.lbqueue0.peek());
                             break;
                         }
                     }
                 }
            // }
           //  if(queue2 == false) {
-                if (TestListener.lbqueue1.peek() != null) {
-                    sortingList.add(TestListener.lbqueue1.peek());
+                if (OutputListener.lbqueue1.peek() != null) {
+                    sortingList.add(OutputListener.lbqueue1.peek());
                 } else {
                     timeout = System.currentTimeMillis();
                     while (true) {
@@ -48,8 +47,8 @@ public class SortingThread extends Thread {
                         if ((System.currentTimeMillis() - timeout) >= 2) {
                           //  queue2 = true;
                             break;
-                        } else if (TestListener.lbqueue1.peek() != null) {
-                            sortingList.add(TestListener.lbqueue1.peek());
+                        } else if (OutputListener.lbqueue1.peek() != null) {
+                            sortingList.add(OutputListener.lbqueue1.peek());
                             break;
                         }
                     }
@@ -57,16 +56,16 @@ public class SortingThread extends Thread {
           //  }
 
            // if(queue3 == false) {
-                if (TestListener.lbqueue2.peek() != null) {
-                    sortingList.add(TestListener.lbqueue2.peek());
+                if (OutputListener.lbqueue2.peek() != null) {
+                    sortingList.add(OutputListener.lbqueue2.peek());
                 } else {
                     timeout = System.currentTimeMillis();
                     while (true) {
                         // System.out.println("inner while loop 3");
                         if ((System.currentTimeMillis() - timeout) >= 2) {
                             break;
-                        } else if (TestListener.lbqueue2.peek() != null) {
-                            sortingList.add(TestListener.lbqueue2.peek());
+                        } else if (OutputListener.lbqueue2.peek() != null) {
+                            sortingList.add(OutputListener.lbqueue2.peek());
                             break;
                         }
                     }
@@ -88,11 +87,11 @@ public class SortingThread extends Thread {
         int n = (Integer)e.getData()[5];
        // System.out.println(n +"removed index");
         if (n == 0) {
-            TestListener.lbqueue0.poll();
+            OutputListener.lbqueue0.poll();
         } else if (n == 1) {
-            TestListener.lbqueue1.poll();
+            OutputListener.lbqueue1.poll();
         } else {
-            TestListener.lbqueue2.poll();
+            OutputListener.lbqueue2.poll();
         }
     }
 
