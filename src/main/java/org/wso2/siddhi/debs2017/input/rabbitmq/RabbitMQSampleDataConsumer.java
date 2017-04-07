@@ -52,7 +52,6 @@ public class RabbitMQSampleDataConsumer {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-
     }
 
 }
