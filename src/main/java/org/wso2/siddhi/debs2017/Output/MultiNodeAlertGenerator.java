@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * Created by sachini on 3/23/17.
  */
-public class AlertGeneratMultiNode {
+public class MultiNodeAlertGenerator {
     private static int anomalyCount = 0;
     private String probThresh;
     private String timestamp;
@@ -57,7 +57,13 @@ public class AlertGeneratMultiNode {
     private static double sum =0;
     //private static int latencyCount;
 
-    public AlertGeneratMultiNode(Event event, RabbitMQPublisher rabbitMQPublisher) {
+
+    /**
+     * initialize the parameters from the sidhhi event, to generate the alert
+     * @param event- sidhhi event
+     * @param rabbitMQPublisher - publish to rabbitmq
+     */
+    public MultiNodeAlertGenerator(Event event, RabbitMQPublisher rabbitMQPublisher) {
         this.probThresh = Double.toString((Double)event.getData()[3]);
         this.timestamp = (String)event.getData()[1];
         this.dimension = (String)event.getData()[2];
@@ -69,25 +75,24 @@ public class AlertGeneratMultiNode {
 
     }
 
+    /**
+     * generate the rdf model and publish to rabbitmq
+     */
     public void generateAlert() {
 
         Model model = ModelFactory.createDefaultModel();
         String anomalyName = "Anomaly_" + anomalyCount;
         Resource r1 = model.createResource(anomaly + anomalyName);
-        Resource timeStampRes = model.createResource(anomaly + timestamp);
         Property type = model.createProperty(rdf + "type");
         Resource r2 = model.createResource(ar + "Anomaly");
         Property threshProb = model.createProperty(ar + "hasProbabilityOfObservedAbnormalSequence");
-        Resource r3 = model.createResource(probThresh);
         Property time = model.createProperty(ar + "hasTimestamp");
         Resource r4 = model.createResource(debs + timestamp);
         Property dim = model.createProperty(ar + "inAbnormalDimension");
         Resource r5 = model.createResource(wmm + dimension);
         Property machine = model.createProperty(i40 + "machine");
         Resource r6 = model.createResource(wmm + machineNumber);
-        Resource timeType = model.createResource(IoTCore + "Timestamp");
-        Property timeValue = model.createProperty(IoTCore + "valueLiteral");
-        Resource currentTime = model.createResource(timestampValue);
+
 
 
         model.add(r1,threshProb,model.createTypedLiteral(probThresh))
@@ -96,14 +101,14 @@ public class AlertGeneratMultiNode {
                 .add(r1,machine,r6)
                 .add(r1,type,r2);
 
-        //alert.add(model);
+
 
         anomalyCount ++;
-        //RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
+
         String str ="N-TRIPLES";
         out = new StringWriter();
         model.write(out, str);
-       //System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
+
         rabbitMQPublisher.publish(out.toString());
 
         sum += System.currentTimeMillis()-dispatchedTime;
