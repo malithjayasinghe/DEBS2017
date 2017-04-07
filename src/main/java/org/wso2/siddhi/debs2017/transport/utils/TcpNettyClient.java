@@ -35,8 +35,6 @@ import java.util.UUID;
 */
 public class TcpNettyClient {
 
-    private static final Logger log = Logger.getLogger(TcpNettyClient.class);
-
     private EventLoopGroup group;
     private Bootstrap bootstrap;
     private Channel channel;
@@ -67,7 +65,7 @@ public class TcpNettyClient {
             channel = bootstrap.connect(host, port).sync().channel();
             sessionId = UUID.randomUUID() + "-" + hostAndPort;
         } catch (InterruptedException e) {
-            log.error("Error connecting to '" + hostAndPort + "', " + e.getMessage(), e);
+            System.out.println("Error connecting to '" + hostAndPort + "', " + e.getMessage()+"\n"+e);
         }
     }
 
@@ -78,8 +76,8 @@ public class TcpNettyClient {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (!future.isSuccess()) {
-                    log.error("Error sending events to '" + hostAndPort + "' on stream '" + streamId +
-                            "', " + future.cause() + ", dropping events " + Arrays.deepToString(events), future.cause());
+                    System.out.println("Error sending events to '" + hostAndPort + "' on stream '" + streamId +
+                            "', " + future.cause() + ", dropping events " + Arrays.deepToString(events)+"\n"+future.cause());
                 }
             }
         });
@@ -92,11 +90,11 @@ public class TcpNettyClient {
                 channel.close();
                 channel.closeFuture().sync();
             } catch (InterruptedException e) {
-                log.error("Error closing connection to '" + hostAndPort + "' from client '" + sessionId +
+                System.out.println("Error closing connection to '" + hostAndPort + "' from client '" + sessionId +
                         "', " + e);
             }
             channel.disconnect();
-            log.info("Disconnecting client to '" + hostAndPort + "' with sessionId:" + sessionId);
+            System.out.println("Disconnecting client to '" + hostAndPort + "' with sessionId:" + sessionId);
         }
     }
 
@@ -105,7 +103,7 @@ public class TcpNettyClient {
         if (group != null) {
             group.shutdownGracefully();
         }
-        log.info("Stopping client to '" + hostAndPort + "' with sessionId:" + sessionId);
+        System.out.println("Stopping client to '" + hostAndPort + "' with sessionId:" + sessionId);
         hostAndPort = null;
         sessionId = null;
     }

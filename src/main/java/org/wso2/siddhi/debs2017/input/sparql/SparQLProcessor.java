@@ -34,15 +34,15 @@ import java.util.concurrent.ThreadFactory;
 */
 public class SparQLProcessor extends DefaultConsumer {
 
-    static int value = 10;
+    private static int value = 10;
 
     //performance
-    static  int count = 0;
-    static  long starttime;
+    private static int count = 0;
+    private static long starttime;
 
 
-    static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    public  static  final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
+    private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
+    private   static  final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
     public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
 
 

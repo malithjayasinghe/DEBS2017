@@ -33,7 +33,7 @@ public class SorterThread extends Thread {
     private TcpNettyClient siddhiClient2 = new TcpNettyClient();
 
 
-    public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, String host1, int port1, String host2, int port2, String host3, int port3){
+    public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, String host1, int port1, String host2, int port2, String host3, int port3) {
         this.arrayList = arrayList;
         this.size = arrayList.size();
         this.siddhiClient.connect(host1, port1);
@@ -41,32 +41,21 @@ public class SorterThread extends Thread {
         this.siddhiClient2.connect(host3, port3);
 
     }
-    public void run(){
-        while (true){
 
-//            try {
-//                System.out.println(arrayList.get(0).take());
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-            for(int i=0; i<this.size; i++){
+    public void run() {
+        while (true) {
+            for (int i = 0; i < this.size; i++) {
                 try {
-
-
-                    if(arrayList.get(i).size()!=0){
+                    if (arrayList.get(i).size() != 0) {
                         arr.add(arrayList.get(i).peek());
                         arr2.add(i);
-                    }
-                    else {
-
+                    } else {
                         long timeout = System.currentTimeMillis();
-                        while(true){
-
-                            if((System.currentTimeMillis() - timeout)>=3000){
-
+                        while (true) {
+                            if ((System.currentTimeMillis() - timeout) >= 3000) {
                                 break;
                             }
-                            if(arrayList.get(i).size()!=0){
+                            if (arrayList.get(i).size() != 0) {
                                 arr.add(arrayList.get(i).peek());
                                 arr2.add(i);
                                 break;
@@ -79,8 +68,7 @@ public class SorterThread extends Thread {
                     e.printStackTrace();
                 }
             }
-
-          sort();
+            sort();
         }
     }
 
@@ -97,37 +85,32 @@ public class SorterThread extends Thread {
         //MoldingMachine_59
         int machineNo = Integer.parseInt(e.getData()[0].toString().substring(8));
 
-            LinkedBlockingQueue<Event> linkedBlockingQueue = arrayList.get(queNo);
-            if (machineNo % 3 == 0) {
-                linkedBlockingQueue.poll();
-                e.getData()[7] =0 ;
-                siddhiClient.send("input", new Event[]{e});
-            } else if (machineNo % 3 == 1) {
-                e.getData()[7] =1 ;
-                linkedBlockingQueue.poll();
-                siddhiClient1.send("input", new Event[]{e});
-            } else if (machineNo % 3 % 3 == 2) {
-                e.getData()[7] =2;
-                linkedBlockingQueue.poll();
-                siddhiClient2.send("input", new Event[]{e});
-            }
-
-
+        LinkedBlockingQueue<Event> linkedBlockingQueue = arrayList.get(queNo);
+        if (machineNo % 3 == 0) {
+            linkedBlockingQueue.poll();
+            e.getData()[7] = 0;
+            siddhiClient.send("input", new Event[]{e});
+        } else if (machineNo % 3 == 1) {
+            e.getData()[7] = 1;
+            linkedBlockingQueue.poll();
+            siddhiClient1.send("input", new Event[]{e});
+        } else if (machineNo % 3 % 3 == 2) {
+            e.getData()[7] = 2;
+            linkedBlockingQueue.poll();
+            siddhiClient2.send("input", new Event[]{e});
+        }
     }
 
     private synchronized void sort() {
-
         if (arr.size() > 0) {
             Event currentEvent = arr.get(0);
             Integer queNo = arr2.get(0);
-
             for (int i = 1; i < arr.size(); i++) {
-                if (getTime(currentEvent) > getTime(arr.get(i))){
+                if (getTime(currentEvent) > getTime(arr.get(i))) {
                     currentEvent = arr.get(i);
                     queNo = arr2.get(i);
                 }
             }
-
             arr = new ArrayList<>();
             arr2 = new ArrayList<>();
             removeEvent(currentEvent, queNo);
@@ -137,5 +120,4 @@ public class SorterThread extends Thread {
     }
 
 
-    
 }

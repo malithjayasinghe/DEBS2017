@@ -50,8 +50,8 @@ public class DimensionAggregator extends AttributeAggregator {
 
         // int center = cluster.getCenter((Double) data);
         ArrayList<Integer> centers = cluster.getCenterA(arr);
-       // System.out.println(arr);
-       // System.out.println(centers);
+        // System.out.println(arr);
+        // System.out.println(centers);
         return centers;
 
     }
