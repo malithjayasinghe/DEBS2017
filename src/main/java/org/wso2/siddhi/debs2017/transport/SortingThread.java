@@ -1,8 +1,7 @@
 package org.wso2.siddhi.debs2017.transport;
 
-import javafx.scene.control.Alert;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.Output.AlertGeneratMultiNode;
+import org.wso2.siddhi.debs2017.Output.MultiNodeAlertGenerator;
 import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
 import org.wso2.siddhi.debs2017.transport.test.TestListener;
 
@@ -106,7 +105,7 @@ public class SortingThread extends Thread {
                     currentEvent = sortingList.get(i);
             }
             sortingList.clear();
-            AlertGeneratMultiNode ag = new AlertGeneratMultiNode(currentEvent, rabbitMQPublisher);
+            MultiNodeAlertGenerator ag = new MultiNodeAlertGenerator(currentEvent, rabbitMQPublisher);
             ag.generateAlert();
            // System.out.println(currentEvent);
             //count++;

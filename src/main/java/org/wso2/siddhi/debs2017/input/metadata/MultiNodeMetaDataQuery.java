@@ -9,7 +9,7 @@ import org.apache.jena.riot.RDFDataMgr;
 /**
  * Created by sachini on 4/3/17.
  */
-public class MetaDataQueryMulti {
+public class MultiNodeMetaDataQuery {
     public static void run(String datafile) {
 
             String data = "";
@@ -25,7 +25,7 @@ public class MetaDataQueryMulti {
                             "}";
             Query query = QueryFactory.create(queryString);
             try {
-                for(int i = 0; i<10; i++) {
+                for(int i = 0; i<500; i++) {
                 QueryExecution qexec = QueryExecutionFactory.create(query, model);
                 ResultSet results = qexec.execSelect();
                 results = ResultSetFactory.copyResults(results);
@@ -48,22 +48,7 @@ public class MetaDataQueryMulti {
             }
         }
 
-        /*for(int i=0; i<10; i++){
-            for(String key: DebsMetaData.meta.keySet()){
-                DebsMetaData dmm = DebsMetaData.meta.get(key);
-                String machine = "Machine_"+i;
-                String property = dmm.getDimension();
-                int centers = dmm.getClusterCenters();
-                double prob = dmm.getProbabilityThreshold();
-                DebsMetaData db = new DebsMetaData(machine, property
-                        , centers, prob);
 
-                DebsMetaData.storeValues(db);
-                System.out.println(dmm.getMachineNumebr()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "
-                        + dmm.getProbabilityThreshold() );
-            }
-
-        }*/
 
 
 }

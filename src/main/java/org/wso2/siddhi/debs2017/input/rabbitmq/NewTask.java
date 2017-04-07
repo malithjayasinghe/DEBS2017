@@ -73,7 +73,7 @@ public class NewTask {
                         if(dataInLine.contains("----")){
 
                             if(data.length()>100){
-                                for(int i =0; i<5; i++){
+                                for(int i =0; i<500; i++){
 
                                     count++;
                                     System.out.println(count);

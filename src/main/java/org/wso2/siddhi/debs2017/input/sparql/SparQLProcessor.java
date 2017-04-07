@@ -6,22 +6,11 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import org.apache.commons.io.IOUtils;
-import org.apache.jena.riot.RDFDataMgr;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.core.executor.math.mod.ModExpressionExecutorLong;
-import org.wso2.siddhi.debs2017.input.UnixConverter;
-import org.wso2.siddhi.debs2017.input.metadata.MetaDataQueryMulti;
-import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
+import org.wso2.siddhi.debs2017.input.metadata.MultiNodeMetaDataQuery;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,7 +56,7 @@ public class SparQLProcessor extends DefaultConsumer {
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
         sort.start();
-        MetaDataQueryMulti.run("molding_machine_10M.metadata.nt");
+        MultiNodeMetaDataQuery.run("molding_machine_10M.metadata.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {

@@ -16,20 +16,13 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.riot.RDFDataMgr;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.core.executor.math.mod.ModExpressionExecutorLong;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.metadata.MetaDataQueryMulti;
+import org.wso2.siddhi.debs2017.input.metadata.MultiNodeMetaDataQuery;
 import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -73,7 +66,7 @@ public class SparQLProcessor extends DefaultConsumer {
         siddhiClient.connect(host1, port1);
         siddhiClient1.connect(host2, port2);
         siddhiClient2.connect(host3, port3);
-        MetaDataQueryMulti.run("molding_machine_old_10M.metadata.nt");
+        MultiNodeMetaDataQuery.run("molding_machine_old_10M.metadata.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
