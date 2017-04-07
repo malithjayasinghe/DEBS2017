@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * Created by sachini on 3/23/17.
  */
 public class AlertGeneratMultiNode {
-    private static int anomalyCount = 1;
+    private static int anomalyCount = 0;
     private String probThresh;
     private String timestamp;
     private String dimension;
@@ -52,12 +52,17 @@ public class AlertGeneratMultiNode {
     private RabbitMQPublisher rabbitMQPublisher;
     StringWriter out;
 
+    //performance
+    private long dispatchedTime;
+    private static double sum =0;
+    //private static int latencyCount;
 
     public AlertGeneratMultiNode(Event event, RabbitMQPublisher rabbitMQPublisher) {
         this.probThresh = Double.toString((Double)event.getData()[3]);
         this.timestamp = (String)event.getData()[1];
         this.dimension = (String)event.getData()[2];
         this.machineNumber = (String)event.getData()[0];
+        this.dispatchedTime = event.getTimestamp();
       //  this.timestampValue = (String)event.getData()[2];
         this.rabbitMQPublisher = rabbitMQPublisher;
 
@@ -94,12 +99,15 @@ public class AlertGeneratMultiNode {
         //alert.add(model);
 
         anomalyCount ++;
-        RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
+        //RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
         String str ="N-TRIPLES";
         out = new StringWriter();
         model.write(out, str);
        //System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
         rabbitMQPublisher.publish(out.toString());
+
+        sum += System.currentTimeMillis()-dispatchedTime;
+        System.out.println("Average Latency : "+(sum/anomalyCount));
 
 
     }

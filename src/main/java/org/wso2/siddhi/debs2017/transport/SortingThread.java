@@ -109,8 +109,8 @@ public class SortingThread extends Thread {
             AlertGeneratMultiNode ag = new AlertGeneratMultiNode(currentEvent, rabbitMQPublisher);
             ag.generateAlert();
            // System.out.println(currentEvent);
-            count++;
-            System.out.println(count);
+            //count++;
+            //System.out.println(count);
             removeEvent(currentEvent);
         }
     }

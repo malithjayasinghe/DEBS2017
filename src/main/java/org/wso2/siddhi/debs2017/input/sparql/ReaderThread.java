@@ -115,7 +115,7 @@ public class ReaderThread implements Runnable {
 
                         this.queue.put(event);
                     }
-                    System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
+                    //System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
                 }
             }
 

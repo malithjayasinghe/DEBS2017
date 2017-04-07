@@ -47,6 +47,11 @@ public class SparQLProcessor extends DefaultConsumer {
 
     static int value = 10;
 
+    //performance
+    static  int count = 0;
+    static  long starttime;
+
+
     static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     public  static  final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
     public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
@@ -55,6 +60,7 @@ public class SparQLProcessor extends DefaultConsumer {
 
     public SparQLProcessor(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3) {
         super(channel);
+        starttime = System.currentTimeMillis();
         for (int i=0; i<value; i++){
             arrayList.add(new LinkedBlockingQueue());
         }
@@ -66,9 +72,14 @@ public class SparQLProcessor extends DefaultConsumer {
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
+        count++;
+        if(count%100==0){
+            double runTime= (System.currentTimeMillis()-starttime)/1000;
+            System.out.println("Average Throughput "+(count/runTime));
+
+        }
         Runnable reader = new ReaderThread(msg);
         EXECUTOR.execute(reader);
-
 
     }
 
