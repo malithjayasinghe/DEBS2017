@@ -24,23 +24,21 @@ import java.util.concurrent.TimeoutException;
 */
 public class RabbitMQPublisher {
 
-    private  static String QUEUE ;
-    private  ConnectionFactory factory;
-    private  Connection connection = null;
-    private  Channel channel = null;
+    private static String QUEUE;
+    private ConnectionFactory factory;
+    private Connection connection;
+    private Channel channel;
 
-    public void init()  {
-
-
+    /**
+     * Initializes the RabbitMQ connection
+     */
+    private void init() {
         factory = new ConnectionFactory();
-
         //set connection info
         factory.setHost("localhost");
         factory.setUsername("guest");
         factory.setPassword("guest");
-
         //create connection
-
         try {
             connection = factory.newConnection();
         } catch (IOException e) {
@@ -48,9 +46,7 @@ public class RabbitMQPublisher {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-
         //create a channel
-
         try {
             channel = connection.createChannel();
             //this line is required to initialize a queue
@@ -58,27 +54,29 @@ public class RabbitMQPublisher {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // channel.close();
-        //connection.close();
-
-
     }
 
-    public RabbitMQPublisher(String queue){
+    /**
+     * The constructor for RabbitMQPublisher object
+     *
+     * @param queue the queue name
+     */
+    public RabbitMQPublisher(String queue) {
         QUEUE = queue;
         init();
     }
 
-    public void publish(String anomaly){
-
+    /**
+     * Publishes to RabbitMQ queue
+     *
+     * @param anomaly anomaly string to be published
+     */
+    public void publish(String anomaly) {
         try {
             channel.basicPublish("", QUEUE, null, anomaly.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 
 }
