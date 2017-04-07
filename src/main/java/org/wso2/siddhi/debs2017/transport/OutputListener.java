@@ -36,19 +36,20 @@ public class OutputListener implements StreamListener {
 
     private long starttime;
     private long endtime;
-    public static  LinkedBlockingQueue<Event> lbqueue0 = new LinkedBlockingQueue<Event>();
+  /*  public static  LinkedBlockingQueue<Event> lbqueue0 = new LinkedBlockingQueue<Event>();
     public static LinkedBlockingQueue<Event> lbqueue1 = new LinkedBlockingQueue<Event>();
-    public static LinkedBlockingQueue<Event> lbqueue2 = new LinkedBlockingQueue<Event>();
+    public static LinkedBlockingQueue<Event> lbqueue2 = new LinkedBlockingQueue<Event>();*/
     static int count =0;
 
     private ArrayList<Long> arr = new ArrayList<>();
-
     Event currentEvent;
+    private  static LinkedBlockingQueue<Event>[] blockingQueues = new LinkedBlockingQueue[3];
+
 
     public OutputListener(StreamDefinition streamDefinition, RabbitMQPublisher rmq) {
 
         this.streamDefinition = streamDefinition;
-        SortingThread sorter = new SortingThread(rmq);
+        SortingThread sorter = new SortingThread(rmq,blockingQueues);
         sorter.start();
 
 
@@ -72,19 +73,19 @@ public class OutputListener implements StreamListener {
            int node =(Integer)newEvent.getData()[5];
                 if(node == 0)
                     try {
-                        lbqueue0.put(newEvent);
+                        blockingQueues[0].put(newEvent);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 else if(node == 1)
                     try {
-                        lbqueue1.put(newEvent);
+                        blockingQueues[1].put(newEvent);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 else
                     try {
-                        lbqueue2.put(newEvent);
+                        blockingQueues[2].put(newEvent);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -125,6 +126,9 @@ public class OutputListener implements StreamListener {
 
 
     }
+
+
+
 
 
 }

@@ -11,6 +11,8 @@ import org.apache.jena.riot.RDFDataMgr;
  */
 public class MultiNodeMetaDataQuery {
     public static void run(String datafile) {
+
+            String data = "";
             Model model = RDFDataMgr.loadModel(datafile);
             String queryString =
                     "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
@@ -23,13 +25,14 @@ public class MultiNodeMetaDataQuery {
                             "}";
             Query query = QueryFactory.create(queryString);
             try {
-                for(int i = 0; i< 500; i++) {
+                for(int i = 0; i<5; i++) {
                 QueryExecution qexec = QueryExecutionFactory.create(query, model);
                 ResultSet results = qexec.execSelect();
                 results = ResultSetFactory.copyResults(results);
                 for (; results.hasNext(); ) {
                     QuerySolution solution = results.nextSolution();
                     Resource property = solution.getResource("dimension");
+                    Resource machine = solution.getResource("machine");
                     Literal cluster = solution.getLiteral("clusters");
                     Literal thresh = solution.getLiteral("threshold");
 

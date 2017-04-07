@@ -65,7 +65,7 @@ public class MultiNodeAlertGenerator {
      */
     public MultiNodeAlertGenerator(Event event, RabbitMQPublisher rabbitMQPublisher) {
         this.probThresh = Double.toString((Double)event.getData()[3]);
-        this.timestamp = (String)event.getData()[1];
+        this.timestamp = transformTimestamp((String)event.getData()[1]);
         this.dimension = (String)event.getData()[2];
         this.machineNumber = (String)event.getData()[0];
         this.dispatchedTime = event.getTimestamp();
@@ -108,12 +108,17 @@ public class MultiNodeAlertGenerator {
         String str ="N-TRIPLES";
         out = new StringWriter();
         model.write(out, str);
-
+      // System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
         rabbitMQPublisher.publish(out.toString());
 
         sum += System.currentTimeMillis()-dispatchedTime;
         System.out.println("Average Latency : "+(sum/anomalyCount));
 
 
+    }
+
+    private String transformTimestamp(String time){
+        String [] str = time.split("_");
+        return str[0].concat("_"+(Integer.parseInt(str[1])-5));
     }
 }
