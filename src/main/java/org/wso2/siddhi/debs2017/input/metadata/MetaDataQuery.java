@@ -21,6 +21,10 @@ import org.apache.jena.riot.RDFDataMgr;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * NOT USED
+ */
 public class MetaDataQuery {
 
 

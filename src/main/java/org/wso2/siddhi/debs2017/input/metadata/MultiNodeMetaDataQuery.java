@@ -25,7 +25,7 @@ public class MultiNodeMetaDataQuery {
                             "}";
             Query query = QueryFactory.create(queryString);
             try {
-                for(int i = 0; i<500; i++) {
+                for(int i = 0; i< 500; i++) {
                 QueryExecution qexec = QueryExecutionFactory.create(query, model);
                 ResultSet results = qexec.execSelect();
                 results = ResultSetFactory.copyResults(results);

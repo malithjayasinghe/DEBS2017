@@ -43,11 +43,12 @@ public class DebsMetaData {
 
 
     /**
+     * The constructor
+     *
      * @param machineNumber        uniquely identify the machine
      * @param dimension            property of the machine
      * @param clusterCenters       cluster centers per dimension for the particular machine
      * @param probabilityThreshold threshold to decide whether the sequence is an anomaly
-     *
      */
 
     public DebsMetaData(String machineNumber, String dimension, int clusterCenters,
@@ -65,7 +66,6 @@ public class DebsMetaData {
      */
 
     public static void storeValues(DebsMetaData dm) {
-       // String mapKey = dm.getMachineNumebr() + dm.getDimension();
         String mapKey = dm.getDimension();
         meta.put(mapKey, dm);
     }
@@ -74,24 +74,12 @@ public class DebsMetaData {
         return clusterCenters;
     }
 
-    public void setClusterCenters(int clusterCenters) {
-        this.clusterCenters = clusterCenters;
-    }
-
     public synchronized double getProbabilityThreshold() {
         return probabilityThreshold;
     }
 
-    public void setProbabilityThreshold(double probabilityThreshold) {
-        this.probabilityThreshold = probabilityThreshold;
-    }
-
     public synchronized String getMachineNumebr() {
         return machineNumber;
-    }
-
-    public void setMachineNumebr(String machineNumebr) {
-        this.machineNumber = machineNumebr;
     }
 
     public synchronized String getDimension() {
@@ -101,7 +89,6 @@ public class DebsMetaData {
     public void setDimension(String dimension) {
         this.dimension = dimension;
     }
-
 
 
 }
