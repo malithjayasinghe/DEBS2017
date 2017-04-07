@@ -27,12 +27,12 @@ import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class Listener  implements StreamListener {
+public class SiddhiListener implements StreamListener {
        // private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.callback.LogStreamListener.class);
         private StreamDefinition streamDefinition;
         private RingBuffer<EventWrapper> ringBuffer;
 
-        public Listener(StreamDefinition streamDefinition, RingBuffer<EventWrapper> ring) {
+        public SiddhiListener(StreamDefinition streamDefinition, RingBuffer<EventWrapper> ring) {
             this.streamDefinition = streamDefinition;
             this.ringBuffer = ring;
 

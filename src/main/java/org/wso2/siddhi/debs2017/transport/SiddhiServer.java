@@ -2,10 +2,10 @@ package org.wso2.siddhi.debs2017.transport;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.transport.processor.DebsAnormalyDetector;
 import org.wso2.siddhi.debs2017.transport.processor.EventWrapper;
 import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyServer;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 
@@ -68,7 +68,7 @@ public class SiddhiServer {
             // disruptor.handleEventsWith(debsAnormalyDetector);
 
             disruptor.start();
-            tcpNettyServer.addStreamListener(new Listener(streamDefinition, ring));
+            tcpNettyServer.addStreamListener(new SiddhiListener(streamDefinition, ring));
 
             ServerConfig serverConfig = new ServerConfig();
             serverConfig.setHost(hostServer);

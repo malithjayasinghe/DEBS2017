@@ -93,7 +93,8 @@ public class AlertGenerator {
 
 
         //RDFDataMgr.write(System.out, model, RDFFormat.TURTLE_FLAT) ;
-        System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
+        //System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
+
 
 
     }

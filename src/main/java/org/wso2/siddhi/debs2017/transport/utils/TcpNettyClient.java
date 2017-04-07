@@ -1,4 +1,4 @@
-package org.wso2.siddhi.debs2017.transport;
+package org.wso2.siddhi.debs2017.transport.utils;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;

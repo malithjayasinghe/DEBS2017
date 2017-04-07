@@ -73,8 +73,7 @@ public class NewTask {
                         if(dataInLine.contains("----")){
 
                             if(data.length()>100){
-                                for(int i =0; i<500; i++){
-
+                                for(int i =0; i<5; i++){
                                     count++;
                                     System.out.println(count);
                                     String data1 = data.replace("Machine_59", "Machine_"+i).replace("_59_", "_"+i+"_");

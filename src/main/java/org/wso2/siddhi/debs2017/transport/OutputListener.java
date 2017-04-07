@@ -1,4 +1,4 @@
-package org.wso2.siddhi.debs2017.transport.test;
+package org.wso2.siddhi.debs2017.transport;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class TestListener implements StreamListener {
+public class OutputListener implements StreamListener {
 
     private StreamDefinition streamDefinition;
     private int currentnode=0;
@@ -45,7 +45,7 @@ public class TestListener implements StreamListener {
 
     Event currentEvent;
 
-    public TestListener(StreamDefinition streamDefinition, RabbitMQPublisher rmq) {
+    public OutputListener(StreamDefinition streamDefinition, RabbitMQPublisher rmq) {
 
         this.streamDefinition = streamDefinition;
         SortingThread sorter = new SortingThread(rmq);

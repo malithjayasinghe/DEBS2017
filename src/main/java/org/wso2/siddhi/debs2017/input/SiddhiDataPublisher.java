@@ -1,16 +1,11 @@
 package org.wso2.siddhi.debs2017.input;
 
 
-import io.netty.bootstrap.Bootstrap;
-import org.apache.jena.base.Sys;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.processor.DebsEvent;
-import org.wso2.siddhi.debs2017.transport.SiddhiClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /*
@@ -34,7 +29,6 @@ public class SiddhiDataPublisher {
     private static  BufferedReader bufferedReader;
     private String line;
     private Scanner scanner;
-    private SiddhiClient siddhiClient;
     public  static boolean IS_END = false;
 
 

@@ -2,11 +2,8 @@ package org.wso2.siddhi.debs2017.input.sparql;
 
 
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 

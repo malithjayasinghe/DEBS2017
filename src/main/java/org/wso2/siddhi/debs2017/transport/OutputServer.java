@@ -1,14 +1,11 @@
-package org.wso2.siddhi.debs2017.transport.test;
+package org.wso2.siddhi.debs2017.transport;
 
 
 import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
-import org.wso2.siddhi.debs2017.transport.TcpNettyServer;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyServer;
 import org.wso2.siddhi.tcp.transport.config.ServerConfig;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -25,7 +22,7 @@ import java.util.concurrent.Executors;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class TestServer {
+public class OutputServer {
 
     public static void main(String[] args) {
 
@@ -46,7 +43,7 @@ public class TestServer {
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
 
 
-            tcpNettyServer.addStreamListener(new TestListener(streamDefinition, rmq));
+            tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, rmq));
 
             ServerConfig serverConfig = new ServerConfig();
             serverConfig.setHost(host);

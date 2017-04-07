@@ -1,4 +1,4 @@
-package org.wso2.siddhi.debs2017.transport;
+package org.wso2.siddhi.debs2017.transport.utils;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -9,8 +9,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
-import org.wso2.siddhi.query.api.definition.Attribute;
-import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 import org.wso2.siddhi.tcp.transport.handlers.EventDecoder;

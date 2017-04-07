@@ -20,7 +20,7 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MultiNodeMetaDataQuery;
-import org.wso2.siddhi.debs2017.transport.TcpNettyClient;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
 import java.io.IOException;
 
