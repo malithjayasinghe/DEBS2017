@@ -32,10 +32,14 @@ import java.util.concurrent.TimeoutException;
 */
 public class RabbitMQSampleDataPublisher {
 
-    private static final String TASK_QUEUE_NAME = "test123";
+    private static String TASK_QUEUE_NAME = "test123";
 
     public static void main(String[] argv)
             throws java.io.IOException, TimeoutException {
+
+        if (argv.length>0){
+            TASK_QUEUE_NAME = argv[0];
+        }
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection = factory.newConnection();
