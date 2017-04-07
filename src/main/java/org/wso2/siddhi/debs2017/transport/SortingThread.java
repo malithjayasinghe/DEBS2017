@@ -118,52 +118,5 @@ public class SortingThread extends Thread {
         this.rabbitMQPublisher = rmq;
     }
 
-   /* private void sortTerminate(){
-        while (true){
-            while (true){
-                if(queue1 == true){
-                    break;
-                }else if(TestListener.lbqueue0.peek()!=null){
-                    sortingList.add(TestListener.lbqueue0.peek());
-                    break;
-                }else if(TestListener.lbqueue0.peek() =="terminated"){
-                    queue1 = true;
-                    break;
-                }
-
-            }
-            while (true){
-                if(queue2 == true){
-                    break;
-                }else if(TestListener.lbqueue1.peek()!=null){
-                    sortingList.add(TestListener.lbqueue1.peek());
-                    break;
-                }else if(TestListener.lbqueue1.peek() =="terminated"){
-                    queue2 = true;
-                    break;
-                }
-
-            }
-            while (true){
-                if(queue3 == true){
-                    break;
-                }else if(TestListener.lbqueue2.peek()!=null){
-                    sortingList.add(TestListener.lbqueue1.peek());
-                    break;
-                }else if(TestListener.lbqueue2.peek() =="terminated"){
-                    queue3 = true;
-                    break;
-                }
-
-            }
-            sort();
-        }
-    }*/
-
-
-
-
-
-
 
 }

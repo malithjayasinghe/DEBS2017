@@ -30,18 +30,11 @@ import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 public class Listener  implements StreamListener {
        // private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.callback.LogStreamListener.class);
         private StreamDefinition streamDefinition;
-
         private RingBuffer<EventWrapper> ringBuffer;
 
         public Listener(StreamDefinition streamDefinition, RingBuffer<EventWrapper> ring) {
-
             this.streamDefinition = streamDefinition;
-
-
-
             this.ringBuffer = ring;
-
-
 
         }
 
@@ -58,27 +51,17 @@ public class Listener  implements StreamListener {
         @Override
         public void onEvents(Event[] events) {
 
-
             for(int i =0; i<events.length; i++){
                 long sequence = this.ringBuffer.next();  // Grab the next sequence
                 try
                 {
                     EventWrapper wrapper = this.ringBuffer.get(sequence); // Get the entry in the Disruptor
                     wrapper.setEvent(events[i]);
-
-
-
                 }
                 finally
                 {
-
                     this.ringBuffer.publish(sequence);
-
                 }
             }
-
-           // System.out.println("This happens");
-
-
         }
     }
