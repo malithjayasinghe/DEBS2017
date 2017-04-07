@@ -25,6 +25,9 @@ import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
 import org.wso2.siddhi.debs2017.query.DistributedQuery;
 
 import java.util.ArrayList;
+/**
+@deprecated
+*/
 
 public class DebsAnomalyGenerator implements EventHandler<DebsEvent> {
     private static ArrayList<Long> arr = new ArrayList<>();

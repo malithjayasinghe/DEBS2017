@@ -14,7 +14,7 @@ import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
 
 import java.util.ArrayList;
 
-/*
+/**
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ import java.util.ArrayList;
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
+* @deprecated
 */
 public class DebsEventHandler implements EventHandler<DebsEvent> {
 

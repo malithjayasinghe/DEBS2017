@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-
+/**
+ * @deprecated
+ */
 public class SortAnomaly {
     List<DebsOutputEvent> integrated = new ArrayList<>();
     public static synchronized void sortList(long id){

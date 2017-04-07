@@ -1,6 +1,6 @@
 package org.wso2.siddhi.debs2017.processor;
 
-/*
+/**
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@ package org.wso2.siddhi.debs2017.processor;
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
+* @deprecated
 */
 public class DebsEvent {
 
