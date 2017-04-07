@@ -30,6 +30,10 @@ public class RabbitMQSampleDataConsumer {
     private static String TASK_QUEUE_NAME = "";
     static ExecutorService executors = Executors.newFixedThreadPool(8);
 
+    /**
+     *  Consumes the sample data
+     *
+     */
     public void consume(String queue, String host, String host1, int port1, String host2, int port2, String host3, int port3) {
         TASK_QUEUE_NAME = queue;
         ConnectionFactory factory = new ConnectionFactory();

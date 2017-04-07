@@ -133,7 +133,7 @@ public class SparQLProcessor extends DefaultConsumer {
                                       probability,
                                       1});
                               siddhiClient1.send("input", new Event[]{event});
-                          } else if (machineNo % 3 % 3 == 2) {
+                          } else if (machineNo % 3  == 2) {
                               Event event = new Event(System.currentTimeMillis(), new Object[]{
                                       machine.getLocalName(),
                                       time.getLocalName(),
