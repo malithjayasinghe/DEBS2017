@@ -56,7 +56,7 @@ public class SparQLProcessor extends DefaultConsumer {
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
         count++;
-        if (count % 100 == 0) {
+        if (count % 33500 == 0) {
             double runTime = (System.currentTimeMillis() - starttime) / 1000;
             System.out.println("Average Throughput " + (count / runTime));
         }

@@ -110,7 +110,9 @@ public class MultiNodeAlertGenerator {
         rabbitMQPublisher.publish(out.toString());
 
         sum += System.currentTimeMillis()-dispatchedTime;
-        System.out.println("Average Latency : "+(sum/anomalyCount));
+        if(anomalyCount==2000){
+            System.out.println("Average Latency : "+(sum/anomalyCount));
+        }
 
 
     }
