@@ -1,8 +1,8 @@
 package org.wso2.siddhi.debs2017.transport;
 
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.Output.MultiNodeAlertGenerator;
-import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
+import org.wso2.siddhi.debs2017.output.MultiNodeAlertGenerator;
+import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
 
 
 import java.util.ArrayList;

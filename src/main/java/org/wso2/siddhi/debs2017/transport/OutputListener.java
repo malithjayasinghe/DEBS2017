@@ -1,18 +1,12 @@
 package org.wso2.siddhi.debs2017.transport;
 
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.dsl.Disruptor;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
-import org.wso2.siddhi.debs2017.transport.SortingThread;
-import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
+import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicLong;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -91,23 +85,6 @@ public class OutputListener implements StreamListener {
                     }
 
 
-
-       /* if(arr.size()%100==0){
-            System.out.println("Starttime "+starttime);
-            System.out.println("Endtime "+endtime);
-            System.out.println("Running in ms "+(endtime-starttime));
-            System.out.println("Throughput "+arr.size()/((endtime-starttime)/1000));
-            double sum =0;
-            for (int i =0; i<arr.size(); i++){
-                sum +=arr.get(i);
-            }
-            System.out.println("Total Latency"+sum);
-            System.out.println("Average Latency"+(sum/arr.size()));
-            System.out.println("---------------------------------------------");
-
-
-        }
-*/
 
     }
 

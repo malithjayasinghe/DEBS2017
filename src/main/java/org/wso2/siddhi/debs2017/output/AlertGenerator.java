@@ -17,12 +17,10 @@
  *
  */
 
-package org.wso2.siddhi.debs2017.Output;
+package org.wso2.siddhi.debs2017.output;
 
 
 import com.hp.hpl.jena.rdf.model.*;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
 import org.wso2.siddhi.debs2017.processor.DebsEvent;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package org.wso2.siddhi.debs2017.transport;
 
 
-import org.wso2.siddhi.debs2017.Output.RabbitMQPublisher;
+import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhi.debs2017.transport.utils.TcpNettyServer;

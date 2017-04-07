@@ -24,7 +24,6 @@ import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
-import org.wso2.siddhi.debs2017.Output.AlertGenerator;
 import org.wso2.siddhi.debs2017.input.DataPublisher;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package org.wso2.siddhi.debs2017.Output;
+package org.wso2.siddhi.debs2017.output;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

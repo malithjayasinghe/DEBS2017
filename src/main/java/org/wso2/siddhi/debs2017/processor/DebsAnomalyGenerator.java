@@ -20,7 +20,7 @@
 package org.wso2.siddhi.debs2017.processor;
 
 import com.lmax.disruptor.EventHandler;
-import org.wso2.siddhi.debs2017.Output.AlertGenerator;
+import org.wso2.siddhi.debs2017.output.AlertGenerator;
 import org.wso2.siddhi.debs2017.input.DebsDataPublisher;
 import org.wso2.siddhi.debs2017.query.DistributedQuery;
 

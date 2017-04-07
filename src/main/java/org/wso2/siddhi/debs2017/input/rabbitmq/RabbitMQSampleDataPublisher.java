@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class RabbitMQPublisher {
+public class RabbitMQSampleDataPublisher {
 
     private static final String TASK_QUEUE_NAME = "test123";
 

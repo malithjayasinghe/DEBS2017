@@ -17,14 +17,12 @@
  *
  */
 
-package org.wso2.siddhi.debs2017.Output;
+package org.wso2.siddhi.debs2017.output;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
 import org.wso2.siddhi.core.event.Event;
 
 import java.io.StringWriter;

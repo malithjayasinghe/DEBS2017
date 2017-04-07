@@ -33,6 +33,7 @@ import java.util.concurrent.ThreadFactory;
 * limitations under the License.
 */
 public class SparQLProcessor extends DefaultConsumer {
+
     private static int value = 10;
     private static int count = 0;
     private static long starttime;

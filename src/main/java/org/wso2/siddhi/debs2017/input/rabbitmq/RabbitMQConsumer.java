@@ -25,7 +25,7 @@ import java.util.concurrent.TimeoutException;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class RabbitMQSampleDataConsumer {
+public class RabbitMQConsumer {
 
     private static String TASK_QUEUE_NAME = "";
     static ExecutorService executors = Executors.newFixedThreadPool(8);
