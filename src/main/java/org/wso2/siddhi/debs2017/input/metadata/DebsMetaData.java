@@ -78,7 +78,7 @@ public class DebsMetaData {
         return probabilityThreshold;
     }
 
-    public synchronized String getMachineNumebr() {
+    public synchronized String getMachineNumber() {
         return machineNumber;
     }
 

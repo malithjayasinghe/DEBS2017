@@ -30,7 +30,7 @@ public class MetaDataTestCase {
         for(String key: DebsMetaData.meta.keySet()){
             DebsMetaData dmm = DebsMetaData.meta.get(key);
 
-            System.out.println(dmm.getMachineNumebr()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "
+            System.out.println(dmm.getMachineNumber()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "
                     + dmm.getProbabilityThreshold() );
         }
 
@@ -46,7 +46,7 @@ public class MetaDataTestCase {
             DebsMetaData dmm = DebsMetaData.meta.get(key);
             count++;
             System.out.println(key + "Key");
-            System.out.println(dmm.getMachineNumebr()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "
+            System.out.println(dmm.getMachineNumber()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "
                     + dmm.getProbabilityThreshold() );
         }
         System.out.println("Data items"+count);

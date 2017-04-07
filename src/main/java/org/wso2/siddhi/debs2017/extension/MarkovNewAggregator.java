@@ -9,7 +9,7 @@ import org.wso2.siddhi.query.api.definition.Attribute;
 import java.util.ArrayList;
 
 /**
- * NOT USED
+ *  @deprecated
  * Created by sachini on 3/29/17.
  */
 public class MarkovNewAggregator extends AttributeAggregator {

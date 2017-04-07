@@ -23,6 +23,10 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * @deprecated
+ */
 public class Test extends AttributeAggregator {
     private ArrayList<Double> arr = new ArrayList<>();
     @Override

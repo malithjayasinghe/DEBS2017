@@ -23,7 +23,7 @@ import org.apache.jena.riot.RDFDataMgr;
 */
 
 /**
- * NOT USED
+ * @deprecated
  */
 public class MetaDataQuery {
 

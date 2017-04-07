@@ -27,7 +27,7 @@ import java.util.ArrayList;
 */
 
 /**
- * NOT USED
+ *@deprecated
  */
 public class MarkovAggregator extends AttributeAggregator {
 
