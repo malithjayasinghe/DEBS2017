@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
-
+/**
+ * @deprecated
+ */
 public class ReadData {
     private static final String TASK_QUEUE_NAME = "test123";
 

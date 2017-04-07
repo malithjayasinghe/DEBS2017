@@ -25,12 +25,10 @@ import java.util.concurrent.TimeoutException;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class RabbitMQConsumer {
+public class RabbitMQSampleDataConsumer {
 
     private static String TASK_QUEUE_NAME = "";
     static ExecutorService executors = Executors.newFixedThreadPool(8);
-
-
 
     public void consume(String queue, String host, String host1, int port1, String host2, int port2, String host3, int port3) {
         TASK_QUEUE_NAME = queue;
@@ -42,21 +40,15 @@ public class RabbitMQConsumer {
         try {
             connection = factory.newConnection(executors);
             channel = connection.createChannel();
-
             consumer = new SparQLProcessor(channel, host1, port1, host2, port2, host3, port3);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
 
-
-
     }
-
-
 
 }

@@ -1,6 +1,6 @@
 package org.wso2.siddhi.debs2017.query;
 
-import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
+import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQSampleDataConsumer;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -31,7 +31,7 @@ public class Main {
             String client3host = args [6];
             int client3port = Integer.parseInt(args[7]);
 
-            RabbitMQConsumer con = new RabbitMQConsumer();
+            RabbitMQSampleDataConsumer con = new RabbitMQSampleDataConsumer();
             try {
 
                 con.consume(queue, rmqHost, client1host, client1port, client2host, client2port, client3host, client3port);
