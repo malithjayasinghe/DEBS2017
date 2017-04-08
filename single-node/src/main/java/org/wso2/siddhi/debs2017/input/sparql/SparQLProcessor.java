@@ -49,30 +49,19 @@ import java.util.concurrent.ThreadFactory;
 public class SparQLProcessor extends DefaultConsumer {
 
     private static int value = 10;
+    private static int count=0;
+    private static long startTime;
 
 
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
     public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
 
-    private final static String queryString = "" +
-            "SELECT ?observation ?machine ?time ?timestamp ?dimension ?value" +
-            " WHERE {" +
-            "?observation <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup> ." +
-            "?observation <http://www.agtinternational.com/ontologies/I4.0#machine> ?machine ." +
-            "?observation <http://purl.oclc.org/NET/ssnx/ssn#observationResultTime> ?time ." +
-            "?time <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?timestamp ." +
-            "?observation <http://www.agtinternational.com/ontologies/I4.0#contains> ?obGroup ." +
-            "?obGroup <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?dimension ." +
-            "?obGroup <http://purl.oclc.org/NET/ssnx/ssn#observationResult> ?output ." +
-            "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
-            "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
-            "}" +
-            "" +
-            "";
+
 
     public SparQLProcessor(Channel channel, RingBuffer<EventWrapper> ringBuffer) {
         super(channel);
+        this.startTime = System.currentTimeMillis();
         for (int i = 0; i < value; i++) {
             arrayList.add(new LinkedBlockingQueue());
         }
@@ -85,8 +74,13 @@ public class SparQLProcessor extends DefaultConsumer {
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
         Runnable reader = new ReaderRunnable(msg);
+        count++;
         EXECUTOR.execute(reader);
-
+        if(count==335000){
+            double runtime = System.currentTimeMillis() -startTime;
+            System.out.println("Runtime in sec :"+(runtime/1000.0));
+            System.out.println("Average Throughput :"+(count/(runtime/1000.0)));
+        }
 
     }
 

@@ -4,6 +4,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.MessageProperties;
+import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
 
 import java.io.StringWriter;
@@ -37,7 +40,7 @@ public class AlertGenerator {
     String xsd = "http://www.w3.org/2001/XMLSchema#";
     String wmm = "http://www.agtinternational.com/ontologies/WeidmullerMetadata#";
     String i40 = "http://www.agtinternational.com/ontologies/I4.0#";
-    private RabbitMQPublisher rabbitMQPublisher;
+    private RabbitQueue rabbitMQPublisher;
     StringWriter out;
     //performance
     private long dispatchedTime;
@@ -49,9 +52,13 @@ public class AlertGenerator {
      *
      * @param rabbitMQPublisher - publish to rabbitmq
      */
-    public AlertGenerator(RabbitMQPublisher rabbitMQPublisher) {
+    public AlertGenerator(RabbitQueue rabbitMQPublisher) {
 
         this.rabbitMQPublisher = rabbitMQPublisher;
+    }
+
+    public AlertGenerator() {
+
     }
 
     /**
@@ -91,7 +98,13 @@ public class AlertGenerator {
         out = new StringWriter();
         model.write(out, str);
         // System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
-        rabbitMQPublisher.publish(out.toString());
+       // rabbitMQPublisher.publish(out.toString());
+        Channel channel = rabbitMQPublisher.getChannel();
+        try {
+            channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         sum += System.currentTimeMillis() - dispatchedTime;
         if (anomalyCount == 2000) {
