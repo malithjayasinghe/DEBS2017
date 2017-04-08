@@ -125,7 +125,7 @@ public class CorrectnessTestCase {
 
     private void sparql() {
             String queryString = "" +
-                "SELECT ?observation ?machine ?time ?timestamp ?dimension ?value" +
+                "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
                 "?observation <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup> ." +
                 "?observation <http://www.agtinternational.com/ontologies/I4.0#machine> ?machine ." +
@@ -150,7 +150,7 @@ public class CorrectnessTestCase {
 
             for (; results.hasNext(); ) {
                 QuerySolution solution = results.nextSolution();
-                Resource ob = solution.getResource("observation");
+               // Resource ob = solution.getResource("observation");
 
                 Resource time = solution.getResource("time"); // Get a result variable - must be a resource
                 Resource property = solution.getResource("dimension");

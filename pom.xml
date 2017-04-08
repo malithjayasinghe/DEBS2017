@@ -3,8 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.siddhi.debs2017</groupId>
     <artifactId>DEBS2017</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>single-node</module>
+    </modules>
     <name>DEBS2017</name>
     <url>http://maven.apache.org</url>
 
