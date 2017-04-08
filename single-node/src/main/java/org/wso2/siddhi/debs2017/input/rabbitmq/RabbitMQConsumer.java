@@ -37,10 +37,10 @@ public class RabbitMQConsumer {
      *  Consumes the sample data
      *
      */
-    public void consume(String queue, String host, RingBuffer<EventWrapper> ringBuffer) {
+    public void consume(String queue, RingBuffer<EventWrapper> ringBuffer) {
         TASK_QUEUE_NAME = queue;
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(host);
+        factory.setHost("127.0.0.1");
         final Connection connection;
         final Channel channel;
         final Consumer consumer;
