@@ -32,6 +32,8 @@ import java.util.concurrent.ThreadFactory;
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
+*
+* Publishers spaql jobs to executor thread pool + start the sorting threads which publishes events to the back-end workers
 */
 public class EventDispatcher extends DefaultConsumer {
 

@@ -14,15 +14,14 @@ public class SortingThread extends Thread {
     private static ArrayList<Event> sortingList = new ArrayList<>();
     Event currentEvent;
     private static RabbitMQPublisher rabbitMQPublisher;
-    private  static LinkedBlockingQueue<Event>[] blockingQueues;
-    int anomalycount=0;
+    private static LinkedBlockingQueue<Event>[] blockingQueues;
+    int anomalycount = 0;
 
-    public SortingThread(RabbitMQPublisher rmq,LinkedBlockingQueue<Event>[] blockingQueues){
+    public SortingThread(RabbitMQPublisher rmq, LinkedBlockingQueue<Event>[] blockingQueues) {
         this.rabbitMQPublisher = rmq;
         this.blockingQueues = blockingQueues;
         addQueues();
     }
-
 
 
     public void run() {
@@ -35,6 +34,7 @@ public class SortingThread extends Thread {
 
     /**
      * compare the timestamps of the sidhhi events
+     *
      * @param event
      * @return
      */
@@ -47,14 +47,15 @@ public class SortingThread extends Thread {
 
     /**
      * remove the event with the leas ttimestamp from therespective queue
+     *
      * @param e
      */
 
     private void removeEvent(Event e) {
-        int n = (Integer)e.getData()[5];
-       // System.out.println(n +"removed index");
+        int n = (Integer) e.getData()[5];
+        // System.out.println(n +"removed index");
         if (n == 0) {
-           blockingQueues[0].poll();
+            blockingQueues[0].poll();
         } else if (n == 1) {
             blockingQueues[1].poll();
         } else {
@@ -85,32 +86,32 @@ public class SortingThread extends Thread {
     /**
      * assign the linkedblocking queues to the array
      */
-    public void addQueues(){
-       for(int i=0; i <blockingQueues.length; i++){
-           blockingQueues[i] = new LinkedBlockingQueue<Event>();
-       }
+    public void addQueues() {
+        for (int i = 0; i < blockingQueues.length; i++) {
+            blockingQueues[i] = new LinkedBlockingQueue<Event>();
+        }
     }
 
     /**
      * retrieve the first event of each linkedblockingqueue and add to arraylist
      */
 
-    public void checkQueue(){
-        for(int i=0; i <blockingQueues.length; i++){
+    public void checkQueue() {
+        for (int i = 0; i < blockingQueues.length; i++) {
             /*if (blockingQueues[i].peek() != null) {
                 sortingList.add(blockingQueues[i].peek());
             } else {*/
-                timeout = System.currentTimeMillis();
-                while (true) {
-                    if ((System.currentTimeMillis() - timeout) >= 2) {
-                        //  queue1 = true;
-                        break;
-                    } else if (blockingQueues[i].peek() != null) {
-                        sortingList.add(blockingQueues[i].peek());
-                        break;
-                    }
+            timeout = System.currentTimeMillis();
+            while (true) {
+                if ((System.currentTimeMillis() - timeout) >= 2) {
+                    //  queue1 = true;
+                    break;
+                } else if (blockingQueues[i].peek() != null) {
+                    sortingList.add(blockingQueues[i].peek());
+                    break;
                 }
-           // }
+            }
+            // }
         }
     }
 
@@ -157,11 +158,6 @@ public class SortingThread extends Thread {
             sort();
         }
     }*/
-
-
-
-
-
 
 
 }

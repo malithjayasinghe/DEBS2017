@@ -17,10 +17,8 @@ import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class Main {
-
+public class CentralDispatcher {
     public static void main(String[] args) {
-
         if(args.length==8){
             String queue = args [0];
             String rmqHost = args [1];
@@ -30,13 +28,10 @@ public class Main {
             int client2port = Integer.parseInt(args[5]);
             String client3host = args [6];
             int client3port = Integer.parseInt(args[7]);
-
             RabbitMQConsumer con = new RabbitMQConsumer();
             try {
 
                 con.consume(queue, rmqHost, client1host, client1port, client2host, client2port, client3host, client3port);
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

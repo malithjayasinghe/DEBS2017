@@ -21,6 +21,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
+*
+* Sorts the output at the dispatcher and publishes the event to siddhi workers
+*
 */
 public class SorterThread extends Thread {
 
@@ -28,7 +31,7 @@ public class SorterThread extends Thread {
     private ArrayList<Event> arr = new ArrayList<>();
     private ArrayList<Integer> arr2 = new ArrayList<>();
     private static int size;
-    private TcpNettyClient siddhiClient = new TcpNettyClient();
+    private TcpNettyClient siddhiClient0 = new TcpNettyClient();
     private TcpNettyClient siddhiClient1 = new TcpNettyClient();
     private TcpNettyClient siddhiClient2 = new TcpNettyClient();
 
@@ -36,7 +39,7 @@ public class SorterThread extends Thread {
     public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, String host1, int port1, String host2, int port2, String host3, int port3) {
         this.arrayList = arrayList;
         this.size = arrayList.size();
-        this.siddhiClient.connect(host1, port1);
+        this.siddhiClient0.connect(host1, port1);
         this.siddhiClient1.connect(host2, port2);
         this.siddhiClient2.connect(host3, port3);
 
@@ -80,26 +83,25 @@ public class SorterThread extends Thread {
 
 
     private void removeEvent(Event e, int queNo) {
-
         //Machine_59
         //MoldingMachine_59
         int machineNo = Integer.parseInt(e.getData()[0].toString().substring(8));
-
         LinkedBlockingQueue<Event> linkedBlockingQueue = arrayList.get(queNo);
         if (machineNo % 3 == 0) {
             linkedBlockingQueue.poll();
             e.getData()[7] = 0;
-            siddhiClient.send("input", new Event[]{e});
+            siddhiClient0.send("input", new Event[]{e});
         } else if (machineNo % 3 == 1) {
             e.getData()[7] = 1;
             linkedBlockingQueue.poll();
             siddhiClient1.send("input", new Event[]{e});
-        } else if (machineNo % 3 % 3 == 2) {
+        } else if (machineNo % 3 == 2) {
             e.getData()[7] = 2;
             linkedBlockingQueue.poll();
             siddhiClient2.send("input", new Event[]{e});
         }
     }
+
 
     private synchronized void sort() {
         if (arr.size() > 0) {
@@ -116,8 +118,5 @@ public class SorterThread extends Thread {
             removeEvent(currentEvent, queNo);
 
         }
-
     }
-
-
 }

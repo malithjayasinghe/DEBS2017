@@ -23,9 +23,7 @@ import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 * limitations under the License.
 */
 public class OutputServer {
-
     public static void main(String[] args) {
-
         if(args.length==2){
             String host = args[0];
             int port = Integer.parseInt(args[1]);
@@ -36,15 +34,9 @@ public class OutputServer {
                     attribute("value", Attribute.Type.DOUBLE).
                     attribute("threshold",Attribute.Type.DOUBLE).
                     attribute("node",Attribute.Type.INT);
-            //attribute("ij_timestamp", Attribute.Type.LONG);
-
-            //create RMQ connection
             RabbitMQPublisher rmq = new RabbitMQPublisher("output");
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
-
-
             tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, rmq));
-
             ServerConfig serverConfig = new ServerConfig();
             serverConfig.setHost(host);
             serverConfig.setPort(port);
@@ -53,9 +45,6 @@ public class OutputServer {
             System.out.println("Expected two parameters : host , port");
         }
 
-
-
-        //tcpNettyServer.shutdownGracefully();
     }
 
 }
