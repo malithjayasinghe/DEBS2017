@@ -35,6 +35,16 @@ public class SorterThread extends Thread {
     private TcpNettyClient siddhiClient1 = new TcpNettyClient();
     private TcpNettyClient siddhiClient2 = new TcpNettyClient();
 
+    /**
+     * The construntor
+     * @param arrayList : list of linked blocking queues
+     * @param host1 : host of siddhi worker 1
+     * @param port1 : port of siddhi worker 1
+     * @param host2 : host of siddhi worker 2
+     * @param port2 : port of siddhi worker 2
+     * @param host3 : host of siddhi worker 3
+     * @param port3 : port of siddhi worker 3
+     */
 
     public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, String host1, int port1, String host2, int port2, String host3, int port3) {
         this.arrayList = arrayList;
@@ -45,6 +55,9 @@ public class SorterThread extends Thread {
 
     }
 
+    /**
+     * continuously checks if any event is added to queue, if so peeks to a temporary list
+     */
     public void run() {
         while (true) {
             for (int i = 0; i < this.size; i++) {
@@ -75,13 +88,22 @@ public class SorterThread extends Thread {
         }
     }
 
+    /**
+     * Takes in the event, substrings the numerical part of the timestamp and returns it as a integer
+     * @param event : event
+     * @return : integer output of the numerical value
+     */
     private int getTime(Event event) {
         String time = (String) event.getData()[1];
         int timestamp = Integer.parseInt(time.substring(10));
         return timestamp;
     }
 
-
+    /**
+     * Removes the minimum event from the queue and sends to the respective siddhi worker
+     * @param e : the event
+     * @param queNo : the linked blocking queue no. the event belongs to
+     */
     private void removeEvent(Event e, int queNo) {
         //Machine_59
         //MoldingMachine_59
@@ -102,7 +124,9 @@ public class SorterThread extends Thread {
         }
     }
 
-
+    /**
+     * gets the event with smallest timestamp of the temporary list, which holds the first event of each queue
+     */
     private synchronized void sort() {
         if (arr.size() > 0) {
             Event currentEvent = arr.get(0);
