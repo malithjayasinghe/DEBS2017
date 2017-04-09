@@ -26,27 +26,23 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class OutputListener implements StreamListener {
 
     private StreamDefinition streamDefinition;
-    private int currentnode=0;
-
+    private int currentnode = 0;
     private long starttime;
     private long endtime;
-  /*  public static  LinkedBlockingQueue<Event> lbqueue0 = new LinkedBlockingQueue<Event>();
-    public static LinkedBlockingQueue<Event> lbqueue1 = new LinkedBlockingQueue<Event>();
-    public static LinkedBlockingQueue<Event> lbqueue2 = new LinkedBlockingQueue<Event>();*/
-    static int count =0;
-
+    static int count = 0;
     private ArrayList<Long> arr = new ArrayList<>();
-    Event currentEvent;
-    private  static LinkedBlockingQueue<Event>[] blockingQueues = new LinkedBlockingQueue[3];
+    private static LinkedBlockingQueue<Event>[] blockingQueues = new LinkedBlockingQueue[3];
 
-
+    /**
+     * The constructor
+     *
+     * @param streamDefinition the definition of the stream
+     * @param rmq the rabitmq queue to publish the data
+     */
     public OutputListener(StreamDefinition streamDefinition, RabbitMQPublisher rmq) {
-
         this.streamDefinition = streamDefinition;
-        SortingThread sorter = new SortingThread(rmq,blockingQueues);
+        SortingThread sorter = new SortingThread(rmq, blockingQueues);
         sorter.start();
-
-
     }
 
     @Override
@@ -62,50 +58,46 @@ public class OutputListener implements StreamListener {
 
     @Override
     public void onEvents(Event[] events) {
-     // print(events);
-           Event newEvent = events[0];
-           int node =(Integer)newEvent.getData()[5];
-                if(node == 0)
-                    try {
-                        blockingQueues[0].put(newEvent);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                else if(node == 1)
-                    try {
-                        blockingQueues[1].put(newEvent);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                else
-                    try {
-                        blockingQueues[2].put(newEvent);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-
+        Event newEvent = events[0];
+        int node = (Integer) newEvent.getData()[5];
+        if (node == 0)
+            try {
+                blockingQueues[0].put(newEvent);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        else if (node == 1)
+            try {
+                blockingQueues[1].put(newEvent);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        else
+            try {
+                blockingQueues[2].put(newEvent);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
     }
 
+    /**
+     * prints the output
+     *
+     * @param events the events
+     */
     private synchronized void print(Event[] events) {
 
-            count++;
-            System.out.println(count+"\t"+events[0]);
-            arr.add(System.currentTimeMillis()-events[0].getTimestamp());
-
-            if (arr.size() ==1){
-               starttime= events[0].getTimestamp();
-            }
-            if (arr.size()%100==0) {
-                endtime = events[0].getTimestamp();
-            }
-
+        count++;
+        System.out.println(count + "\t" + events[0]);
+        arr.add(System.currentTimeMillis() - events[0].getTimestamp());
+        if (arr.size() == 1) {
+            starttime = events[0].getTimestamp();
+        }
+        if (arr.size() % 100 == 0) {
+            endtime = events[0].getTimestamp();
+        }
 
     }
-
-
-
 
 
 }

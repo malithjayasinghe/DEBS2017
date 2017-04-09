@@ -3,12 +3,12 @@ package org.wso2.siddhi.debs2017.transport;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.output.MultiNodeAlertGenerator;
 import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
-
-
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
+/**
+ * Sorts the events received from the Shiddhi worker nodes before publishing to rabbit mq output queue
+ */
 public class SortingThread extends Thread {
     static long timeout;
     private static ArrayList<Event> sortingList = new ArrayList<>();
@@ -17,13 +17,22 @@ public class SortingThread extends Thread {
     private static LinkedBlockingQueue<Event>[] blockingQueues;
     int anomalycount = 0;
 
+    /**
+     * The constructor
+     *
+     * @param rmq queue to publish the final output
+     * @param blockingQueues link blocking queues to pull the data out
+     */
     public SortingThread(RabbitMQPublisher rmq, LinkedBlockingQueue<Event>[] blockingQueues) {
         this.rabbitMQPublisher = rmq;
         this.blockingQueues = blockingQueues;
         addQueues();
     }
 
-
+    /**
+     * Start the sorting thread.
+     *
+     */
     public void run() {
         while (true) {
             checkQueue();
@@ -33,10 +42,10 @@ public class SortingThread extends Thread {
     }
 
     /**
-     * compare the timestamps of the sidhhi events
+     * Gets the timestamps of the sidhhi events
      *
      * @param event
-     * @return
+     * @return the time stamp
      */
 
     private synchronized int getTime(Event event) {
@@ -46,14 +55,13 @@ public class SortingThread extends Thread {
     }
 
     /**
-     * remove the event with the leas ttimestamp from therespective queue
+     * remove the event from the corresponding queue
      *
-     * @param e
+     * @param e the event to be removed
      */
 
     private void removeEvent(Event e) {
         int n = (Integer) e.getData()[5];
-        // System.out.println(n +"removed index");
         if (n == 0) {
             blockingQueues[0].poll();
         } else if (n == 1) {
@@ -84,7 +92,7 @@ public class SortingThread extends Thread {
     }
 
     /**
-     * assign the linkedblocking queues to the array
+     * assign the linked blocking queues to the array
      */
     public void addQueues() {
         for (int i = 0; i < blockingQueues.length; i++) {
@@ -93,71 +101,20 @@ public class SortingThread extends Thread {
     }
 
     /**
-     * retrieve the first event of each linkedblockingqueue and add to arraylist
+     * retrieve the first event of each linked blocking queue and add to arraylist
      */
 
     public void checkQueue() {
         for (int i = 0; i < blockingQueues.length; i++) {
-            /*if (blockingQueues[i].peek() != null) {
-                sortingList.add(blockingQueues[i].peek());
-            } else {*/
             timeout = System.currentTimeMillis();
             while (true) {
                 if ((System.currentTimeMillis() - timeout) >= 2) {
-                    //  queue1 = true;
                     break;
                 } else if (blockingQueues[i].peek() != null) {
                     sortingList.add(blockingQueues[i].peek());
                     break;
                 }
             }
-            // }
         }
     }
-
-
-
-   /* private void sortTerminate(){
-        while (true){
-            while (true){
-                if(queue1 == true){
-                    break;
-                }else if(TestListener.lbqueue0.peek()!=null){
-                    sortingList.add(TestListener.lbqueue0.peek());
-                    break;
-                }else if(TestListener.lbqueue0.peek() =="terminated"){
-                    queue1 = true;
-                    break;
-                }
-
-            }
-            while (true){
-                if(queue2 == true){
-                    break;
-                }else if(TestListener.lbqueue1.peek()!=null){
-                    sortingList.add(TestListener.lbqueue1.peek());
-                    break;
-                }else if(TestListener.lbqueue1.peek() =="terminated"){
-                    queue2 = true;
-                    break;
-                }
-
-            }
-            while (true){
-                if(queue3 == true){
-                    break;
-                }else if(TestListener.lbqueue2.peek()!=null){
-                    sortingList.add(TestListener.lbqueue1.peek());
-                    break;
-                }else if(TestListener.lbqueue2.peek() =="terminated"){
-                    queue3 = true;
-                    break;
-                }
-
-            }
-            sort();
-        }
-    }*/
-
-
 }

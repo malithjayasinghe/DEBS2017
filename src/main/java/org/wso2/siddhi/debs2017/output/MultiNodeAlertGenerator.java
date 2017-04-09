@@ -83,23 +83,17 @@ public class MultiNodeAlertGenerator {
         Resource r5 = model.createResource(wmm + dimension);
         Property machine = model.createProperty(i40 + "machine");
         Resource r6 = model.createResource(wmm + machineNumber);
-
-
         model.add(r1, threshProb, model.createTypedLiteral(probThresh))
                 .add(r1, time, r4)
                 .add(r1, dim, r5)
                 .add(r1, machine, r6)
                 .add(r1, type, r2);
 
-
         anomalyCount++;
-
         String str = "N-TRIPLES";
         out = new StringWriter();
         model.write(out, str);
-        // System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
         rabbitMQPublisher.publish(out.toString());
-
         sum += System.currentTimeMillis() - dispatchedTime;
         if (anomalyCount == 2000) {
             System.out.println("Average Latency : " + (sum / anomalyCount));
