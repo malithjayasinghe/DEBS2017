@@ -32,7 +32,8 @@ import java.util.concurrent.Executors;
 public class SiddhiServer {
 
     public static void main(String[] args) {
-        if(args.length==4){
+        if(args.length==5){
+            int ringBuffersize = Integer.parseInt(args[4]);
             String hostServer = args[0];
             int portServer = Integer.parseInt(args[1]);
             String hostClient = args[2];
@@ -52,7 +53,7 @@ public class SiddhiServer {
 
 
             Executor executor = Executors.newCachedThreadPool();
-            int buffersize = 128;
+            int buffersize = ringBuffersize;
             Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new,buffersize, executor);
 
             RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
@@ -75,7 +76,7 @@ public class SiddhiServer {
             serverConfig.setPort(portServer);
             tcpNettyServer.bootServer(serverConfig);
         } else {
-            System.out.println("Expected 4 parameters : server host, server port, client host, client port");
+            System.out.println("Expected 5 parameters : server host, server port, client host, client port, ringbuffer size");
         }
 
 
