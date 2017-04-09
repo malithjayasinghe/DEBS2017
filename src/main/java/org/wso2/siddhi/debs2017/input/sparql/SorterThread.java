@@ -52,7 +52,6 @@ public class SorterThread extends Thread {
         this.siddhiClient0.connect(host1, port1);
         this.siddhiClient1.connect(host2, port2);
         this.siddhiClient2.connect(host3, port3);
-
     }
 
     /**
