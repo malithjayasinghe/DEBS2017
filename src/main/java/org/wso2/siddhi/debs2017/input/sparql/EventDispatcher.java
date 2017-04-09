@@ -37,12 +37,12 @@ import java.util.concurrent.ThreadFactory;
 */
 public class EventDispatcher extends DefaultConsumer {
 
-    private static int NUMBER_OF_THREADS = 10;
+
     private static int count = 0;
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(NUMBER_OF_THREADS, threadFactory);
-    public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(NUMBER_OF_THREADS);
+    private static ExecutorService EXECUTOR ;
+    public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
 
     /**
      * The constructor
@@ -55,10 +55,12 @@ public class EventDispatcher extends DefaultConsumer {
      * @param host3 the host 3
      * @param port3 the port 3
      */
-    public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3) {
+    public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3, int executorSize) {
         super(channel);
+        EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
+        arrayList = new ArrayList<>(executorSize);
         startTime = System.currentTimeMillis();
-        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+        for (int i = 0; i < executorSize; i++) {
             arrayList.add(new LinkedBlockingQueue());
         }
         Collections.synchronizedList(arrayList);

@@ -34,7 +34,7 @@ public class RabbitMQConsumer {
      *  Consumes the sample data
      *
      */
-    public void consume(String queue, String host, String host1, int port1, String host2, int port2, String host3, int port3) {
+    public void consume(String queue, String host, String host1, int port1, String host2, int port2, String host3, int port3, int executorSize) {
         TASK_QUEUE_NAME = queue;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(host);
@@ -44,7 +44,7 @@ public class RabbitMQConsumer {
         try {
             connection = factory.newConnection(executors);
             channel = connection.createChannel();
-            consumer = new EventDispatcher(channel, host1, port1, host2, port2, host3, port3);
+            consumer = new EventDispatcher(channel, host1, port1, host2, port2, host3, port3, executorSize);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
         } catch (IOException e) {
