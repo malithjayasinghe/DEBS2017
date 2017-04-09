@@ -23,21 +23,14 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 
-
-import java.util.ArrayList;
-
 public class SiddhiQuery {
-
     private final InputHandler inputHandler;
     private final String query;
     private final String inStreamDefinition;
     private final SiddhiManager siddhiManager;
     private ExecutionPlanRuntime executionPlanRuntime;
-
     private RingBuffer<EventWrapper> buffer;
     private long sequence;
-
-
 
     public SiddhiQuery(RingBuffer<EventWrapper> buffer) {
 
@@ -68,8 +61,6 @@ public class SiddhiQuery {
         inputHandler = executionPlanRuntime.getInputHandler("inStream");
         initCallback();
         executionPlanRuntime.start();
-
-
     }
 
     private void initCallback() {
@@ -77,53 +68,39 @@ public class SiddhiQuery {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
                 for (Event ev : events) {
-
-                        //set the probability in debsevent
-                        publishEvent(ev);
-
+                    //set the probability in debsevent
+                    publishEvent(ev);
                 }
             }
         });
     }
 
-
-
     public void publish(Event obj) {
         try {
-           // inputHandler.send(obj.getData());
+            // inputHandler.send(obj.getData());
             inputHandler.send(obj);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
-
 
     //setting the sequence from the ringbuffer
     public synchronized void setSequence(long l) {
         this.sequence = l;
-
     }
-
-
-
 
     /**
      * @param ev probability of the event sequence in the window
-     *          publishing the debsevent back tot he ring buffer after setting the probability
+     *           publishing the debsevent back tot he ring buffer after setting the probability
      */
     private synchronized void publishEvent(Event ev) {
-        try{
+        try {
             EventWrapper wrapper = buffer.get(sequence);
             wrapper.setEvent(ev);
         } finally {
             buffer.publish(sequence);
         }
-
-
-
     }
-
 
 }
 
