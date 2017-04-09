@@ -36,14 +36,25 @@ public class SparQLProcessor extends DefaultConsumer {
 
     private static int value = 10;
     private static int count = 0;
-    private static long starttime;
+    private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
     public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
 
+    /**
+     * The constructor
+     *
+     * @param channel the channel
+     * @param host1 the host 1
+     * @param port1 the port 1
+     * @param host2 the host 2
+     * @param port2 the port 2
+     * @param host3 the host 3
+     * @param port3 the port 3
+     */
     public SparQLProcessor(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3) {
         super(channel);
-        starttime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         for (int i = 0; i < value; i++) {
             arrayList.add(new LinkedBlockingQueue());
         }
@@ -53,11 +64,20 @@ public class SparQLProcessor extends DefaultConsumer {
         MultiNodeMetaDataQuery.run("molding_machine_10M.metadata.nt");
     }
 
+    /**
+     * Handle delivery
+     *
+     * @param consumerTag the consumer tag
+     * @param envelope the envelop
+     * @param properties the properties
+     * @param body the body
+     * @throws IOException thrown if an IO exception occurs
+     */
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
         count++;
         if (count % 33500 == 0) {
-            double runTime = (System.currentTimeMillis() - starttime) / 1000;
+            double runTime = (System.currentTimeMillis() - startTime) / 1000;
             System.out.println("Average Throughput " + (count / runTime));
         }
         Runnable reader = new ReaderThread(msg);

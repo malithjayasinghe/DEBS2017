@@ -47,6 +47,7 @@ public class ReaderThread implements Runnable {
 
     static synchronized public int getCount() {
         return count;
+
     }
 
     @Override

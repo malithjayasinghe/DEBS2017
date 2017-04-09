@@ -10,22 +10,22 @@ import org.apache.jena.riot.RDFDataMgr;
  * Created by sachini on 4/3/17.
  */
 public class MultiNodeMetaDataQuery {
-    public static void run(String datafile) {
 
-            String data = "";
-            Model model = RDFDataMgr.loadModel(datafile);
-            String queryString =
-                    "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
-                            "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
-                            "?machine <http://www.agtinternational.com/ontologies/IoTCore#hasModel> ?model ." +
-                            "?model <http://purl.oclc.org/NET/ssnx/ssn#hasProperty> ?dimension ." +
-                            "?dimension <http://www.agtinternational.com/ontologies/WeidmullerMetadata#hasNumberOfClusters> ?clusters ." +
-                            "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty> ?dimension ." +
-                            "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
-                            "}";
-            Query query = QueryFactory.create(queryString);
-            try {
-                for(int i = 0; i<5; i++) {
+    public static void run(String datafile) {
+        String data = "";
+        Model model = RDFDataMgr.loadModel(datafile);
+        String queryString =
+                "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
+                        "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
+                        "?machine <http://www.agtinternational.com/ontologies/IoTCore#hasModel> ?model ." +
+                        "?model <http://purl.oclc.org/NET/ssnx/ssn#hasProperty> ?dimension ." +
+                        "?dimension <http://www.agtinternational.com/ontologies/WeidmullerMetadata#hasNumberOfClusters> ?clusters ." +
+                        "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty> ?dimension ." +
+                        "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
+                        "}";
+        Query query = QueryFactory.create(queryString);
+        try {
+            for (int i = 0; i < 5; i++) {
                 QueryExecution qexec = QueryExecutionFactory.create(query, model);
                 ResultSet results = qexec.execSelect();
                 results = ResultSetFactory.copyResults(results);
@@ -34,18 +34,14 @@ public class MultiNodeMetaDataQuery {
                     Resource property = solution.getResource("dimension");
                     Literal cluster = solution.getLiteral("clusters");
                     Literal thresh = solution.getLiteral("threshold");
-                    String dimension = property.getLocalName().replace("_59","_"+i);
+                    String dimension = property.getLocalName().replace("_59", "_" + i);
                     DebsMetaData db = new DebsMetaData("Machine_" + i, dimension
                             , cluster.getInt(), thresh.getDouble());
                     DebsMetaData.storeValues(db);
                 }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-
-
-
+    }
 }
