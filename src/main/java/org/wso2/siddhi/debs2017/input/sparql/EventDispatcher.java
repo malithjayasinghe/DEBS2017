@@ -7,6 +7,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MultiNodeMetaDataQuery;
 
 import java.io.IOException;
@@ -34,12 +35,12 @@ import java.util.concurrent.ThreadFactory;
 */
 public class EventDispatcher extends DefaultConsumer {
 
-    private static int value = 10;
+    private static int NUMBER_OF_THREADS = 10;
     private static int count = 0;
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
-    public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(NUMBER_OF_THREADS, threadFactory);
+    public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(NUMBER_OF_THREADS);
 
     /**
      * The constructor
@@ -55,13 +56,13 @@ public class EventDispatcher extends DefaultConsumer {
     public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3) {
         super(channel);
         startTime = System.currentTimeMillis();
-        for (int i = 0; i < value; i++) {
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             arrayList.add(new LinkedBlockingQueue());
         }
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
         sort.start();
-        MultiNodeMetaDataQuery.run("molding_machine_10M.metadata.nt");
+        DebsMetaData.populateMetaData("molding_machine_10M.metadata.nt");
     }
 
     /**

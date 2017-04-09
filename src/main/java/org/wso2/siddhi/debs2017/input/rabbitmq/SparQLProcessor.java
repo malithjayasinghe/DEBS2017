@@ -54,7 +54,7 @@ public class SparQLProcessor extends DefaultConsumer {
         siddhiClient.connect(host1, port1);
         siddhiClient1.connect(host2, port2);
         siddhiClient2.connect(host3, port3);
-        MultiNodeMetaDataQuery.run("molding_machine_old_10M.metadata.nt");
+        DebsMetaData.populateMetaData("molding_machine_old_10M.metadata.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -92,10 +92,10 @@ public class SparQLProcessor extends DefaultConsumer {
                     int machineNo = Integer.parseInt(machine.getLocalName().substring(15));
                     String stateful = machine.getLocalName()+"_"+machineNo+property.getLocalName();
 
-                      if(DebsMetaData.meta.containsKey(stateful)) {
+                      if(DebsMetaData.getMetaData().containsKey(stateful)) {
 
-                          int centers = DebsMetaData.meta.get(stateful).getClusterCenters();
-                          double probability = DebsMetaData.meta.get(stateful).getProbabilityThreshold();
+                          int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
+                          double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
 
 //                    Event event = new Event(System.currentTimeMillis(), new Object[]{machine.getLocalName(),
 //                            time.getLocalName(),timestamp.getLexicalForm(), UnixConverter.getUnixTime(timestamp.getLexicalForm()), property.getLocalName(), value.getDouble()});

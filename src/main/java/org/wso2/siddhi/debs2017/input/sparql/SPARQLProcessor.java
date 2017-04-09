@@ -36,22 +36,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class SPARQLProcessor implements Runnable {
 
     private String data;
-    private  static int count =0;
     private LinkedBlockingQueue<Event> queue;
 
-
+    /**
+     * The constructor
+     *
+     * @param data data to be queries using SPARQL
+     */
     public SPARQLProcessor(String data) {
         this.data = data;
     }
 
-    static synchronized public int getCount() {
-        return count;
-
-    }
 
     @Override
     public void run() {
-
         this.queue = EventDispatcher.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
@@ -85,10 +83,10 @@ public class SPARQLProcessor implements Runnable {
                 Literal value = solution.getLiteral("value");
                 if (!value.toString().contains("#string")) {
                     String stateful = property.getLocalName();
-                    if(DebsMetaData.meta.containsKey(stateful)) {
+                    if (DebsMetaData.getMetaData().containsKey(stateful)) {
 
-                        int centers = DebsMetaData.meta.get(stateful).getClusterCenters();
-                        double probability = DebsMetaData.meta.get(stateful).getProbabilityThreshold();
+                        int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
+                        double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
 
                         Event event = new Event(System.currentTimeMillis(), new Object[]{
                                 machine.getLocalName(),
@@ -109,7 +107,5 @@ public class SPARQLProcessor implements Runnable {
             e.printStackTrace();
         }
     }
-
-
 
 }

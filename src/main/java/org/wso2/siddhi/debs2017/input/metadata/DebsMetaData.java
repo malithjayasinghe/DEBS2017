@@ -19,76 +19,82 @@
 
 package org.wso2.siddhi.debs2017.input.metadata;
 
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.riot.RDFDataMgr;
+
 import java.util.HashMap;
 
 
 /**
- * class to extract the meta data for the machines
+ * Container for meta data (loaded by running the meta data query)
  */
 public class DebsMetaData {
 
 
-    private String machineNumber;
-    private int clusterCenters;
-    private double probabilityThreshold;
-    private String dimension;
+    private static HashMap<String, MetaDataItem> meta = new HashMap<>();
 
     /**
-     * hashmap to store the meatdata
-     * key - combination of machine number and dimension
-     * value DebsMetaData object
-     */
-
-    public static HashMap<String, DebsMetaData> meta = new HashMap<>();
-
-
-    /**
-     * The constructor
+     * Adds a value to meta data container
      *
-     * @param machineNumber        uniquely identify the machine
-     * @param dimension            property of the machine
-     * @param clusterCenters       cluster centers per dimension for the particular machine
-     * @param probabilityThreshold threshold to decide whether the sequence is an anomaly
+     * @param machineNumber machine number
+     * @param dimension dimension
+     * @param clusterCenters cluster center
+     * @param probabilityThreshold probability threshold
      */
-
-    public DebsMetaData(String machineNumber, String dimension, int clusterCenters,
-                        double probabilityThreshold) {
-        this.machineNumber = machineNumber;
-        this.clusterCenters = clusterCenters;
-        this.probabilityThreshold = probabilityThreshold;
-        this.dimension = dimension;
-
-    }
-
-    /**
-     * @param dm the DebsMetaData object to be store din the hashmap
-     *           store the metadata object generated
-     */
-
-    public static void storeValues(DebsMetaData dm) {
+    private static void addValue(String machineNumber, String dimension, int clusterCenters,
+                         double probabilityThreshold) {
+        MetaDataItem dm = new MetaDataItem(machineNumber, dimension, clusterCenters, probabilityThreshold);
         String mapKey = dm.getDimension();
         meta.put(mapKey, dm);
     }
 
-    public synchronized int getClusterCenters() {
-        return clusterCenters;
+    /**
+     *
+     * @return the meta data holder (i.e. hash map)
+     */
+    public static HashMap<String, MetaDataItem> getMetaData()
+    {
+        return meta;
     }
 
-    public synchronized double getProbabilityThreshold() {
-        return probabilityThreshold;
+    /**
+     * Populate the meta data container (i.e. the hash map)
+     *
+     * @param datafile the name of the file
+     */
+    public static void populateMetaData(String datafile) {
+        String data = "";
+        Model model = RDFDataMgr.loadModel(datafile);
+        String queryString =
+                "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
+                        "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
+                        "?machine <http://www.agtinternational.com/ontologies/IoTCore#hasModel> ?model ." +
+                        "?model <http://purl.oclc.org/NET/ssnx/ssn#hasProperty> ?dimension ." +
+                        "?dimension <http://www.agtinternational.com/ontologies/WeidmullerMetadata#hasNumberOfClusters> ?clusters ." +
+                        "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty> ?dimension ." +
+                        "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
+                        "}";
+        Query query = QueryFactory.create(queryString);
+        try {
+            for (int i = 0; i < 5; i++) {
+                QueryExecution qexec = QueryExecutionFactory.create(query, model);
+                ResultSet results = qexec.execSelect();
+                results = ResultSetFactory.copyResults(results);
+                for (; results.hasNext(); ) {
+                    QuerySolution solution = results.nextSolution();
+                    Resource property = solution.getResource("dimension");
+                    Literal cluster = solution.getLiteral("clusters");
+                    Literal thresh = solution.getLiteral("threshold");
+                    String dimension = property.getLocalName().replace("_59", "_" + i);
+                    DebsMetaData.addValue("Machine_" + i, dimension
+                            , cluster.getInt(), thresh.getDouble());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-    public synchronized String getMachineNumber() {
-        return machineNumber;
-    }
-
-    public synchronized String getDimension() {
-        return dimension;
-    }
-
-    public void setDimension(String dimension) {
-        this.dimension = dimension;
-    }
-
-
 }

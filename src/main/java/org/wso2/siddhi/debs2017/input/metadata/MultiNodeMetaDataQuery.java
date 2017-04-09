@@ -8,9 +8,15 @@ import org.apache.jena.riot.RDFDataMgr;
 
 /**
  * Created by sachini on 4/3/17.
+ * @deprecated
  */
 public class MultiNodeMetaDataQuery {
 
+    /**
+     * Runs the meta data query
+     *
+     * @param datafile name of the data file
+     */
     public static void run(String datafile) {
         String data = "";
         Model model = RDFDataMgr.loadModel(datafile);
@@ -35,9 +41,8 @@ public class MultiNodeMetaDataQuery {
                     Literal cluster = solution.getLiteral("clusters");
                     Literal thresh = solution.getLiteral("threshold");
                     String dimension = property.getLocalName().replace("_59", "_" + i);
-                    DebsMetaData db = new DebsMetaData("Machine_" + i, dimension
-                            , cluster.getInt(), thresh.getDouble());
-                    DebsMetaData.storeValues(db);
+                    //DebsMetaData.addValue("Machine_" + i, dimension
+                      //      , cluster.getInt(), thresh.getDouble());
                 }
             }
         } catch (Exception e) {

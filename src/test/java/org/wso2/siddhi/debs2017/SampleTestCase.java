@@ -73,7 +73,7 @@ public class SampleTestCase {
 
                     String machineName = machine.getLocalName();
                     String dimension = property.getLocalName();
-                    if (DebsMetaData.meta.keySet().contains(machineName+dimension) &&  !value.toString().contains("#string")) { //&& property.getLocalName().equals("_59_5")
+                    if (DebsMetaData.getMetaData().keySet().contains(machineName+dimension) &&  !value.toString().contains("#string")) { //&& property.getLocalName().equals("_59_5")
                         if(property.getLocalName().equals("_59_31")){
                             System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getDouble());
 

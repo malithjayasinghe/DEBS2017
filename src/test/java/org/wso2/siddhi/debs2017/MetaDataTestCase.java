@@ -7,6 +7,7 @@ package org.wso2.siddhi.debs2017;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.MetaDataItem;
 import org.wso2.siddhi.debs2017.input.metadata.MetaDataQuery;
 import org.wso2.siddhi.debs2017.input.metadata.MultiNodeMetaDataQuery;
 
@@ -26,9 +27,9 @@ public class MetaDataTestCase {
         log.info("Meta data test case TestCase");
         MetaDataQuery.run("molding_machine_10M.metadata.nt");
 
-        System.out.println(DebsMetaData.meta.size());
-        for(String key: DebsMetaData.meta.keySet()){
-            DebsMetaData dmm = DebsMetaData.meta.get(key);
+        System.out.println(DebsMetaData.getMetaData().size());
+        for(String key: DebsMetaData.getMetaData().keySet()){
+            MetaDataItem dmm = DebsMetaData.getMetaData().get(key);
 
             System.out.println(dmm.getMachineNumber()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "
                     + dmm.getProbabilityThreshold() );
@@ -40,10 +41,10 @@ public class MetaDataTestCase {
     @org.junit.Test
     public void Test2() throws InterruptedException {
         log.info("Meta data test case TestCase");
-        MultiNodeMetaDataQuery.run("molding_machine_10M.metadata.nt");
+        DebsMetaData.populateMetaData("molding_machine_10M.metadata.nt");
         int count = 0;
-        for(String key: DebsMetaData.meta.keySet()){
-            DebsMetaData dmm = DebsMetaData.meta.get(key);
+        for(String key: DebsMetaData.getMetaData().keySet()){
+            MetaDataItem dmm = DebsMetaData.getMetaData().get(key);
             count++;
             System.out.println(key + "Key");
             System.out.println(dmm.getMachineNumber()+ " " + dmm.getDimension()+ " "+ dmm.getClusterCenters()+ " "

@@ -51,13 +51,9 @@ public class MetaDataQuery {
                 Resource machine = solution.getResource("machine");
                 Literal cluster = solution.getLiteral("clusters");
                 Literal thresh = solution.getLiteral("threshold");
-
-                //System.out.println(machine.getLocalName()+"\t"+property.getLocalName()+"\t"+cluster.getInt()+"\t"+thresh.getDouble());
-
-                DebsMetaData db = new DebsMetaData(machine.getLocalName(), property.getLocalName()
-                        , cluster.getInt(), thresh.getDouble());
-                DebsMetaData.storeValues(db);
-
+               // DebsMetaData db = new DebsMetaData();
+                //db.addValue(machine.getLocalName(), property.getLocalName()
+                  //      , cluster.getInt(), thresh.getDouble());
             }
         } catch (Exception e) {
             e.printStackTrace();

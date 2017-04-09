@@ -160,15 +160,15 @@ public class CorrectnessTestCase {
 
                 String machineName = machine.getLocalName();
                 String dimension = property.getLocalName();
-                if (DebsMetaData.meta.keySet().contains(dimension) &&  !value.toString().contains("#string")) {
+                if (DebsMetaData.getMetaData().keySet().contains(dimension) &&  !value.toString().contains("#string")) {
                             arr.add(new Object[]{machineName, time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), dimension, value.getDouble(),
-                                    DebsMetaData.meta.get(dimension).getClusterCenters()});
+                                    DebsMetaData.getMetaData().get(dimension).getClusterCenters()});
 
                 }
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e1) {
+            e1.printStackTrace();
         }
         //tw
 
