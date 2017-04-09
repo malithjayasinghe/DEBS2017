@@ -21,6 +21,9 @@ import java.util.concurrent.TimeoutException;
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
+*
+* Publishes the anomaly to output rabbitMQ queue
+*
 */
 public class RabbitMQPublisher {
 
@@ -78,5 +81,4 @@ public class RabbitMQPublisher {
             e.printStackTrace();
         }
     }
-
 }

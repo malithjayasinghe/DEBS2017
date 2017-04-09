@@ -19,11 +19,12 @@
 
 package org.wso2.siddhi.debs2017.markovchain;
 
-import org.wso2.siddhi.query.api.expression.condition.In;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * @deprecated
+ */
 public class MarkoveModified {
     private int currentCenter = 0;
     private int previousCenter = 0;
@@ -33,7 +34,7 @@ public class MarkoveModified {
     /**
      * hash map to keep track of the event count of the center transitions
      **/
-    private HashMap<Integer, HashMap<Integer, EventProbability>> transitionEventCount = new HashMap<>();
+    private HashMap<Integer, HashMap<Integer, EventDataHolder>> transitionEventCount = new HashMap<>();
 
     /**
      * arraylist to maintain the current events in the time window for which probability sequence is checked
@@ -73,23 +74,23 @@ public class MarkoveModified {
             double total = totalTransitions.get(previousCenter);
 
             //retrieve the hashmap for the transitions starting from the particular cluster center
-            HashMap<Integer, EventProbability> temp = transitionEventCount.get(previousCenter);
-            EventProbability eventProbability;
+            HashMap<Integer, EventDataHolder> temp = transitionEventCount.get(previousCenter);
+            EventDataHolder eventDataHolder;
             if (temp.containsKey(currentCenter)) {
 
-                //retrieve the EventProbability object for the particular event
-                 eventProbability = temp.get(currentCenter);
+                //retrieve the EventDataHolder object for the particular event
+                 eventDataHolder = temp.get(currentCenter);
                 //increment the event count
-                eventProbability.setEventCount(eventProbability.getEventCount() + 1);
-                temp.put(currentCenter, eventProbability);
+                eventDataHolder.setEventCount(eventDataHolder.getEventCount() + 1);
+                temp.put(currentCenter, eventDataHolder);
 
 
             } else {
                 /**
-                 *   if there is no transiton from the previous center to the current center,create a new eventProbability
+                 *   if there is no transiton from the previous center to the current center,create a new eventDataHolder
                  *   object and store it in the hashmap containing transitions from the previous center
                  */
-                EventProbability newEvent = new EventProbability();
+                EventDataHolder newEvent = new EventDataHolder();
                 newEvent.setEventCount(1);
                 newEvent.setProbability(1);
                 temp.put(currentCenter, newEvent);
@@ -99,8 +100,8 @@ public class MarkoveModified {
              * update the transitional probabilities for each event having transitions from the particualr previous center
              */
             for (Integer key : temp.keySet()) {
-                eventProbability = temp.get(key);
-                eventProbability.setProbability(eventProbability.getEventCount() / total);
+                eventDataHolder = temp.get(key);
+                eventDataHolder.setProbability(eventDataHolder.getEventCount() / total);
             }
             //store the updated hashmap for transitions from the particular previous center
             transitionEventCount.put(previousCenter, temp);
@@ -112,10 +113,10 @@ public class MarkoveModified {
              * create a new hashmap and add a new event probability object
              */
 
-            EventProbability newEvent = new EventProbability();
+            EventDataHolder newEvent = new EventDataHolder();
             newEvent.setEventCount(1);
             newEvent.setProbability(1);
-            HashMap<Integer, EventProbability> hm = new HashMap<>();
+            HashMap<Integer, EventDataHolder> hm = new HashMap<>();
             hm.put(currentCenter, newEvent);
             transitionEventCount.put(previousCenter, hm);
 
@@ -136,15 +137,15 @@ public class MarkoveModified {
             transitionEventCount.remove(prev);
         } else {
             double total = totalTransitions.get(prev);
-            HashMap<Integer, EventProbability> temp = transitionEventCount.get(prev);
-            EventProbability event = temp.get(curr);
+            HashMap<Integer, EventDataHolder> eventDataMap = transitionEventCount.get(prev);
+            EventDataHolder event = eventDataMap.get(curr);
             event.setEventCount(event.getEventCount() - 1);
 
             if (event.getEventCount() == 0) {
-                temp.remove(curr);
+                eventDataMap.remove(curr);
             }
-            for (Integer key : temp.keySet()) {
-                event = temp.get(key);
+            for (Integer key : eventDataMap.keySet()) {
+                event = eventDataMap.get(key);
                 event.setProbability(event.getEventCount() / total);
             }
         }
@@ -185,13 +186,13 @@ public class MarkoveModified {
                 if (previousEvent == 0 && currentEvent == 0) {
                     previousEvent = eventOrder.get(0);
                     currentEvent = eventOrder.get(1);
-                    EventProbability event = transitionEventCount.get(previousEvent).get(currentEvent);
+                    EventDataHolder event = transitionEventCount.get(previousEvent).get(currentEvent);
                     transitionalProb = event.getProbability();
                     eventprobability = eventprobability * transitionalProb;
                 } else {
                     previousEvent = currentEvent;
                     currentEvent = eventOrder.get(i);
-                    EventProbability event = transitionEventCount.get(previousEvent).get(currentEvent);
+                    EventDataHolder event = transitionEventCount.get(previousEvent).get(currentEvent);
                     transitionalProb = event.getProbability();
                     eventprobability = eventprobability * transitionalProb;
                 }

@@ -4,6 +4,7 @@ import org.hobbit.core.components.AbstractDataGenerator;
 
 /**
  * Created by miyurud on 2/2/17.
+ * @deprecated
  */
 public class DataGenerator extends AbstractDataGenerator {
     @Override

@@ -20,8 +20,9 @@
 package org.wso2.siddhi.debs2017.markovchain;
 
 
-public class EventProbability {
-    private int eventCount =0;
+public class EventDataHolder {
+
+    private int eventCount = 0;
 
     public int getEventCount() {
         return eventCount;
@@ -39,6 +40,6 @@ public class EventProbability {
         this.probability = probability;
     }
 
-    private double probability=1;
+    private double probability = 1.0;
 
 }

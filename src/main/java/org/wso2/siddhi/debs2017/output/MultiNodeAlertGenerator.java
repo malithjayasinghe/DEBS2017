@@ -24,9 +24,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.wso2.siddhi.core.event.Event;
-
 import java.io.StringWriter;
-import java.util.ArrayList;
+
 
 /**
  * Created by sachini on 3/23/17.
@@ -45,17 +44,15 @@ public class MultiNodeAlertGenerator {
     String wmm = "http://www.agtinternational.com/ontologies/WeidmullerMetadata#";
     String i40 = "http://www.agtinternational.com/ontologies/I4.0#";
     private RabbitMQPublisher rabbitMQPublisher;
-    StringWriter out;
-    //performance
+    private StringWriter out;
     private long dispatchedTime;
     private static double sum = 0;
-    //private static int latencyCount;
 
     /**
      * initialize the parameters from the sidhhi event, to generate the alert
      *
-     * @param event-            sidhhi event
-     * @param rabbitMQPublisher - publish to rabbitmq
+     * @param event          sidhhi event
+     * @param rabbitMQPublisher  publish to rabbitmq
      */
     public MultiNodeAlertGenerator(Event event, RabbitMQPublisher rabbitMQPublisher) {
         this.probThresh = Double.toString((Double) event.getData()[3]);
@@ -102,6 +99,12 @@ public class MultiNodeAlertGenerator {
 
     }
 
+    /**
+     * Transforms the timestamp
+     *
+     * @param time time stamp to be converted
+     * @return converted value
+     */
     private String transformTimestamp(String time) {
         String[] str = time.split("_");
         return str[0].concat("_" + (Integer.parseInt(str[1]) - 5));

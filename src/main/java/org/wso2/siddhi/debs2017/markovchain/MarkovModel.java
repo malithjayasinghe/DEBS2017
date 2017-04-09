@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 /**
  * Created by sachini on 1/27/17.
+ * @deprecated
  */
 public class MarkovModel {
 

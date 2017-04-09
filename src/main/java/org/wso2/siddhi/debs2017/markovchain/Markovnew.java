@@ -19,8 +19,6 @@
 
 package org.wso2.siddhi.debs2017.markovchain;
 
-import org.wso2.siddhi.query.api.expression.condition.In;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -32,13 +30,13 @@ public class Markovnew {
     /**
      * hash map to keep track of the event count of the center transitions
      **/
-    private HashMap<Integer, HashMap<Integer, EventProbability>> transitionEventCount = new HashMap<>();
+    private HashMap<Integer, HashMap<Integer, EventDataHolder>> transitionEventCount = new HashMap<>();
 
     /**
      * arraylist to maintain the current events in the time window for which probability sequence is checked
      */
     private ArrayList<Integer> eventOrder = new ArrayList<>();
-     //private int[] eventOrder;
+    //private int[] eventOrder;
 
     /**
      * hashmap to keep track of the total transitions from a particular cluster center
@@ -71,54 +69,44 @@ public class Markovnew {
             double total = totalTransitions.get(previousCenter);
 
             //retrieve the hashmap for the transitions starting from the particular cluster center
-            HashMap<Integer, EventProbability> temp = transitionEventCount.get(previousCenter);
-            EventProbability eventProbability;
+            HashMap<Integer, EventDataHolder> temp = transitionEventCount.get(previousCenter);
+            EventDataHolder eventDataHolder;
             if (temp.containsKey(currentCenter)) {
-
-                //retrieve the EventProbability object for the particular event
-                eventProbability = temp.get(currentCenter);
+                //retrieve the EventDataHolder object for the particular event
+                eventDataHolder = temp.get(currentCenter);
                 //increment the event count
-                eventProbability.setEventCount(eventProbability.getEventCount() + 1);
-                temp.put(currentCenter, eventProbability);
-
-
-
+                eventDataHolder.setEventCount(eventDataHolder.getEventCount() + 1);
+                temp.put(currentCenter, eventDataHolder);
             } else {
                 /**
-                 *   if there is no transiton from the previous center to the current center,create a new eventProbability
+                 *   if there is no transiton from the previous center to the current center,create a new eventDataHolder
                  *   object and store it in the hashmap containing transitions from the previous center
                  */
-                EventProbability newEvent = new EventProbability();
+                EventDataHolder newEvent = new EventDataHolder();
                 newEvent.setEventCount(1);
                 temp.put(currentCenter, newEvent);
-
             }
             /**
              * update the transitional probabilities for each event having transitions from the particualr previous center
              */
             for (Integer key : temp.keySet()) {
-                eventProbability = temp.get(key);
-                eventProbability.setProbability(eventProbability.getEventCount() / total);
-
+                eventDataHolder = temp.get(key);
+                eventDataHolder.setProbability(eventDataHolder.getEventCount() / total);
             }
             //store the updated hashmap for transitions from the particular previous center
             transitionEventCount.put(previousCenter, temp);
-
-
         } else {
             /**
              * if there are no event transitions from the particular previous center
              * create a new hashmap and add a new event probability object
              */
 
-            EventProbability newEvent = new EventProbability();
+            EventDataHolder newEvent = new EventDataHolder();
             newEvent.setEventCount(1);
             newEvent.setProbability(1);
-            HashMap<Integer, EventProbability> hm = new HashMap<>();
+            HashMap<Integer, EventDataHolder> hm = new HashMap<>();
             hm.put(currentCenter, newEvent);
             transitionEventCount.put(previousCenter, hm);
-
-
         }
     }
 
@@ -129,52 +117,29 @@ public class Markovnew {
      * multiply each transition probability to get the total combined probability
      */
     public double updateProbability(ArrayList<Integer> arr) {
-
         eventOrder = arr;
         int currentEvent = 0;
         int previousEvent = 0;
-        double eventprobability = 1;
+        double eventProbability = 1;
         double transitionalProb;
-/*
-        int seqprev = eventOrder.size()-2;
-        int seqlast = eventOrder.size()-1;
-        int eventPrev = eventOrder.get(seqprev);
-        int eventLAST = eventOrder.get(seqlast);*/
-//
-//        // check whether there are any transitions from the previous center
-//        if( !totalTransitions.containsKey(eventPrev)){
-//            totalProbability = 0.0;
-//        }
-//        //check whether a transition exist for the last event transition
-//        else if(transitionEventCount.get(eventPrev).get(eventLAST) == null){
-//            totalProbability = 0.0;
-//        }else {
-
-        //calculate the transitiona; probability for the sequence of cluster center transitions
-            for (int i = eventOrder.size()-5; i < eventOrder.size(); i++) {
-                if (previousEvent == 0 && currentEvent == 0) {
-                    currentEvent = eventOrder.get(i);
-                    previousEvent = eventOrder.get(i-1);
-                    EventProbability event = transitionEventCount.get(previousEvent).get(currentEvent);
-                    transitionalProb = event.getProbability();
-
-                    eventprobability = eventprobability * transitionalProb;
-                } else {
-                    previousEvent = currentEvent;
-                    currentEvent = eventOrder.get(i);
-                    EventProbability event = transitionEventCount.get(previousEvent).get(currentEvent);
-                    transitionalProb = event.getProbability();
-
-                    eventprobability = eventprobability * transitionalProb;
-                }
-
-
-
+        for (int i = eventOrder.size() - 5; i < eventOrder.size(); i++) {
+            if (previousEvent == 0 && currentEvent == 0) {
+                currentEvent = eventOrder.get(i);
+                previousEvent = eventOrder.get(i - 1);
+                EventDataHolder event = transitionEventCount.get(previousEvent).get(currentEvent);
+                transitionalProb = event.getProbability();
+                eventProbability = eventProbability * transitionalProb;
+            } else {
+                previousEvent = currentEvent;
+                currentEvent = eventOrder.get(i);
+                EventDataHolder event = transitionEventCount.get(previousEvent).get(currentEvent);
+                transitionalProb = event.getProbability();
+                eventProbability = eventProbability * transitionalProb;
             }
 
-            totalProbability = eventprobability;
-       // }
+        }
 
+        totalProbability = eventProbability;
         return totalProbability;
     }
 
@@ -184,44 +149,28 @@ public class Markovnew {
          *  passing the event sequence in the current time window  to calculate the  combined probability
          */
 
-        eventOrder = arr ;
-
+        eventOrder = arr;
         /**
          * clearing the hashmaps to keep track of the cluster center transitions of the current window
          */
         transitionEventCount.clear();
         totalTransitions.clear();
-        previousCenter =0;
+        previousCenter = 0;
         currentCenter = 0;
-
-        for(int i = 1; i <eventOrder.size(); i++){
+        for (int i = 1; i < eventOrder.size(); i++) {
             /**
              * initialize the current center and previous center
              */
 
             if (currentCenter == 0 && previousCenter == 0) {
-
                 previousCenter = eventOrder.get(0);
                 currentCenter = eventOrder.get(1);
-
                 updateModel();
-
-
-            } else  {
+            } else {
                 previousCenter = currentCenter;
                 currentCenter = eventOrder.get(i);
-
-
                 updateModel();
-
-
             }
         }
-
-
-
-
     }
-
-
 }

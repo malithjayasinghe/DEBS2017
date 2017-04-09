@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 /**
  * NOT USED
+ * @deprecated
  */
 public class AnomalyDetection {
     private HashMap<String, Double> thresholdPerDimension = new HashMap<>();
