@@ -72,7 +72,7 @@ public class DistributedQuery {
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
                     alertGenerator = new AlertGenerator(rmqPublisher);
-                    debsAnormalyDetector =  null;new DebsAnomalyDetector(alertGenerator);
+                    debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
                     disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
                     disruptor.start();
 
