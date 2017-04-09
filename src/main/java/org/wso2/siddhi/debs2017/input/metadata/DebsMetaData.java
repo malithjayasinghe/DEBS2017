@@ -66,7 +66,6 @@ public class DebsMetaData {
      * @param datafile the name of the file
      */
     public static void populateMetaData(String datafile) {
-        String data = "";
         Model model = RDFDataMgr.loadModel(datafile);
         String queryString =
                 "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +

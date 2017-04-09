@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMQConsumer {
 
     private static String TASK_QUEUE_NAME = "";
-    static ExecutorService executors = Executors.newFixedThreadPool(8);
+    private static ExecutorService EXECUTORS = Executors.newFixedThreadPool(8);
 
     /**
      *  Consumes the sample data
@@ -42,7 +42,7 @@ public class RabbitMQConsumer {
         final Channel channel;
         final Consumer consumer;
         try {
-            connection = factory.newConnection(executors);
+            connection = factory.newConnection(EXECUTORS);
             channel = connection.createChannel();
             consumer = new EventDispatcher(channel, host1, port1, host2, port2, host3, port3, executorSize);
             boolean autoAck = true; // acknowledgment is covered below
@@ -53,5 +53,4 @@ public class RabbitMQConsumer {
             e.printStackTrace();
         }
     }
-
 }

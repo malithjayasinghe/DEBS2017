@@ -26,7 +26,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
 
-
+/**
+ * @deprecated
+ */
 public class DataPublisher {
 
     private String fileName;

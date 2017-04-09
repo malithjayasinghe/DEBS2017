@@ -63,6 +63,8 @@ public class EventDispatcher extends DefaultConsumer {
         for (int i = 0; i < executorSize; i++) {
             arrayList.add(new LinkedBlockingQueue());
         }
+
+        //TODO: I do not think we need to synchronize the array list
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
         sort.start();

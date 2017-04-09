@@ -27,7 +27,6 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
     private final long NUM;
     private final SiddhiQuery sq;
 
-
     @Override
     public void onEvent(EventWrapper wrapper, long sequence, boolean b) throws Exception {
         Object[] o = wrapper.getEvent().getData();

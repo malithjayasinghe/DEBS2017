@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 
 public class MarkovFunction extends FunctionExecutor {
-    Markovnew markovnew = new Markovnew();
+    private Markovnew markovnew = new Markovnew();
     private ArrayList<Integer> centers;
     private double probability = -1;
 
