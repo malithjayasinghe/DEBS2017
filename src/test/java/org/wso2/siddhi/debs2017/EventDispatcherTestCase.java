@@ -19,9 +19,9 @@ import org.junit.Before;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SparQLProcessorTestCase {
+public class EventDispatcherTestCase {
 
-    //private static final Logger log = Logger.getLogger(SparQLProcessor.class);
+    //private static final Logger log = Logger.getLogger(EventDispatcher.class);
 
 
     @Before
@@ -32,7 +32,7 @@ public class SparQLProcessorTestCase {
     @org.junit.Test
     public void Test1() throws InterruptedException {
         //log.info("MedianAggregatorTestCase TestCase");
-        //SparQLProcessor.excuteQuery("100m_extract_time.csv");
+        //EventDispatcher.excuteQuery("100m_extract_time.csv");
 
     }
 

@@ -16,7 +16,6 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 
-import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /*
@@ -53,7 +52,7 @@ public class ReaderThread implements Runnable {
     @Override
     public void run() {
 
-        this.queue = SparQLProcessor.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
+        this.queue = EventDispatcher.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +

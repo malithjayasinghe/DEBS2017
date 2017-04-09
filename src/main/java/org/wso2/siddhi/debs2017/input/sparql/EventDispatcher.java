@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadFactory;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SparQLProcessor extends DefaultConsumer {
+public class EventDispatcher extends DefaultConsumer {
 
     private static int value = 10;
     private static int count = 0;
@@ -52,7 +52,7 @@ public class SparQLProcessor extends DefaultConsumer {
      * @param host3 the host 3
      * @param port3 the port 3
      */
-    public SparQLProcessor(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3) {
+    public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3) {
         super(channel);
         startTime = System.currentTimeMillis();
         for (int i = 0; i < value; i++) {

@@ -4,7 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
-import org.wso2.siddhi.debs2017.input.sparql.SparQLProcessor;
+import org.wso2.siddhi.debs2017.input.sparql.EventDispatcher;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,7 +44,7 @@ public class RabbitMQConsumer {
         try {
             connection = factory.newConnection(executors);
             channel = connection.createChannel();
-            consumer = new SparQLProcessor(channel, host1, port1, host2, port2, host3, port3);
+            consumer = new EventDispatcher(channel, host1, port1, host2, port2, host3, port3);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
         } catch (IOException e) {
