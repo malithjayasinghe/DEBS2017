@@ -9,6 +9,7 @@ import java.io.IOException;
 
 /**
  * Created by miyurud on 2/2/17.
+ * @deprecated
  */
 public class BenchmarkController extends AbstractBenchmarkController {
 

@@ -2,7 +2,7 @@ package org.wso2.siddhi.debs2017;
 
 /**
  * Hello world!
- *
+ *@deprecated
  */
 public class App 
 {

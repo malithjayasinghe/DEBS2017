@@ -29,31 +29,27 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
 
 
     @Override
-    public void onEvent (EventWrapper wrapper , long sequence, boolean b) throws Exception {
-
-
+    public void onEvent(EventWrapper wrapper, long sequence, boolean b) throws Exception {
         Object[] o = wrapper.getEvent().getData();
-        String [] splitter = o[2].toString().split("_");
+        String[] splitter = o[2].toString().split("_");
         long partition = Long.parseLong(splitter[2]);
-        //long partition = Long.parseLong(o[2].toString().substring(1));
-        if(partition%NUM==ID){
-
-            //setting the buffer sequence
-           sq.setSequence(sequence);
-
-
-           sq.publish(wrapper.getEvent());
+        if (partition % NUM == ID) {
+            sq.setSequence(sequence);
+            sq.publish(wrapper.getEvent());
         }
 
     }
 
-    public SiddhiEventHandler(long id, long num, RingBuffer<EventWrapper> ringBuffer){
+    /**
+     * The constructor
+     *
+     * @param id         the ID
+     * @param num        number
+     * @param ringBuffer the ring buffer
+     */
+    public SiddhiEventHandler(long id, long num, RingBuffer<EventWrapper> ringBuffer) {
         this.ID = id;
         this.NUM = num;
         this.sq = new SiddhiQuery(ringBuffer);
     }
-
-
-
-
 }

@@ -6,6 +6,7 @@ import org.hobbit.core.components.Component;
 
 /**
  * Created by miyurud on 2/2/17.
+ * @deprecated
  */
 public class ComponentStarter {
     private static final int ERROR_EXIT_CODE = -1;

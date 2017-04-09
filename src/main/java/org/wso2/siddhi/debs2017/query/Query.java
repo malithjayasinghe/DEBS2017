@@ -28,7 +28,9 @@ import org.wso2.siddhi.debs2017.input.DataPublisher;
 
 import java.util.ArrayList;
 
-
+/**
+ * @deprecated
+ */
 public class Query {
 
     ArrayList<Long> latency = new ArrayList<>();

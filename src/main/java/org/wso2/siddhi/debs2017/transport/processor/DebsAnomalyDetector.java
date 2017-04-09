@@ -21,38 +21,34 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class DebsAnormalyDetector implements EventHandler<EventWrapper> {
+public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
 
     private TcpNettyClient siddhiClient;
     private double probability;
     private double threshold;
-    static int count =0;
+    static int count = 0;
+
     @Override
     public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
-
-        //System.out.println(wrapper.getEvent());
         Object[] o = wrapper.getEvent().getData();
-         probability = Double.parseDouble(o[3].toString());
-         threshold  = Double.parseDouble(o[4].toString());
+        probability = Double.parseDouble(o[3].toString());
+        threshold = Double.parseDouble(o[4].toString());
 
-         if(probability < threshold && probability > 0) {
-            // System.out.println(probability);
-             send(wrapper.getEvent());
-         }
+        if (probability < threshold && probability > 0) {
+            send(wrapper.getEvent());
+        }
 
     }
 
     private synchronized void send(Event event) {
         count++;
-       // System.out.println(count);
-        Event [] events = {event};
+        Event[] events = {event};
         siddhiClient.send("output", events);
     }
 
-    public DebsAnormalyDetector(String host, int port){
+    public DebsAnomalyDetector(String host, int port) {
         this.siddhiClient = new TcpNettyClient();
-       this.siddhiClient.connect(host, port);
-
+        this.siddhiClient.connect(host, port);
     }
 }
 
