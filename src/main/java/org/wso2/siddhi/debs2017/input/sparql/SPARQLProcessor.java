@@ -33,14 +33,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class ReaderThread implements Runnable {
+public class SPARQLProcessor implements Runnable {
 
     private String data;
     private  static int count =0;
     private LinkedBlockingQueue<Event> queue;
 
 
-    public ReaderThread(String data) {
+    public SPARQLProcessor(String data) {
         this.data = data;
     }
 

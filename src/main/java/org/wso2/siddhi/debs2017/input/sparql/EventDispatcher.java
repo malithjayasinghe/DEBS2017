@@ -80,7 +80,7 @@ public class EventDispatcher extends DefaultConsumer {
             double runTime = (System.currentTimeMillis() - startTime) / 1000;
             System.out.println("Average Throughput " + (count / runTime));
         }
-        Runnable reader = new ReaderThread(msg);
+        Runnable reader = new SPARQLProcessor(msg);
         EXECUTOR.execute(reader);
     }
 
