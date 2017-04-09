@@ -2,6 +2,7 @@ package org.wso2.siddhi.debs2017.query;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.EventHandlerGroup;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import org.hobbit.core.data.RabbitQueue;
@@ -36,10 +37,20 @@ public class DistributedQuery {
 
     private static final Logger logger = LoggerFactory.getLogger(DistributedQuery.class);
 
+    /**
+     * 1 : input queue : -hobbit
+     * 2 : output queue : metedataFilename
+     * 3 : executor size
+     * 4 : ring buffersize
+     * 5 : no of handlers --@TODO
+     *
+     */
     public static void main(String[] args) {
 
-        if(args.length==2){
+        if(args.length==5){
 
+            int executorsize = Integer.parseInt(args[2]);
+            int ringbuffersize = Integer.parseInt(args[3]);
             if(args[0].equals("-hobbit")){
 
                 String metadata = args[1];
@@ -47,7 +58,7 @@ public class DistributedQuery {
                 AlertGenerator alertGenerator = null;
 
                 Executor executor = Executors.newCachedThreadPool();
-                int buffersize = 128;
+                int buffersize = ringbuffersize;
                 Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new,buffersize, executor);
 
                 RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
@@ -59,14 +70,14 @@ public class DistributedQuery {
                 DebsAnomalyDetector debsAnormalyDetector =  null;
 
                 disruptor.handleEventsWith(sh1,sh2, sh3);
-
+                //disruptor.handleEventsWith(EventHandlerGroup<S>)
                 // disruptor.handleEventsWith(debsAnormalyDetector);
 
 
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
                 try {
-                    system = new DebsBenchmarkSystem(ring, metadata);
+                    system = new DebsBenchmarkSystem(ring, metadata, executorsize);
                     system.init();
 
                     //disruptor
@@ -104,7 +115,7 @@ public class DistributedQuery {
 
 
                 Executor executor = Executors.newCachedThreadPool();
-                int buffersize = 128;
+                int buffersize = ringbuffersize;
                 Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new,buffersize, executor);
 
                 RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
@@ -124,7 +135,7 @@ public class DistributedQuery {
                 disruptor.start();
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
-                rmq.consume(inputQueue, ring);
+                rmq.consume(inputQueue, ring, executorsize);
 
             }
 

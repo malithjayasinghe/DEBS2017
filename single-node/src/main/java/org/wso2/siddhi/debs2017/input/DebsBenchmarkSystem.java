@@ -59,19 +59,22 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
         private RabbitQueue inputQueue;
         private RabbitQueue outputQueue;
 
-        private static int value = 10;
-        private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-        private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
-        public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
 
-        public DebsBenchmarkSystem(RingBuffer<EventWrapper> ringBuffer, String metadataFile){
-            for (int i = 0; i < value; i++) {
+        private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
+        private static ExecutorService EXECUTOR;
+        public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
+
+        public DebsBenchmarkSystem(RingBuffer<EventWrapper> ringBuffer, String metadataFile, int executorSize){
+            arrayList = new ArrayList<>(executorSize);
+            for (int i = 0; i < executorSize; i++) {
                 arrayList.add(new LinkedBlockingQueue());
             }
             Collections.synchronizedList(arrayList);
             SorterThread sort = new SorterThread(arrayList, ringBuffer);
             sort.start();
             DebsMetaDataQuery.run(metadataFile);
+            EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
+
         }
 
         public RabbitQueue getOutputQueue(){

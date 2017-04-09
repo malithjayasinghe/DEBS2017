@@ -48,27 +48,30 @@ import java.util.concurrent.ThreadFactory;
 */
 public class SparQLProcessor extends DefaultConsumer {
 
-    private static int value = 10;
+
     private static int count=0;
     private static long startTime;
 
 
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(value, threadFactory);
-    public static ArrayList<LinkedBlockingQueue<Event>> arrayList = new ArrayList<>(value);
+    private static  ExecutorService EXECUTOR;
+    public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
 
 
 
-    public SparQLProcessor(Channel channel, RingBuffer<EventWrapper> ringBuffer) {
+    public SparQLProcessor(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize) {
         super(channel);
+        arrayList = new ArrayList<>(executorSize);
         this.startTime = System.currentTimeMillis();
-        for (int i = 0; i < value; i++) {
+        for (int i = 0; i < executorSize; i++) {
             arrayList.add(new LinkedBlockingQueue());
         }
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, ringBuffer);
         sort.start();
         SampleDebsMetaData.run("molding_machine_10M.metadata.nt");
+        EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
+
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {

@@ -37,7 +37,7 @@ public class RabbitMQConsumer {
      *  Consumes the sample data
      *
      */
-    public void consume(String queue, RingBuffer<EventWrapper> ringBuffer) {
+    public void consume(String queue, RingBuffer<EventWrapper> ringBuffer, int executorSize) {
         TASK_QUEUE_NAME = queue;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("127.0.0.1");
@@ -47,7 +47,7 @@ public class RabbitMQConsumer {
         try {
             connection = factory.newConnection(executors);
             channel = connection.createChannel();
-            consumer = new SparQLProcessor(channel, ringBuffer);
+            consumer = new SparQLProcessor(channel, ringBuffer, executorSize);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
         } catch (IOException e) {
