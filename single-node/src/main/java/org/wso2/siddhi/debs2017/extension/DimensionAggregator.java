@@ -25,7 +25,7 @@ import java.util.ArrayList;
 * limitations under the License.
 */
 public class DimensionAggregator extends AttributeAggregator {
-    MarkovGenerator markovnew = new MarkovGenerator();
+    MarkovGenerator markovModel = new MarkovGenerator();
     private ArrayList<Integer> centers;
     private double probability = -1;
     private ArrayList<Double> arr = new ArrayList<>();
@@ -53,9 +53,9 @@ public class DimensionAggregator extends AttributeAggregator {
         ArrayList<Integer> centers = cluster.getCenterA(arr);
 
         if (centers.size() >= ((Integer) objects[2])) {
-            markovnew.execute(centers);
+            markovModel.execute(centers);
             //get the total probability
-            probability = markovnew.updateProbability(centers);
+            probability = markovModel.updateProbability(centers);
         } else {
             return 2.0;
         }
