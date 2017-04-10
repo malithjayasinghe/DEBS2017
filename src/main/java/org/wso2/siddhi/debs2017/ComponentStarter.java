@@ -19,7 +19,7 @@ public class ComponentStarter {
             //component = createComponentInstance(args[0]);
             // initialize the component
             component.init();
-            // run the component
+            // load the component
             logger.info("----AAAA");
             component.run();
             logger.info("----BBBB");

@@ -19,7 +19,6 @@ import org.apache.commons.io.IOUtils;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.metadata.MultiNodeMetaDataQuery;
 import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class SparQLProcessor extends DefaultConsumer {
         siddhiClient.connect(host1, port1);
         siddhiClient1.connect(host2, port2);
         siddhiClient2.connect(host3, port3);
-        DebsMetaData.populateMetaData("molding_machine_old_10M.metadata.nt");
+        DebsMetaData.generate("molding_machine_old_10M.metadata.nt");
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {

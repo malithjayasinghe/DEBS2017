@@ -13,7 +13,6 @@ import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.metadata.MetaDataQuery;
 
 import java.util.ArrayList;
 
@@ -102,9 +101,9 @@ public class CorrectnessTestCase {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
 
         //extract metadata
-        DebsMetaData.run("molding_machine_10M.metadata.nt");
+        DebsMetaData.load("molding_machine_10M.metadata.nt");
 
-        //run sparql
+        //load sparql
 
         sparql();
         try {

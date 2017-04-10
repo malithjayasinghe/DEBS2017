@@ -1,6 +1,5 @@
 package org.wso2.siddhi.debs2017.input.sparql;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -12,24 +11,12 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.lmax.disruptor.RingBuffer;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
 import org.apache.commons.io.IOUtils;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.input.metadata.DebsMetaDataQuery;
-import org.wso2.siddhi.debs2017.input.metadata.SampleDebsMetaData;
-import org.wso2.siddhi.debs2017.processor.EventWrapper;
+import org.wso2.siddhi.debs2017.input.UnixConverter;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -46,46 +33,78 @@ import java.util.concurrent.ThreadFactory;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SparQLProcessor extends DefaultConsumer {
+public class SparQLProcessor implements Runnable{
+    private String data;
+    private LinkedBlockingQueue<Event> queue;
 
-
-    private static int count=0;
-    private static long startTime;
-
-
-    private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static  ExecutorService EXECUTOR;
-    public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
-
-
-
-    public SparQLProcessor(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize) {
-        super(channel);
-        arrayList = new ArrayList<>(executorSize);
-        this.startTime = System.currentTimeMillis();
-        for (int i = 0; i < executorSize; i++) {
-            arrayList.add(new LinkedBlockingQueue());
-        }
-        Collections.synchronizedList(arrayList);
-        SorterThread sort = new SorterThread(arrayList, ringBuffer);
-        sort.start();
-        SampleDebsMetaData.run("molding_machine_10M.metadata.nt");
-        EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
-
-    }
-
-    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-        String msg = new String(body, "UTF-8");
-        Runnable reader = new ReaderRunnable(msg);
-        count++;
-        EXECUTOR.execute(reader);
-        if(count==335000){
-            double runtime = System.currentTimeMillis() -startTime;
-            System.out.println("Runtime in sec :"+(runtime/1000.0));
-            System.out.println("Average Throughput :"+(count/(runtime/1000.0)));
-        }
-
+    public SparQLProcessor(String data) {
+        this.data = data;
     }
 
 
+    @Override
+    public void run() {
+
+        this.queue = CentralDispatcher.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
+        String queryString = "" +
+                "SELECT ?machine ?time ?timestamp ?dimension ?value" +
+                " WHERE {" +
+                "?observation <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup> ." +
+                "?observation <http://www.agtinternational.com/ontologies/I4.0#machine> ?machine ." +
+                "?observation <http://purl.oclc.org/NET/ssnx/ssn#observationResultTime> ?time ." +
+                "?time <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?timestamp ." +
+                "?observation <http://www.agtinternational.com/ontologies/I4.0#contains> ?obGroup ." +
+                "?obGroup <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?dimension ." +
+                "?obGroup <http://purl.oclc.org/NET/ssnx/ssn#observationResult> ?output ." +
+                "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
+                "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
+                "}" +
+                "" +
+                "";
+
+        try {
+            Model model = ModelFactory.createDefaultModel().read(IOUtils.toInputStream(this.data, "UTF-8"), null, "TURTLE");
+
+            Query query = QueryFactory.create(queryString);
+            QueryExecution qexec = QueryExecutionFactory.create(query, model);
+            ResultSet results = qexec.execSelect();
+            results = ResultSetFactory.copyResults(results);
+            for (; results.hasNext(); ) {
+                QuerySolution solution = results.nextSolution();
+
+                Resource time = solution.getResource("time"); // Get a result variable - must be a resource
+                Resource property = solution.getResource("dimension");
+                Resource machine = solution.getResource("machine");
+                Literal timestamp = solution.getLiteral("timestamp");
+                Literal value = solution.getLiteral("value");
+                if (!value.toString().contains("#string")) {
+
+
+                    // int machineNo = Integer.parseInt(machine.getLocalName().substring(8));
+                    String stateful = property.getLocalName();
+                    //System.out.println(stateful);
+
+                    if(DebsMetaData.getMetaData().containsKey(stateful)) {
+
+                        int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
+                        double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
+                        Event event = new Event(System.currentTimeMillis(), new Object[]{
+                                machine.getLocalName(),
+                                time.getLocalName(),
+                                property.getLocalName(),
+                                UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                                Math.round(value.getDouble() * 10000.0) / 10000.0, //
+                                centers,
+                                probability});
+                      //  System.out.println(UnixConverter.getUnixTime(timestamp.getLexicalForm()));
+                        this.queue.put(event);
+                    }
+                    //System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

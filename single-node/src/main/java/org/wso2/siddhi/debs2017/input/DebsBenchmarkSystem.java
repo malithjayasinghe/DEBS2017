@@ -17,8 +17,8 @@ import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.input.metadata.DebsMetaDataQuery;
-import org.wso2.siddhi.debs2017.input.sparql.ReaderRunnable;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.sparql.SparQLProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
@@ -72,7 +72,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
             Collections.synchronizedList(arrayList);
             SorterThread sort = new SorterThread(arrayList, ringBuffer);
             sort.start();
-            DebsMetaDataQuery.run(metadataFile);
+            DebsMetaData.load(metadataFile);
             EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
 
         }
@@ -234,7 +234,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
                     terminationMessageBarrier.countDown();
                 } else {
                     //logger.debug("Repeating message: {}", message);
-                    Runnable reader = new ReaderRunnable(message);
+                    Runnable reader = new SparQLProcessor(message);
                     EXECUTOR.execute(reader);
 
                     //sends to output queue

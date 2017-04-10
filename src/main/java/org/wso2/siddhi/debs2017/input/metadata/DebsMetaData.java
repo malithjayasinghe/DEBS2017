@@ -35,6 +35,15 @@ public class DebsMetaData {
 
 
     private static HashMap<String, MetaDataItem> meta = new HashMap<>();
+    private final static String queryString =
+            "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
+                    "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
+                    "?machine <http://www.agtinternational.com/ontologies/IoTCore#hasModel> ?model ." +
+                    "?model <http://purl.oclc.org/NET/ssnx/ssn#hasProperty> ?dimension ." +
+                    "?dimension <http://www.agtinternational.com/ontologies/WeidmullerMetadata#hasNumberOfClusters> ?clusters ." +
+                    "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty> ?dimension ." +
+                    "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
+                    "}";
 
     /**
      * Adds a value to meta data container
@@ -65,17 +74,8 @@ public class DebsMetaData {
      *
      * @param datafile the name of the file
      */
-    public static void populateMetaData(String datafile) {
+    public static void generate(String datafile) {
         Model model = RDFDataMgr.loadModel(datafile);
-        String queryString =
-                "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
-                        "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
-                        "?machine <http://www.agtinternational.com/ontologies/IoTCore#hasModel> ?model ." +
-                        "?model <http://purl.oclc.org/NET/ssnx/ssn#hasProperty> ?dimension ." +
-                        "?dimension <http://www.agtinternational.com/ontologies/WeidmullerMetadata#hasNumberOfClusters> ?clusters ." +
-                        "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty> ?dimension ." +
-                        "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
-                        "}";
         Query query = QueryFactory.create(queryString);
         try {
             for (int i = 0; i < 5; i++) {
@@ -97,18 +97,14 @@ public class DebsMetaData {
         }
     }
 
-    public static void run(String datafile) {
+    /**
+     * Loading the actual meta file from the platform
+     *
+     * @param datafile the name of the file to be loaded
+     */
+    public static void load(String datafile) {
         String data = "";
         Model model = RDFDataMgr.loadModel(datafile);
-        String queryString =
-                "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
-                        "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
-                        "?machine <http://www.agtinternational.com/ontologies/IoTCore#hasModel> ?model ." +
-                        "?model <http://purl.oclc.org/NET/ssnx/ssn#hasProperty> ?dimension ." +
-                        "?dimension <http://www.agtinternational.com/ontologies/WeidmullerMetadata#hasNumberOfClusters> ?clusters ." +
-                        "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty> ?dimension ." +
-                        "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
-                        "}";
         Query query = QueryFactory.create(queryString);
         try {
             QueryExecution qexec = QueryExecutionFactory.create(query, model);
@@ -127,7 +123,6 @@ public class DebsMetaData {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
 }
