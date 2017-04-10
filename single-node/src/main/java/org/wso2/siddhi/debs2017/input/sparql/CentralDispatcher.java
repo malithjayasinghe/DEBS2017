@@ -39,8 +39,6 @@ public class CentralDispatcher extends DefaultConsumer {
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR;
-    public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
-
     /**
      * Dispatchers events to the disruptor after sorting
      *
@@ -48,17 +46,13 @@ public class CentralDispatcher extends DefaultConsumer {
      * @param ringBuffer the ring buffer
      * @param executorSize the size of the executor pool
      */
-    public CentralDispatcher(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize) {
+    public CentralDispatcher(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<Event>> arrayList) {
         super(channel);
-        arrayList = new ArrayList<>(executorSize);
         this.startTime = System.currentTimeMillis();
-        for (int i = 0; i < executorSize; i++) {
-            arrayList.add(new LinkedBlockingQueue());
-        }
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, ringBuffer);
         sort.start();
-        DebsMetaData.load("molding_machine_10M.metadata.nt");
+        DebsMetaData.generate("molding_machine_10M.metadata.nt");
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
 
     }

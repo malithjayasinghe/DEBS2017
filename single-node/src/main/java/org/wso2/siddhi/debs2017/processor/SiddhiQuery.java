@@ -7,6 +7,7 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 import org.wso2.siddhi.debs2017.extension.DimensionAggregator;
+import org.wso2.siddhi.debs2017.extension.TimestampAggregator;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -49,7 +50,7 @@ public class SiddhiQuery {
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
                 "begin " +
                 "from inStreamA#window.externalTime(uTime , 10) \n" +
-                "select machine, time, dimension, singlenode:agg(value, centers, 10) as probaility, threshold " +
+                "select machine, singlenode:time(time) as time, dimension, singlenode:agg(value, centers, 10) as probaility, threshold " +
                 " insert into detectAnomaly  " + //inner stream
 //                "\n" +
 //                "from #outputStream \n " +
@@ -59,6 +60,7 @@ public class SiddhiQuery {
 
         this.siddhiManager = new SiddhiManager();
         this.siddhiManager.setExtension("singlenode:agg", DimensionAggregator.class);
+        this.siddhiManager.setExtension("singlenode:time", TimestampAggregator.class);
         this.executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
         this.buffer = buffer;
         inputHandler = executionPlanRuntime.getInputHandler("inStream");

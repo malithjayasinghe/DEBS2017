@@ -62,13 +62,9 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
         private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
         private static ExecutorService EXECUTOR;
-        public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
 
-        public DebsBenchmarkSystem(RingBuffer<EventWrapper> ringBuffer, String metadataFile, int executorSize){
-            arrayList = new ArrayList<>(executorSize);
-            for (int i = 0; i < executorSize; i++) {
-                arrayList.add(new LinkedBlockingQueue());
-            }
+
+        public DebsBenchmarkSystem(RingBuffer<EventWrapper> ringBuffer, String metadataFile, int executorSize, ArrayList<LinkedBlockingQueue<Event>> arrayList){
             Collections.synchronizedList(arrayList);
             SorterThread sort = new SorterThread(arrayList, ringBuffer);
             sort.start();
@@ -231,6 +227,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
                 String message = new String(bytes, CHARSET);
                 if (TERMINATION_MESSAGE.equals(message)) {
                     logger.debug("Got termination message");
+
                     terminationMessageBarrier.countDown();
                 } else {
                     //logger.debug("Repeating message: {}", message);
