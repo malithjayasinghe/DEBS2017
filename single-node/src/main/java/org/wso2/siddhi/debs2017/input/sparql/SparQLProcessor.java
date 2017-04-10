@@ -15,7 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.query.DistributedQuery;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
+
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -46,7 +47,7 @@ public class SparQLProcessor implements Runnable{
     @Override
     public void run() {
 
-        this.queue = DistributedQuery.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
+        this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
