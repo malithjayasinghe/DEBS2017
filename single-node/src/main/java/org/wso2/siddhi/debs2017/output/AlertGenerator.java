@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class AlertGenerator {
 
     private static int anomalyCount = 0;
-    private String probThresh;
+    private Double probThresh;
     private String timestamp;
     private String dimension;
     private String machineNumber;
@@ -60,7 +60,7 @@ public class AlertGenerator {
      * generate the rdf model and publish to rabbitmq
      */
     public void generateAlert(Event event) {
-        this.probThresh = Double.toString((Double) event.getData()[3]);
+        this.probThresh = Double.parseDouble(event.getData()[3].toString());
         //this.timestamp = transformTimestamp((String) event.getData()[1]);
         this.timestamp = (String) event.getData()[1];
         this.dimension = (String) event.getData()[2];

@@ -5,12 +5,15 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
+import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.sparql.CentralDispatcher;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
 
 /*
@@ -36,7 +39,7 @@ public class RabbitMQConsumer {
     /**
      * Consumes the sample data
      */
-    public void consume(String queue, RingBuffer<EventWrapper> ringBuffer, int executorSize) {
+    public void consume(String queue, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<Event>> arrayList) {
         TASK_QUEUE_NAME = queue;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("127.0.0.1");
@@ -46,7 +49,7 @@ public class RabbitMQConsumer {
         try {
             connection = factory.newConnection(executors);
             channel = connection.createChannel();
-            consumer = new CentralDispatcher(channel, ringBuffer, executorSize);
+            consumer = new CentralDispatcher(channel, ringBuffer, executorSize, arrayList);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
         } catch (IOException e) {
