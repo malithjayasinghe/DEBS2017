@@ -54,7 +54,7 @@ public class RabbitMQSamplePublisher {
                     String dataInLine = scanner.next();
                     if (dataInLine.contains("----")) {
                         if (data.length() > 100) {
-                            for (int i = 0; i < 5000; i++) {
+                            for (int i = 0; i < 5; i++) {
                                 count++;
                                 System.out.println(count);
                                // System.out.println(data);
