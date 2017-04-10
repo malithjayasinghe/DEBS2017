@@ -43,7 +43,7 @@ public class RabbitMQSamplePublisher {
         channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
         String data = "";
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("63-messages.txt"));//molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt
+            BufferedReader reader = new BufferedReader(new FileReader("frmattedData_63.nt"));//molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt
             // read file line by line
             String line;
             Scanner scanner;
@@ -52,17 +52,17 @@ public class RabbitMQSamplePublisher {
                 scanner = new Scanner(line);
                 while (scanner.hasNext()) {
                     String dataInLine = scanner.next();
-                    if (dataInLine.contains("|")) {
+                    if (dataInLine.contains("----")) {
                         if (data.length() > 100) {
-                            for (int i = 0; i < 1; i++) {
+                            for (int i = 0; i < 5; i++) {
                                 count++;
                                 System.out.println(count);
                                // System.out.println(data);
                                 //Thread.sleep(5000);
-                                //String data1 = data.replace("Machine_59", "Machine_" + i).replace("_59_", "_" + i + "_");
+                                String data1 = data.replace("Machine_59", "Machine_" + i).replace("_59_", "_" + i + "_");
                                 channel.basicPublish("", TASK_QUEUE_NAME,
                                         MessageProperties.PERSISTENT_TEXT_PLAIN,
-                                        data.getBytes());
+                                        data1.getBytes());
                             }
                         }
                         data = "";

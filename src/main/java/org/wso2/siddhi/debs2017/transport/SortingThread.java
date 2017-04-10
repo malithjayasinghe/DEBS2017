@@ -3,6 +3,8 @@ package org.wso2.siddhi.debs2017.transport;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.output.MultiNodeAlertGenerator;
 import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
+import org.wso2.siddhi.query.api.expression.condition.In;
+
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -52,6 +54,28 @@ public class SortingThread extends Thread {
         String time = (String) event.getData()[1];
         int timestamp = Integer.parseInt(time.substring(10));
         return timestamp;
+    }
+
+    /**
+     * Get the machine number of the sidhhi events
+     * @param event
+     * @return
+     */
+    private synchronized int getMachine(Event event){
+        String machine = event.getData()[0].toString();
+        int machinenum = Integer.parseInt(machine.split("_")[1]);
+        return machinenum;
+
+    }
+
+
+    /**
+     * Get the property number of the sidhhi event
+     */
+    private synchronized int getPropery(Event event){
+        String property = event.getData()[2].toString();
+        int propertynum = Integer.parseInt(property.split("_")[2]);
+        return propertynum;
     }
 
     /**
