@@ -102,7 +102,7 @@ public class CorrectnessTestCase {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
 
         //extract metadata
-        MetaDataQuery.run("molding_machine_10M.metadata.nt");
+        DebsMetaData.run("molding_machine_10M.metadata.nt");
 
         //run sparql
 
@@ -160,11 +160,14 @@ public class CorrectnessTestCase {
 
                 String machineName = machine.getLocalName();
                 String dimension = property.getLocalName();
+               // System.out.println(DebsMetaData.getMetaData().keySet());
                 if (DebsMetaData.getMetaData().keySet().contains(dimension) &&  !value.toString().contains("#string")) {
                             arr.add(new Object[]{machineName, time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), dimension, value.getDouble(),
                                     DebsMetaData.getMetaData().get(dimension).getClusterCenters()});
 
+
                 }
+
             }
 
         } catch (Exception e1) {
