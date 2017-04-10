@@ -90,7 +90,7 @@ public class DebsMetaData {
     }
 
     /**
-     * Loading the actual meta file from the platform
+     * Loading the actual meta data file from the platform node
      *
      * @param datafile the name of the file to be loaded
      */

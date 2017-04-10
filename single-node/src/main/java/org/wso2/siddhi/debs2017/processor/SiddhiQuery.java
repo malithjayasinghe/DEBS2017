@@ -34,7 +34,6 @@ public class SiddhiQuery {
     private long sequence;
 
 
-
     public SiddhiQuery(RingBuffer<EventWrapper> buffer) {
 
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
@@ -84,7 +83,6 @@ public class SiddhiQuery {
     }
 
 
-
     public void publish(Event obj) {
         try {
             // inputHandler.send(obj.getData());
@@ -103,20 +101,17 @@ public class SiddhiQuery {
     }
 
 
-
-
     /**
      * @param ev probability of the event sequence in the window
-     *          publishing the debsevent back tot he ring buffer after setting the probability
+     *           publishing the debsevent back tot he ring buffer after setting the probability
      */
     private synchronized void publishEvent(Event ev) {
-        try{
+        try {
             EventWrapper wrapper = buffer.get(sequence);
             wrapper.setEvent(ev);
         } finally {
             buffer.publish(sequence);
         }
-
 
 
     }

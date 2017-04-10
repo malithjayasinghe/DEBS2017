@@ -1,7 +1,7 @@
 package org.wso2.siddhi.debs2017.extension.utils.markov;
 
 /**
- * Created by temp on 4/10/17.
+ * Holder for event data
  */
 public class EventDataHolder {
 

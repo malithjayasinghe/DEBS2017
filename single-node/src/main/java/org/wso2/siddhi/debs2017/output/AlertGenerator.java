@@ -41,25 +41,20 @@ public class AlertGenerator {
     String wmm = "http://www.agtinternational.com/ontologies/WeidmullerMetadata#";
     String i40 = "http://www.agtinternational.com/ontologies/I4.0#";
     private RabbitQueue rabbitMQPublisher;
-    StringWriter out;
-    //performance
+    private StringWriter out;
     private long dispatchedTime;
     private static double sum = 0;
-    //private static int latencyCount;
 
     /**
      * initialize the parameters from the sidhhi event, to generate the alert
      *
-     * @param rabbitMQPublisher - publish to rabbitmq
+     * @param rabbitMQPublisher  publish to rabbitmq
      */
     public AlertGenerator(RabbitQueue rabbitMQPublisher) {
 
         this.rabbitMQPublisher = rabbitMQPublisher;
     }
 
-    public AlertGenerator() {
-
-    }
 
     /**
      * generate the rdf model and publish to rabbitmq
@@ -91,14 +86,10 @@ public class AlertGenerator {
                 .add(r1, machine, r6)
                 .add(r1, type, r2);
 
-
         anomalyCount++;
-
         String str = "N-TRIPLES";
         out = new StringWriter();
         model.write(out, str);
-        // System.out.println("Anomaly" + machineNumber + " " + timestamp + " " + dimension);
-       // rabbitMQPublisher.publish(out.toString());
         Channel channel = rabbitMQPublisher.getChannel();
         try {
             channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
@@ -114,6 +105,12 @@ public class AlertGenerator {
 
     }
 
+    /**
+     * Transforms the time stamp
+     *
+     * @param time the time stamp string to be transformed
+     * @return converted time stamp
+     */
     private String transformTimestamp(String time) {
         String[] str = time.split("_");
         return str[0].concat("_" + (Integer.parseInt(str[1]) - 5));

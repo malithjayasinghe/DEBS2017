@@ -46,7 +46,6 @@ public class DimensionAggregator extends AttributeAggregator {
     public Object processAdd(Object[] objects) {
         arr.add((Double) objects[0]);
         Clusterer cluster = new Clusterer((Integer) objects[1], 50, arr);//(Integer) objects[1]
-
         // Do the clustering on the elements present in the array list and return the center it belongs to
         cluster.cluster();
 

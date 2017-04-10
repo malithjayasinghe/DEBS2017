@@ -24,32 +24,33 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
     private static AlertGenerator alertGenerator;
     private double probability;
     private double threshold;
-    static int count =0;
+    static int count = 0;
 
     @Override
     public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
-
-        //System.out.println(wrapper.getEvent());
         Object[] o = wrapper.getEvent().getData();
         probability = Double.parseDouble(o[3].toString());
-        threshold  = Double.parseDouble(o[4].toString());
-
-        if(probability < threshold && probability > 0) {
-            // System.out.println(probability);
+        threshold = Double.parseDouble(o[4].toString());
+        if (probability < threshold && probability > 0) {
             send(wrapper.getEvent());
         }
-
     }
 
+    /**
+     * Generates an alert
+     * @param event the event to generate the alert from
+     */
     private synchronized void send(Event event) {
         count++;
         alertGenerator.generateAlert(event);
-
-
     }
 
-    public DebsAnomalyDetector(AlertGenerator alertGenerator){
-    this.alertGenerator = alertGenerator;
-
+    /**
+     * The constructor
+     *
+     * @param alertGenerator the alert generator object
+     */
+    public DebsAnomalyDetector(AlertGenerator alertGenerator) {
+        this.alertGenerator = alertGenerator;
     }
 }

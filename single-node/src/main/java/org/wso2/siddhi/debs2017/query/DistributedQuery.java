@@ -43,51 +43,39 @@ public class DistributedQuery {
      * 3 : executor size
      * 4 : ring buffersize
      * 5 : no of handlers --@TODO
-     *
      */
     public static void main(String[] args) {
-
-        if(args.length==5){
-
+        if (args.length == 5) {
             int executorsize = Integer.parseInt(args[2]);
             int ringbuffersize = Integer.parseInt(args[3]);
-            if(args[0].equals("-hobbit")){
+            if (args[0].equals("-hobbit")) {
 
                 String metadata = args[1];
                 RabbitQueue rmqPublisher = null;
                 AlertGenerator alertGenerator = null;
-
                 Executor executor = Executors.newCachedThreadPool();
                 int buffersize = ringbuffersize;
-                Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new,buffersize, executor);
-
+                Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new, buffersize, executor);
                 RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
 
                 SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
                 SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
                 SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
 
-                DebsAnomalyDetector debsAnormalyDetector =  null;
-
-                disruptor.handleEventsWith(sh1,sh2, sh3);
-                //disruptor.handleEventsWith(EventHandlerGroup<S>)
-                // disruptor.handleEventsWith(debsAnormalyDetector);
-
+                DebsAnomalyDetector debsAnormalyDetector = null;
+                disruptor.handleEventsWith(sh1, sh2, sh3);
 
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
                 try {
                     system = new DebsBenchmarkSystem(ring, metadata, executorsize);
                     system.init();
-
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
                     alertGenerator = new AlertGenerator(rmqPublisher);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
                     disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
                     disruptor.start();
-
-
                     system.run();
                 } finally {
                     if (system != null) {
@@ -113,10 +101,9 @@ public class DistributedQuery {
                 }
 
 
-
                 Executor executor = Executors.newCachedThreadPool();
                 int buffersize = ringbuffersize;
-                Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new,buffersize, executor);
+                Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new, buffersize, executor);
 
                 RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
 
@@ -126,22 +113,14 @@ public class DistributedQuery {
                 output = new RabbitQueue(channel, outputQueue);
                 AlertGenerator alertGenerator = new AlertGenerator(output);
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
-
-                disruptor.handleEventsWith(sh1,sh2, sh3);
-
+                disruptor.handleEventsWith(sh1, sh2, sh3);
                 disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
-                // disruptor.handleEventsWith(debsAnormalyDetector);
-
                 disruptor.start();
-
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
                 rmq.consume(inputQueue, ring, executorsize);
 
             }
 
-
         }
-
-
     }
 }

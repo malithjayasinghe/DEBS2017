@@ -19,10 +19,8 @@ import java.util.HashMap;
 * limitations under the License.
 */
 public class MarkovGenerator {
-
     private int currentCenter = 0;
     private int previousCenter = 0;
-
 
     /**
      * hash map to keep track of the event count of the center transitions
