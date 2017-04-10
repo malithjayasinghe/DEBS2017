@@ -7,6 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkSystem;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
@@ -14,8 +15,10 @@ import org.wso2.siddhi.debs2017.processor.DebsAnomalyDetector;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 import org.wso2.siddhi.debs2017.processor.SiddhiEventHandler;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -36,6 +39,7 @@ public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
+    public static ArrayList<LinkedBlockingQueue<Event>> arraylist;
     /**
      * 1 : input queue : -hobbit
      * 2 : output queue : metedataFilename
@@ -47,6 +51,11 @@ public class SingleNodeServer {
         if (args.length == 5) {
             int executorsize = Integer.parseInt(args[2]);
             int ringbuffersize = Integer.parseInt(args[3]);
+
+            arraylist = new ArrayList<>(executorsize);
+            for(int i=0; i<executorsize; i++){
+                arraylist.add(new LinkedBlockingQueue<Event>());
+            }
             if (args[0].equals("-hobbit")) {
 
                 String metadata = args[1];
@@ -67,7 +76,7 @@ public class SingleNodeServer {
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
                 try {
-                    system = new DebsBenchmarkSystem(ring, metadata, executorsize);
+                    system = new DebsBenchmarkSystem(ring, metadata, executorsize, arraylist);
                     system.init();
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
@@ -116,7 +125,7 @@ public class SingleNodeServer {
                 disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
-                rmq.consume(inputQueue, ring, executorsize);
+                rmq.consume(inputQueue, ring, executorsize, arraylist);
 
             }
 

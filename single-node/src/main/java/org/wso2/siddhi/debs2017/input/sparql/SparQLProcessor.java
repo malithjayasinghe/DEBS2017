@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.query.DistributedQuery;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -45,7 +46,7 @@ public class SparQLProcessor implements Runnable{
     @Override
     public void run() {
 
-        this.queue = CentralDispatcher.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
+        this.queue = DistributedQuery.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
@@ -59,7 +60,7 @@ public class SparQLProcessor implements Runnable{
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-                "" +
+                "ORDER BY (?timestamp)" +
                 "";
 
         try {
