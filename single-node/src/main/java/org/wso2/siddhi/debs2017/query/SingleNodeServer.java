@@ -54,7 +54,7 @@ public class SingleNodeServer {
                 disruptor.handleEventsWith(sh1,sh2);
                 disruptor.after(sh1, sh2).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
-                System.out.println(Thread.activeCount());
+               // System.out.println(Thread.activeCount());
                 break;
 
             }
@@ -65,7 +65,7 @@ public class SingleNodeServer {
                 disruptor.handleEventsWith(sh1,sh2,sh3);
                 disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
-                System.out.println(Thread.activeCount());
+                //System.out.println(Thread.activeCount());
                 break;
 
             }
@@ -77,7 +77,7 @@ public class SingleNodeServer {
                 disruptor.handleEventsWith(sh1,sh2,sh3,sh4);
                 disruptor.after(sh1, sh2, sh3,sh4).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
-                System.out.println(Thread.activeCount());
+                //System.out.println(Thread.activeCount());
                 break;
 
             }

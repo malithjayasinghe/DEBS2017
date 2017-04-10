@@ -99,7 +99,7 @@ public class AlertGenerator {
         }
 
         sum += System.currentTimeMillis() - dispatchedTime;
-        if (anomalyCount == 2000) {
+        if (anomalyCount == 20000) {
             System.out.println("Average Latency : " + (sum / anomalyCount));
         }
 
