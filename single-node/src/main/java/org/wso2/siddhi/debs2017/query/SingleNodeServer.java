@@ -2,7 +2,6 @@ package org.wso2.siddhi.debs2017.query;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
-import com.lmax.disruptor.dsl.EventHandlerGroup;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import org.hobbit.core.data.RabbitQueue;
@@ -33,9 +32,9 @@ import java.util.concurrent.Executors;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class DistributedQuery {
+public class SingleNodeServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(DistributedQuery.class);
+    private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
     /**
      * 1 : input queue : -hobbit

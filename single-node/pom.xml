@@ -102,7 +102,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQSampleDataPublisher</mainClass>
+                            <mainClass>org.wso2.siddhi.debs2017.query.SingleNodeServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
