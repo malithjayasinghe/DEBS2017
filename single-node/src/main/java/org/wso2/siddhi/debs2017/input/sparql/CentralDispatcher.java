@@ -41,6 +41,13 @@ public class CentralDispatcher extends DefaultConsumer {
     private static ExecutorService EXECUTOR;
     public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
 
+    /**
+     * Dispatchers events to the disruptor after sorting
+     *
+     * @param channel the channel
+     * @param ringBuffer the ring buffer
+     * @param executorSize the size of the executor pool
+     */
     public CentralDispatcher(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize) {
         super(channel);
         arrayList = new ArrayList<>(executorSize);
@@ -58,9 +65,9 @@ public class CentralDispatcher extends DefaultConsumer {
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
-        Runnable reader = new SparQLProcessor(msg);
+        Runnable sparQLProcessor = new SparQLProcessor(msg);
         count++;
-        EXECUTOR.execute(reader);
+        EXECUTOR.execute(sparQLProcessor);
         if (count == 335000) {
             double runtime = System.currentTimeMillis() - startTime;
             System.out.println("Runtime in sec :" + (runtime / 1000.0));

@@ -34,8 +34,7 @@ public class RabbitMQConsumer {
     static ExecutorService executors = Executors.newFixedThreadPool(8);
 
     /**
-     *  Consumes the sample data
-     *
+     * Consumes the sample data
      */
     public void consume(String queue, RingBuffer<EventWrapper> ringBuffer, int executorSize) {
         TASK_QUEUE_NAME = queue;
@@ -56,7 +55,4 @@ public class RabbitMQConsumer {
             e.printStackTrace();
         }
     }
-
-
-
 }

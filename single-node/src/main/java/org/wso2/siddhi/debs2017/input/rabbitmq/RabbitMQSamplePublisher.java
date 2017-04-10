@@ -33,7 +33,7 @@ public class RabbitMQSamplePublisher {
     public static void main(String[] argv)
             throws java.io.IOException, TimeoutException {
 
-        if (argv.length>0){
+        if (argv.length > 0) {
             TASK_QUEUE_NAME = argv[0];
         }
         ConnectionFactory factory = new ConnectionFactory();
@@ -45,8 +45,8 @@ public class RabbitMQSamplePublisher {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("frmattedData_63.nt"));//molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt
             // read file line by line
-            String line ;
-            Scanner scanner ;
+            String line;
+            Scanner scanner;
             int count = 0;
             while ((line = reader.readLine()) != null) {
                 scanner = new Scanner(line);

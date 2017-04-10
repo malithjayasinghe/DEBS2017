@@ -30,12 +30,16 @@ public class SorterThread extends Thread {
     private static int size;
     private static RingBuffer<EventWrapper> ring;
 
-
+    /**
+     * The constructor
+     *
+     * @param arrayList  the array list of link blocking queues
+     * @param ringBuffer the ring buffer to publish
+     */
     public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, RingBuffer<EventWrapper> ringBuffer) {
         this.arrayList = arrayList;
         this.size = arrayList.size();
         this.ring = ringBuffer;
-
     }
 
     public void run() {
@@ -57,7 +61,6 @@ public class SorterThread extends Thread {
                                 break;
                             }
                         }
-
                     }
 
                 } catch (Exception e) {
@@ -68,33 +71,42 @@ public class SorterThread extends Thread {
         }
     }
 
+    /**
+     * Gets the time stamp from the event
+     *
+     * @param event the event to get the time stamp from
+     * @return the time stamp
+     */
     private int getTime(Event event) {
         String time = (String) event.getData()[1];
         int timestamp = Integer.parseInt(time.substring(10));
         return timestamp;
     }
 
-
+    /**
+     * Remove event from the blocking queue
+     *
+     * @param e     event to be removed
+     * @param queNo blocking queue number
+     */
     private void removeEvent(Event e, int queNo) {
-
         //Machine_59
         //MoldingMachine_59
         int machineNo = Integer.parseInt(e.getData()[0].toString().substring(8));
-
         LinkedBlockingQueue<Event> linkedBlockingQueue = arrayList.get(queNo);
         //add to disruptor
         long sequence = this.ring.next();  // Grab the next sequence
-        try
-        {
+        try {
             EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor
             wrapper.setEvent(linkedBlockingQueue.poll());
-        }
-        finally
-        {
+        } finally {
             this.ring.publish(sequence);
         }
     }
 
+    /**
+     * Sort events based on their time stamp
+     */
     private synchronized void sort() {
         if (arr.size() > 0) {
             Event currentEvent = arr.get(0);
@@ -108,9 +120,6 @@ public class SorterThread extends Thread {
             arr = new ArrayList<>();
             arr2 = new ArrayList<>();
             removeEvent(currentEvent, queNo);
-
         }
-
     }
-    
 }
