@@ -52,7 +52,7 @@ public class SorterThread extends Thread {
                     } else {
                         long timeout = System.currentTimeMillis();
                         while (true) {
-                            if ((System.currentTimeMillis() - timeout) >= 3000) {
+                            if ((System.currentTimeMillis() - timeout) >= 30) {
                                 break;
                             }
                             if (arrayList.get(i).size() != 0) {
@@ -77,9 +77,8 @@ public class SorterThread extends Thread {
      * @param event the event to get the time stamp from
      * @return the time stamp
      */
-    private int getTime(Event event) {
-        String time = (String) event.getData()[1];
-        int timestamp = Integer.parseInt(time.substring(10));
+    private long getTime(Event event) {
+        long timestamp = Long.parseLong(event.getData()[3].toString());
         return timestamp;
     }
 

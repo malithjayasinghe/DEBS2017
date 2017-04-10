@@ -238,7 +238,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
                     EXECUTOR.execute(reader);
 
                     //sends to output queue
-                    send(bytes);
+                    //send(bytes);
                 }
             } catch (Exception e) {
                 logger.error("Exception", e);

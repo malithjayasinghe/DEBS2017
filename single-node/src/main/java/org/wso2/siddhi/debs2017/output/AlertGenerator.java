@@ -61,7 +61,8 @@ public class AlertGenerator {
      */
     public void generateAlert(Event event) {
         this.probThresh = Double.toString((Double) event.getData()[3]);
-        this.timestamp = transformTimestamp((String) event.getData()[1]);
+        //this.timestamp = transformTimestamp((String) event.getData()[1]);
+        this.timestamp = (String) event.getData()[1];
         this.dimension = (String) event.getData()[2];
         this.machineNumber = (String) event.getData()[0];
         this.dispatchedTime = event.getTimestamp();

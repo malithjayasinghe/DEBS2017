@@ -58,7 +58,7 @@ public class CentralDispatcher extends DefaultConsumer {
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, ringBuffer);
         sort.start();
-        DebsMetaData.generate("molding_machine_10M.metadata.nt");
+        DebsMetaData.load("molding_machine_10M.metadata.nt");
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
 
     }

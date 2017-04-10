@@ -74,7 +74,9 @@ public class SiddhiQuery {
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
                 for (Event ev : events) {
 
-                    //set the probability in debsevent
+                      //  System.out.println(ev);
+
+
                     publishEvent(ev);
 
                 }

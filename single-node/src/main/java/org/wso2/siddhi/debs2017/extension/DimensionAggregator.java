@@ -48,9 +48,9 @@ public class DimensionAggregator extends AttributeAggregator {
         Clusterer cluster = new Clusterer((Integer) objects[1], 50, arr);//(Integer) objects[1]
         // Do the clustering on the elements present in the array list and return the center it belongs to
         cluster.cluster();
-
+        //System.out.println(arr);
         ArrayList<Integer> centers = cluster.getCenterA(arr);
-
+        //System.out.println(centers);
         if (centers.size() >= ((Integer) objects[2])) {
             markovModel.execute(centers);
             //get the total probability
