@@ -3,7 +3,6 @@ package org.wso2.siddhi.debs2017.extension;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.selector.attribute.aggregator.AttributeAggregator;
-import org.wso2.siddhi.debs2017.kmeans.WSO2KmeansClustering;
 import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.util.ArrayList;
