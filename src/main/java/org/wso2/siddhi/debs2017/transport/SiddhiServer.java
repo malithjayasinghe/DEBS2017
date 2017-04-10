@@ -32,8 +32,8 @@ import java.util.concurrent.Executors;
 public class SiddhiServer {
 
     public static void main(String[] args) {
-        if(args.length==5){
-            int ringBuffersize = Integer.parseInt(args[4]);
+        if (args.length == 5) {
+            int ringBufferSize = Integer.parseInt(args[4]);
             String hostServer = args[0];
             int portServer = Integer.parseInt(args[1]);
             String hostClient = args[2];
@@ -42,19 +42,19 @@ public class SiddhiServer {
             StreamDefinition streamDefinition = StreamDefinition.id("input").
                     attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
-                    attribute("dimension",Attribute.Type.STRING).
+                    attribute("dimension", Attribute.Type.STRING).
                     attribute("uTime", Attribute.Type.LONG).
                     attribute("value", Attribute.Type.DOUBLE).
-                    attribute("centers",Attribute.Type.INT).
-                    attribute("threshold",Attribute.Type.DOUBLE).
-                    attribute("node",Attribute.Type.INT);
+                    attribute("centers", Attribute.Type.INT).
+                    attribute("threshold", Attribute.Type.DOUBLE).
+                    attribute("node", Attribute.Type.INT);
 
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
 
 
             Executor executor = Executors.newCachedThreadPool();
-            int buffersize = ringBuffersize;
-            Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new,buffersize, executor);
+            int buffersize = ringBufferSize;
+            Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new, buffersize, executor);
 
             RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
 
@@ -64,7 +64,7 @@ public class SiddhiServer {
 
             DebsAnomalyDetector debsAnomalyDetector = new DebsAnomalyDetector(hostClient, portClient);
 
-            disruptor.handleEventsWith(sh1,sh2, sh3);
+            disruptor.handleEventsWith(sh1, sh2, sh3);
             disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnomalyDetector);
             // disruptor.handleEventsWith(debsAnomalyDetector);
 
@@ -79,10 +79,6 @@ public class SiddhiServer {
             System.out.println("Expected 5 parameters : server host, server port, client host, client port, ringbuffer size");
         }
 
-
-
-
-        //tcpNettyServer.shutdownGracefully();
     }
 
 }

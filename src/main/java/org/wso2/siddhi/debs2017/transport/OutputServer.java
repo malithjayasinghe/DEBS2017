@@ -24,16 +24,16 @@ import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 */
 public class OutputServer {
     public static void main(String[] args) {
-        if(args.length==2){
+        if (args.length == 2) {
             String host = args[0];
             int port = Integer.parseInt(args[1]);
             StreamDefinition streamDefinition = StreamDefinition.id("output").
                     attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
-                    attribute("dimension",Attribute.Type.STRING).
+                    attribute("dimension", Attribute.Type.STRING).
                     attribute("value", Attribute.Type.DOUBLE).
-                    attribute("threshold",Attribute.Type.DOUBLE).
-                    attribute("node",Attribute.Type.INT);
+                    attribute("threshold", Attribute.Type.DOUBLE).
+                    attribute("node", Attribute.Type.INT);
             RabbitMQPublisher rmq = new RabbitMQPublisher("output");
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
             tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, rmq));
