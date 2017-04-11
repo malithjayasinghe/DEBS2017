@@ -220,7 +220,6 @@ public class SingleNodeServer {
                     alertGenerator = new AlertGenerator(rmqPublisher);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
                     createhandler(handlers, ring, debsAnormalyDetector, disruptor);
-                    system.initCommunications();
                 }catch (Exception e)
                 {
                     e.printStackTrace();

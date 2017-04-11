@@ -106,7 +106,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
     }
 
-    public void initCommunications() throws Exception {
+    private void initCommunications() throws Exception {
         outputQueue = createQueueWithName(getOutputQueueName());
         inputQueue = createQueueWithName(getInputQueueName());
         registerConsumerFor(inputQueue);
