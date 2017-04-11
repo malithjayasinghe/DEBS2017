@@ -35,7 +35,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SparQLProcessor implements Runnable{
+public class SparQLProcessor implements Runnable {
     private String data;
     private LinkedBlockingQueue<Event> queue;
 
@@ -70,41 +70,30 @@ public class SparQLProcessor implements Runnable{
             Query query = QueryFactory.create(queryString);
             QueryExecution qexec = QueryExecutionFactory.create(query, model);
             ResultSet results = qexec.execSelect();
-            results = ResultSetFactory.copyResults(results);
+
             for (; results.hasNext(); ) {
                 QuerySolution solution = results.nextSolution();
-
                 Resource time = solution.getResource("time"); // Get a result variable - must be a resource
                 Resource property = solution.getResource("dimension");
                 Resource machine = solution.getResource("machine");
                 Literal timestamp = solution.getLiteral("timestamp");
                 Literal value = solution.getLiteral("value");
-                if (!value.toString().contains("#string")) {
+                String stateful = property.getLocalName();
+                if (DebsMetaData.getMetaData().containsKey(stateful)) {
 
-
-                    // int machineNo = Integer.parseInt(machine.getLocalName().substring(8));
-                    String stateful = property.getLocalName();
-                    //System.out.println(stateful);
-
-                    if(DebsMetaData.getMetaData().containsKey(stateful)) {
-
-                        int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
-                        double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
-                        Event event = new Event(System.currentTimeMillis(), new Object[]{
-                                machine.getLocalName(),
-                                time.getLocalName(),
-                                property.getLocalName(),
-                                UnixConverter.getUnixTime(timestamp.getLexicalForm()),
-                                Math.round(value.getDouble() * 10000.0) / 10000.0, //
-                                centers,
-                                probability});
-                      //  System.out.println(UnixConverter.getUnixTime(timestamp.getLexicalForm()));
-                        this.queue.put(event);
-                    }
-                    //System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
+                    int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
+                    double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
+                    Event event = new Event(System.currentTimeMillis(), new Object[]{
+                            machine.getLocalName(),
+                            time.getLocalName(),
+                            property.getLocalName(),
+                            UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                            Math.round(value.getDouble() * 10000.0) / 10000.0, //
+                            centers,
+                            probability});
+                    this.queue.put(event);
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
