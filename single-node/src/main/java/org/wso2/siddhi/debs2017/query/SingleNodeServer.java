@@ -47,7 +47,127 @@ public class SingleNodeServer {
      * 4 : ring buffersize
      * 5 : no of handlers --@TODO
      */
+
+    public static void createhandler(int handlersize,RingBuffer ring, DebsAnomalyDetector debsAnormalyDetector, Disruptor disruptor ){
+        switch (handlersize){
+            case 2: {
+
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 2L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, ring);
+                disruptor.handleEventsWith(sh1,sh2);
+                disruptor.after(sh1, sh2).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+
+            }
+            case 3:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3);
+                disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+
+            }
+            case 4:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 4L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 4L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 4L, ring);
+                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 4L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3,sh4);
+                disruptor.after(sh1, sh2, sh3,sh4).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+
+            }
+            case 5:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 5L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 5L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 5L, ring);
+                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 5L, ring);
+                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 5L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5);
+                disruptor.after(sh1, sh2, sh3,sh4,sh5).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+
+            }
+            case 6:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 6L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 6L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 6L, ring);
+                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 6L, ring);
+                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 6L, ring);
+                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 6L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6);
+                disruptor.after(sh1, sh2, sh3,sh4,sh5,sh6).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+            }
+            case 7:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 7L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 7L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 7L, ring);
+                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 7L, ring);
+                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 7L, ring);
+                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 7L, ring);
+                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 7L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7);
+                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+            }
+            case 8:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 8L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 8L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 8L, ring);
+                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 8L, ring);
+                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 8L, ring);
+                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 8L, ring);
+                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 8L, ring);
+                SiddhiEventHandler sh8 = new SiddhiEventHandler(7L, 8L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8);
+                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+            }
+            case 9:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 9L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 9L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 9L, ring);
+                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 8L, ring);
+                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 9L, ring);
+                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 9L, ring);
+                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 9L, ring);
+                SiddhiEventHandler sh8 = new SiddhiEventHandler(7L, 9L, ring);
+                SiddhiEventHandler sh9 = new SiddhiEventHandler(8L, 9L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9);
+                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+            }
+            case 10:{
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 10L, ring);
+                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 10L, ring);
+                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 10L, ring);
+                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 10L, ring);
+                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 10L, ring);
+                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 10L, ring);
+                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 10L, ring);
+                SiddhiEventHandler sh8 = new SiddhiEventHandler(7L, 10L, ring);
+                SiddhiEventHandler sh9 = new SiddhiEventHandler(8L, 10L, ring);
+                SiddhiEventHandler sh10 = new SiddhiEventHandler(9L, 10L, ring);
+                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9,sh10);
+                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9,sh10).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
+                break;
+            }
+
+        }
+    }
     public static void main(String[] args) {
+        int handlers = Integer.parseInt(args[4]);
         if (args.length == 5) {
             int executorsize = Integer.parseInt(args[2]);
             int ringbuffersize = Integer.parseInt(args[3]);
@@ -65,13 +185,15 @@ public class SingleNodeServer {
                 int buffersize = ringbuffersize;
                 Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new, buffersize, executor);
                 RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
-
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
-
                 DebsAnomalyDetector debsAnormalyDetector = null;
-                disruptor.handleEventsWith(sh1, sh2, sh3);
+
+//                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
+//                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
+//                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
+//
+//
+//                disruptor.handleEventsWith(sh1, sh2, sh3);
+
 
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
@@ -82,8 +204,8 @@ public class SingleNodeServer {
                     rmqPublisher = system.getOutputQueue();
                     alertGenerator = new AlertGenerator(rmqPublisher);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
-                    disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
-                    disruptor.start();
+                    createhandler(handlers,ring,debsAnormalyDetector,disruptor);
+
                     system.run();
                 } finally {
                     if (system != null) {
@@ -115,15 +237,13 @@ public class SingleNodeServer {
 
                 RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
 
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
+
                 output = new RabbitQueue(channel, outputQueue);
                 AlertGenerator alertGenerator = new AlertGenerator(output);
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
-                disruptor.handleEventsWith(sh1, sh2, sh3);
-                disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
+
+                createhandler(handlers,ring,debsAnormalyDetector,disruptor);
+
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
                 rmq.consume(inputQueue, ring, executorsize, arraylist);
 
