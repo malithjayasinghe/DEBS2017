@@ -1,5 +1,6 @@
 package org.wso2.siddhi.debs2017.transport.utils;
 
+import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQSampleDataPublisher;
 import org.wso2.siddhi.debs2017.query.CentralDispatcher;
 import org.wso2.siddhi.debs2017.transport.OutputServer;
 import org.wso2.siddhi.debs2017.transport.SiddhiServer;
@@ -18,6 +19,12 @@ public class DEBSServer {
         CENTRAL_DISPATCHER,
         OUTPUT_SERVER
     }
+
+    /**
+     * The entry point of the DEBS server
+     *
+     * @param args
+     */
     public static void main(String[] args) {
 
         int serverType = Integer.parseInt(args[0]);
@@ -40,7 +47,7 @@ public class DEBSServer {
 
         if(serverType == SERVERTYPE.RABBITMQ_PUBLISHER.ordinal())
         {
-
+            RabbitMQSampleDataPublisher.start(args);
         }
 
 

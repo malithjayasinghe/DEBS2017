@@ -31,23 +31,22 @@ public class RabbitMQSampleDataPublisher {
 
     private static String TASK_QUEUE_NAME = "test123";
 
-    public static void main(String[] argv)
-            throws java.io.IOException, TimeoutException {
+    public static void start(String[] argv) {
 
-        if (argv.length>0){
-            TASK_QUEUE_NAME = argv[0];
-        }
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-        channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
-        String data = "";
         try {
+            if (argv.length > 0) {
+                TASK_QUEUE_NAME = argv[0];
+            }
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost("localhost");
+            Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+            String data = "";
             BufferedReader reader = new BufferedReader(new FileReader("frmattedData_63.nt"));//molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt
             // read file line by line
-            String line ;
-            Scanner scanner ;
+            String line;
+            Scanner scanner;
             int count = 0;
             while ((line = reader.readLine()) != null) {
                 scanner = new Scanner(line);
@@ -74,14 +73,10 @@ public class RabbitMQSampleDataPublisher {
                 }
             }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            channel.close();
+            connection.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        channel.close();
-        connection.close();
     }
-
 }
