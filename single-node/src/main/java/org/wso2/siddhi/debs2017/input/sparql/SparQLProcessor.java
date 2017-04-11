@@ -35,19 +35,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SparQLProcessor implements Runnable{
+public class SparQLProcessor implements Runnable {
     private String data;
-    private LinkedBlockingQueue<Event> queue;
+
 
     public SparQLProcessor(String data) {
         this.data = data;
     }
 
-
-    @Override
-    public void run() {
-
-        this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
+    public static void process(String data) {
+        LinkedBlockingQueue<Event> queue = SingleNodeServer.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
@@ -65,7 +62,7 @@ public class SparQLProcessor implements Runnable{
                 "";
 
         try {
-            Model model = ModelFactory.createDefaultModel().read(IOUtils.toInputStream(this.data, "UTF-8"), null, "TURTLE");
+            Model model = ModelFactory.createDefaultModel().read(IOUtils.toInputStream(data, "UTF-8"), null, "TURTLE");
 
             Query query = QueryFactory.create(queryString);
             QueryExecution qexec = QueryExecutionFactory.create(query, model);
@@ -92,11 +89,19 @@ public class SparQLProcessor implements Runnable{
                             Math.round(value.getDouble() * 10000.0) / 10000.0, //
                             centers,
                             probability});
-                    this.queue.put(event);
+                    queue.put(event);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
+
+    @Override
+    public void run() {
+        process(data);
+    }
+
 }
