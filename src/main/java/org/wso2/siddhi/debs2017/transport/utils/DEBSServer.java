@@ -1,6 +1,8 @@
 package org.wso2.siddhi.debs2017.transport.utils;
 
 import org.wso2.siddhi.debs2017.query.CentralDispatcher;
+import org.wso2.siddhi.debs2017.transport.OutputServer;
+import org.wso2.siddhi.debs2017.transport.SiddhiServer;
 
 /**
  *
@@ -27,12 +29,12 @@ public class DEBSServer {
 
         if(serverType == SERVERTYPE.CENTRAL_DISPATCHER.ordinal())
         {
-            CentralDispatcher.start(args);
+            OutputServer.start(args);
         }
 
         if(serverType == SERVERTYPE.SIDDHI_SERVER.ordinal())
         {
-
+            SiddhiServer.start(args);
         }
 
 

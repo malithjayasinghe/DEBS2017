@@ -31,6 +31,7 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
         Object[] o = wrapper.getEvent().getData();
         probability = Double.parseDouble(o[3].toString());
         threshold = Double.parseDouble(o[4].toString());
+
         if (probability < threshold && probability > 0) {
             send(wrapper.getEvent());
         }

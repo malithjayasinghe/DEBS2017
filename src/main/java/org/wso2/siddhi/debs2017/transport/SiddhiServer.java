@@ -31,7 +31,7 @@ import java.util.concurrent.Executors;
 */
 public class SiddhiServer {
 
-    public static void main(String[] args) {
+    public static void start (String[] args) {
         if (args.length == 5) {
             int ringBufferSize = Integer.parseInt(args[4]);
             String hostServer = args[0];

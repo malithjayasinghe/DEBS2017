@@ -23,8 +23,8 @@ import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 * limitations under the License.
 */
 public class OutputServer {
-    public static void main(String[] args) {
-        if (args.length == 2) {
+    public static void start(String[] args) {
+        if (args.length == 3) {
             String host = args[0];
             int port = Integer.parseInt(args[1]);
             StreamDefinition streamDefinition = StreamDefinition.id("output").
