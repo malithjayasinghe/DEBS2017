@@ -30,16 +30,20 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
 
 
         Object[] o = wrapper.getEvent().getData();
-        String [] splitter = o[2].toString().split("_");
-        long partition = Long.parseLong(splitter[2]);
-        //long partition = Long.parseLong(o[2].toString().substring(1));
-        if(partition%NUM==ID){
+        if(wrapper.getEvent().getTimestamp() == -1l){
 
-            //setting the buffer sequence
-            sq.setSequence(sequence);
+        } else {
+            String[] splitter = o[2].toString().split("_");
+            long partition = Long.parseLong(splitter[2]);
+            //long partition = Long.parseLong(o[2].toString().substring(1));
+            if (partition % NUM == ID) {
+
+                //setting the buffer sequence
+                sq.setSequence(sequence);
 
 
-            sq.publish(wrapper.getEvent());
+                sq.publish(wrapper.getEvent());
+            }
         }
 
     }

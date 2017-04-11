@@ -35,7 +35,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SparQLProcessor implements Runnable {
+public class SparQLProcessor implements Runnable{
     private String data;
     private LinkedBlockingQueue<Event> queue;
 
@@ -61,7 +61,7 @@ public class SparQLProcessor implements Runnable {
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-                "ORDER BY (?timestamp)" +
+                "ORDER BY DESC (?dimension)" +
                 "";
 
         try {
@@ -73,6 +73,7 @@ public class SparQLProcessor implements Runnable {
 
             for (; results.hasNext(); ) {
                 QuerySolution solution = results.nextSolution();
+
                 Resource time = solution.getResource("time"); // Get a result variable - must be a resource
                 Resource property = solution.getResource("dimension");
                 Resource machine = solution.getResource("machine");

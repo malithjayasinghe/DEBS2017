@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -63,9 +64,12 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
         private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
         private static ExecutorService EXECUTOR;
 
+        private ArrayList<LinkedBlockingQueue<Event>> arrayList;
+
 
         public DebsBenchmarkSystem(RingBuffer<EventWrapper> ringBuffer, String metadataFile, int executorSize, ArrayList<LinkedBlockingQueue<Event>> arrayList){
             Collections.synchronizedList(arrayList);
+            this.arrayList = arrayList;
             SorterThread sort = new SorterThread(arrayList, ringBuffer);
             sort.start();
             DebsMetaData.load(metadataFile);
@@ -227,8 +231,17 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
                 String message = new String(bytes, CHARSET);
                 if (TERMINATION_MESSAGE.equals(message)) {
                     logger.debug("Got termination message");
-
-                    terminationMessageBarrier.countDown();
+                    EXECUTOR.shutdown();
+                    try{
+                        EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                        System.out.println("-------------------------------------");
+                        for(int i =0; i<arrayList.size(); i++){
+                            arrayList.get(i).put(new Event(-1l, new Object[]{}));
+                        }
+                    } catch (InterruptedException e){
+                        //do nothing
+                    }
+                   // terminationMessageBarrier.countDown();
                 } else {
                     //logger.debug("Repeating message: {}", message);
                     Runnable reader = new SparQLProcessor(message);

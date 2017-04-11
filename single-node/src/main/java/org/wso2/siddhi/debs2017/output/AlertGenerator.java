@@ -33,13 +33,13 @@ public class AlertGenerator {
     private String timestamp;
     private String dimension;
     private String machineNumber;
-    String anomaly = "http://wso2.org.debsgrandchallenge.anomaly#";
-    String ar = "http://www.agtinternational.com/ontologies/DEBSAnalyticResults#";
-    String rdf = "http://www.agtinternational.com/ontologies/DEBSAnalyticResults#";
-    String debs = "http://project-hobbit.eu/resources/debs2017#";
-    String xsd = "http://www.w3.org/2001/XMLSchema#";
-    String wmm = "http://www.agtinternational.com/ontologies/WeidmullerMetadata#";
-    String i40 = "http://www.agtinternational.com/ontologies/I4.0#";
+    private String anomaly = "http://project-hobbit.eu/resources/debs2017#";
+    private String ar = "http://www.agtinternational.com/ontologies/DEBSAnalyticResults#";
+    private String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    private String debs = "http://project-hobbit.eu/resources/debs2017#";
+    private String xsd = "http://www.w3.org/2001/XMLSchema#";
+    private String wmm = "http://www.agtinternational.com/ontologies/WeidmullerMetadata#";
+    private String i40 = "http://www.agtinternational.com/ontologies/I4.0#";
     private RabbitQueue rabbitMQPublisher;
     private StringWriter out;
     private long dispatchedTime;
@@ -73,7 +73,7 @@ public class AlertGenerator {
         Property type = model.createProperty(rdf + "type");
         Resource r2 = model.createResource(ar + "Anomaly");
         Property threshProb = model.createProperty(ar + "hasProbabilityOfObservedAbnormalSequence");
-        Property time = model.createProperty(ar + "hasTimestamp");
+        Property time = model.createProperty(ar + "hasTimeStamp");
         Resource r4 = model.createResource(debs + timestamp);
         Property dim = model.createProperty(ar + "inAbnormalDimension");
         Resource r5 = model.createResource(wmm + dimension);
@@ -115,5 +115,15 @@ public class AlertGenerator {
     private String transformTimestamp(String time) {
         String[] str = time.split("_");
         return str[0].concat("_" + (Integer.parseInt(str[1]) - 5));
+    }
+
+    public void terminate() {
+        Channel channel = rabbitMQPublisher.getChannel();
+        String TERMINATION_MESSAGE = "~~Termination Message~~";
+        try {
+            channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, TERMINATION_MESSAGE.toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -13,10 +13,12 @@ import org.wso2.siddhi.debs2017.processor.EventWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -39,6 +41,9 @@ public class CentralDispatcher extends DefaultConsumer {
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR;
+    private  ArrayList<LinkedBlockingQueue<Event>> arrayList;
+    private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
+    SorterThread sort;
     /**
      * Dispatchers events to the disruptor after sorting
      *
@@ -48,9 +53,10 @@ public class CentralDispatcher extends DefaultConsumer {
      */
     public CentralDispatcher(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<Event>> arrayList) {
         super(channel);
+        this.arrayList = arrayList;
         this.startTime = System.currentTimeMillis();
         Collections.synchronizedList(arrayList);
-        SorterThread sort = new SorterThread(arrayList, ringBuffer);
+        sort = new SorterThread(arrayList, ringBuffer);
         sort.start();
         DebsMetaData.generate("molding_machine_10M.metadata.nt");
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
@@ -62,10 +68,23 @@ public class CentralDispatcher extends DefaultConsumer {
         Runnable sparQLProcessor = new SparQLProcessor(msg);
         count++;
         EXECUTOR.execute(sparQLProcessor);
-        if (count == 335000) {
-            double runtime = System.currentTimeMillis() - startTime;
-            System.out.println("Runtime in sec :" + (runtime / 1000.0));
-            System.out.println("Average Throughput :" + (count / (runtime / 1000.0)));
+
+
+        if(count==63){
+            EXECUTOR.shutdown();
+            try{
+                EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                System.out.println("-------------------------------------");
+                for(int i =0; i<arrayList.size(); i++){
+                    arrayList.get(i).put(new Event(-1l, new Object[]{}));
+                }
+            } catch (InterruptedException e){
+                //do nothing
+            }
+
         }
+
+
+
     }
 }

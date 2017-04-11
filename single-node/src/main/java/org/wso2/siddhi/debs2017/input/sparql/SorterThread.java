@@ -5,6 +5,7 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /*
@@ -29,6 +30,7 @@ public class SorterThread extends Thread {
     private ArrayList<Integer> arr2 = new ArrayList<>();
     private static int size;
     private static RingBuffer<EventWrapper> ring;
+    // private Object[] termination = new A;
 
     /**
      * The constructor
@@ -47,8 +49,18 @@ public class SorterThread extends Thread {
             for (int i = 0; i < this.size; i++) {
                 try {
                     if (arrayList.get(i).size() != 0) {
-                        arr.add(arrayList.get(i).peek());
-                        arr2.add(i);
+
+                        if(arrayList.get(i).peek().getTimestamp()==-1l){
+                            System.out.println(i+"Termination :"+arrayList.get(i).size()+" "+arrayList.get(i).poll()+" "+arrayList.get(i).peek());
+                            arrayList.remove(i);
+                            i= i-1;
+                            this.size = this.size -1;
+                            break;
+                        }else {
+                            arr.add(arrayList.get(i).peek());
+                            arr2.add(i);
+                        }
+
                     } else {
                         long timeout = System.currentTimeMillis();
                         while (true) {
@@ -66,8 +78,22 @@ public class SorterThread extends Thread {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
-            sort();
+            if(this.size==0){
+                System.out.println("Termination recieved");
+                long sequence = this.ring.next();  // Grab the next sequence
+                try {
+                    EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor
+                    wrapper.setEvent(new Event(-1l, new Object[]{}));
+                } finally {
+                    this.ring.publish(sequence);
+                }
+                break;
+            } else {
+                sort();
+            }
+
         }
     }
 
@@ -78,6 +104,7 @@ public class SorterThread extends Thread {
      * @return the time stamp
      */
     private long getTime(Event event) {
+       // System.out.println(event);
         long timestamp = Long.parseLong(event.getData()[3].toString());
         return timestamp;
     }
@@ -91,7 +118,8 @@ public class SorterThread extends Thread {
     private void removeEvent(Event e, int queNo) {
         //Machine_59
         //MoldingMachine_59
-        int machineNo = Integer.parseInt(e.getData()[0].toString().substring(8));
+        //System.out.println(e);
+        //int machineNo = Integer.parseInt(e.getData()[0].toString().substring(8));
         LinkedBlockingQueue<Event> linkedBlockingQueue = arrayList.get(queNo);
         //add to disruptor
         long sequence = this.ring.next();  // Grab the next sequence
@@ -120,5 +148,8 @@ public class SorterThread extends Thread {
             arr2 = new ArrayList<>();
             removeEvent(currentEvent, queNo);
         }
+    }
+
+    public void setTermination(boolean b, int i) {
     }
 }

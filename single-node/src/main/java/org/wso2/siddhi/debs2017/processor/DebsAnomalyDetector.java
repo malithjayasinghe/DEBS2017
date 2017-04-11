@@ -29,12 +29,16 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
     @Override
     public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
         Object[] o = wrapper.getEvent().getData();
-        probability = Double.parseDouble(o[3].toString());
-        threshold = Double.parseDouble(o[4].toString());
-
-        if (probability < threshold && probability > 0) {
-            send(wrapper.getEvent());
+        if(wrapper.getEvent().getTimestamp() == -1l){
+            alertGenerator.terminate();
+        } else {
+            probability = Double.parseDouble(o[3].toString());
+            threshold = Double.parseDouble(o[4].toString());
+            if (probability < threshold && probability > 0) {
+                send(wrapper.getEvent());
+            }
         }
+
     }
 
     /**
