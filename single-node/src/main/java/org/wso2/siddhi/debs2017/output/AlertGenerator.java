@@ -10,6 +10,9 @@ import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -45,6 +48,10 @@ public class AlertGenerator {
     private long dispatchedTime;
     private static double sum = 0;
 
+    public static ArrayList<Anomaly> arr;
+    private String currentTime = "Timestamp_0";
+    private String preTime = "Timestamp_-1";
+
     /**
      * initialize the parameters from the sidhhi event, to generate the alert
      *
@@ -53,6 +60,7 @@ public class AlertGenerator {
     public AlertGenerator(RabbitQueue rabbitMQPublisher) {
 
         this.rabbitMQPublisher = rabbitMQPublisher;
+        arr = new ArrayList<>();
     }
 
 
@@ -66,6 +74,8 @@ public class AlertGenerator {
         this.dimension = (String) event.getData()[2];
         this.machineNumber = (String) event.getData()[0];
         this.dispatchedTime = event.getTimestamp();
+
+        this.preTime = this.timestamp;
 
         Model model = ModelFactory.createDefaultModel();
         String anomalyName = "Anomaly_" + anomalyCount;
@@ -88,15 +98,25 @@ public class AlertGenerator {
                 .add(r1, type, r2);
 
         anomalyCount++;
-        String str = "N-TRIPLES";
-        out = new StringWriter();
-        model.write(out, str);
-        Channel channel = rabbitMQPublisher.getChannel();
-        try {
-            channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        Anomaly anomaly = new Anomaly(Integer.parseInt(this.dimension.split("_")[1]), model);
+
+        if(this.currentTime.equals(this.preTime)){
+            arr.add(anomaly);
+        } else {
+            //flush the arr
+            Collections.sort(arr);
+            publish(arr);
         }
+//        String str = "N-TRIPLES";
+//        out = new StringWriter();
+//        model.write(out, str);
+//        Channel channel = rabbitMQPublisher.getChannel();
+//        try {
+//            channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         sum += System.currentTimeMillis() - dispatchedTime;
         if (anomalyCount == 20000) {
@@ -104,6 +124,22 @@ public class AlertGenerator {
         }
 
 
+    }
+
+    private void publish(ArrayList<Anomaly> arrayList) {
+        for(int i =0; i<arrayList.size(); i++){
+            Model model = arrayList.get(i).getModel();
+            String str = "N-TRIPLES";
+            out = new StringWriter();
+            model.write(out, str);
+            Channel channel = rabbitMQPublisher.getChannel();
+            try {
+                channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+       arr = new ArrayList<>();
     }
 
     /**
@@ -118,6 +154,9 @@ public class AlertGenerator {
     }
 
     public void terminate() {
+
+        Collections.sort(arr);
+        publish(arr);
         Channel channel = rabbitMQPublisher.getChannel();
         String TERMINATION_MESSAGE = "~~Termination Message~~";
         try {

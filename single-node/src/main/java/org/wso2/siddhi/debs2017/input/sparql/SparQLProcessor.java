@@ -63,7 +63,7 @@ public class SparQLProcessor implements Runnable{
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-                "ORDER BY DESC (?dimension)" +
+              //  "ORDER BY DESC (?dimension)" +
                 "";
 
         try {
