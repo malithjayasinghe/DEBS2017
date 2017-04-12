@@ -1,0 +1,9 @@
+
+jar cf SiddhiServer.jar /transport/SiddhiServer.java
+jar cf CentralDispatcher.jar query/org.wso2.siddhi.debs2017.query.CentralDispatcher
+jar cf OutputServer.jar transport/org.wso2.siddhi.debs2017.transport.OutputServer
+jar cf RabbitMQSampleDataPublisher.jar input/rabbitmq/org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQSampleDataPublisher 
+
+
+
+
