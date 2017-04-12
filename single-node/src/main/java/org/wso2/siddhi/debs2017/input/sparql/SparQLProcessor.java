@@ -18,6 +18,7 @@ import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /*
@@ -37,7 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 */
 public class SparQLProcessor implements Runnable{
     private String data;
-    private LinkedBlockingQueue<Event> queue;
+    private LinkedBlockingQueue<ObservationGroup> queue;
 
     public SparQLProcessor(String data) {
         this.data = data;
@@ -46,7 +47,8 @@ public class SparQLProcessor implements Runnable{
 
     @Override
     public void run() {
-
+        ObservationGroup observationGroup;
+        ArrayList<Event> arr = new ArrayList<>();
         this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
@@ -65,6 +67,7 @@ public class SparQLProcessor implements Runnable{
                 "";
 
         try {
+            long timeS = 0l;
             Model model = ModelFactory.createDefaultModel().read(IOUtils.toInputStream(this.data, "UTF-8"), null, "TURTLE");
 
             Query query = QueryFactory.create(queryString);
@@ -84,17 +87,25 @@ public class SparQLProcessor implements Runnable{
 
                     int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
                     double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
+                    timeS = UnixConverter.getUnixTime(timestamp.getLexicalForm());
                     Event event = new Event(System.currentTimeMillis(), new Object[]{
                             machine.getLocalName(),
                             time.getLocalName(),
                             property.getLocalName(),
-                            UnixConverter.getUnixTime(timestamp.getLexicalForm()),
+                            timeS,
                             Math.round(value.getDouble() * 10000.0) / 10000.0, //
                             centers,
                             probability});
-                    this.queue.put(event);
+
+                    arr.add(event);
+
+                    //this.queue.put(event);
                 }
+
             }
+            observationGroup = new ObservationGroup(timeS, arr);
+            this.queue.put(observationGroup);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

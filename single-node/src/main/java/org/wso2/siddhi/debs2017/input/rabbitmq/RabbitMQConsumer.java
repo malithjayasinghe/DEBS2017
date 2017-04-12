@@ -7,6 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.sparql.CentralDispatcher;
+import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class RabbitMQConsumer {
     /**
      * Consumes the sample data
      */
-    public void consume(String queue, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<Event>> arrayList) {
+    public void consume(String queue, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList) {
         TASK_QUEUE_NAME = queue;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("127.0.0.1");

@@ -9,7 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkSystem;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
+import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
+import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
 import org.wso2.siddhi.debs2017.processor.DebsAnomalyDetector;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
@@ -39,7 +42,7 @@ public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
-    public static ArrayList<LinkedBlockingQueue<Event>> arraylist;
+    public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arraylist;
     /**
      * 1 : input queue : -hobbit
      * 2 : output queue : metedataFilename
@@ -174,7 +177,7 @@ public class SingleNodeServer {
 
             arraylist = new ArrayList<>(executorsize);
             for(int i=0; i<executorsize; i++){
-                arraylist.add(new LinkedBlockingQueue<Event>());
+                arraylist.add(new LinkedBlockingQueue<ObservationGroup>());
             }
             if (args[0].equals("-hobbit")) {
 
@@ -243,6 +246,9 @@ public class SingleNodeServer {
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
 
                 createhandler(handlers,ring,debsAnormalyDetector,disruptor);
+                SorterThread sort = new SorterThread(arraylist, ring);
+                sort.start();
+                DebsMetaData.load("molding_machine_10M.metadata.nt");
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
                 rmq.consume(inputQueue, ring, executorsize, arraylist);

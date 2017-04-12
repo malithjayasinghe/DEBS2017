@@ -25,11 +25,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 */
 public class SorterThread extends Thread {
 
-    public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
-    private ArrayList<Event> arr = new ArrayList<>();
+    public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
+    private ArrayList<ObservationGroup> arr = new ArrayList<>();
     private ArrayList<Integer> arr2 = new ArrayList<>();
     private static int size;
     private static RingBuffer<EventWrapper> ring;
+    static int queNo = -1;
     // private Object[] termination = new A;
 
     /**
@@ -38,42 +39,44 @@ public class SorterThread extends Thread {
      * @param arrayList  the array list of link blocking queues
      * @param ringBuffer the ring buffer to publish
      */
-    public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, RingBuffer<EventWrapper> ringBuffer) {
+    public SorterThread(ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList, RingBuffer<EventWrapper> ringBuffer) {
         this.arrayList = arrayList;
         this.size = arrayList.size();
         this.ring = ringBuffer;
+        for(int i=0; i<this.size; i++){
+            this.arr2.add(queNo);
+            this.arr.add(new ObservationGroup(0l, null));
+        }
+
     }
 
     public void run() {
         while (true) {
             for (int i = 0; i < this.size; i++) {
                 try {
-                    if (arrayList.get(i).size() != 0) {
 
-                        if(arrayList.get(i).peek().getTimestamp()==-1l){
-                            System.out.println(i+"Termination :"+arrayList.get(i).size()+" "+arrayList.get(i).poll()+" "+arrayList.get(i).peek());
+                    if(arr2.get(i)==-1){
+                        ObservationGroup ob =arrayList.get(i).take();
+                        if(ob.getTimestamp()!=-1l){
+
+                            arr.set(i, ob);
+                            arr2.set(i, 0);
+                        } else {
+                            // System.out.println(i+"Termination :"+arrayList.get(i).size()+" "+arrayList.get(i).poll()+" "+arrayList.get(i).peek());
                             arrayList.remove(i);
+                            arr.remove(i);
+                            arr2.remove(i);
                             i= i-1;
                             this.size = this.size -1;
                             break;
-                        }else {
-                            arr.add(arrayList.get(i).peek());
-                            arr2.add(i);
+
                         }
 
-                    } else {
-                        long timeout = System.currentTimeMillis();
-                        while (true) {
-                            if ((System.currentTimeMillis() - timeout) >= 30) {
-                                break;
-                            }
-                            if (arrayList.get(i).size() != 0) {
-                                arr.add(arrayList.get(i).peek());
-                                arr2.add(i);
-                                break;
-                            }
-                        }
+                        // System.out.println("\t --"+ob.getTimestamp());
+
                     }
+
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -97,59 +100,43 @@ public class SorterThread extends Thread {
         }
     }
 
-    /**
-     * Gets the time stamp from the event
-     *
-     * @param event the event to get the time stamp from
-     * @return the time stamp
-     */
-    private long getTime(Event event) {
-       // System.out.println(event);
-        long timestamp = Long.parseLong(event.getData()[3].toString());
-        return timestamp;
-    }
 
-    /**
-     * Remove event from the blocking queue
-     *
-     * @param e     event to be removed
-     * @param queNo blocking queue number
-     */
-    private void removeEvent(Event e, int queNo) {
-        //Machine_59
-        //MoldingMachine_59
-        //System.out.println(e);
-        //int machineNo = Integer.parseInt(e.getData()[0].toString().substring(8));
-        LinkedBlockingQueue<Event> linkedBlockingQueue = arrayList.get(queNo);
-        //add to disruptor
-        long sequence = this.ring.next();  // Grab the next sequence
-        try {
-            EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor
-            wrapper.setEvent(linkedBlockingQueue.poll());
-        } finally {
-            this.ring.publish(sequence);
-        }
-    }
+
 
     /**
      * Sort events based on their time stamp
      */
     private synchronized void sort() {
         if (arr.size() > 0) {
-            Event currentEvent = arr.get(0);
-            Integer queNo = arr2.get(0);
+            ObservationGroup currentOb = arr.get(0);
+            queNo =0;
             for (int i = 1; i < arr.size(); i++) {
-                if (getTime(currentEvent) > getTime(arr.get(i))) {
-                    currentEvent = arr.get(i);
-                    queNo = arr2.get(i);
+                if (currentOb.getTimestamp() > arr.get(i).getTimestamp()) {
+                    currentOb = arr.get(i);
+                    queNo = i;
+
                 }
             }
-            arr = new ArrayList<>();
-            arr2 = new ArrayList<>();
-            removeEvent(currentEvent, queNo);
+            // arr = new ArrayList<>();
+            // arr2 = new ArrayList<>();
+            //System.out.println("--"+arr.indexOf(currentOb)+"\t"+currentOb.getTimestamp());
+
+            // System.out.println(currentOb.getTimestamp());
+
+            for (int i =0; i<currentOb.getDataArr().size(); i++){
+                long sequence = this.ring.next();  // Grab the next sequence
+                try {
+                    EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor
+                    wrapper.setEvent(currentOb.getDataArr().get(i));
+                } finally {
+                    this.ring.publish(sequence);
+                }
+            }
+
+
+            arr2.set(queNo, -1);
+            arr.set(queNo, new ObservationGroup(0l, null));
         }
     }
 
-    public void setTermination(boolean b, int i) {
-    }
 }

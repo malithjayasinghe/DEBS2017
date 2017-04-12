@@ -9,6 +9,7 @@ import com.rabbitmq.client.Envelope;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,9 +42,10 @@ public class CentralDispatcher extends DefaultConsumer {
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR;
-    private  ArrayList<LinkedBlockingQueue<Event>> arrayList;
+    private  ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = SingleNodeServer.arraylist;
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
-    SorterThread sort;
+
+
     /**
      * Dispatchers events to the disruptor after sorting
      *
@@ -51,37 +53,34 @@ public class CentralDispatcher extends DefaultConsumer {
      * @param ringBuffer the ring buffer
      * @param executorSize the size of the executor pool
      */
-    public CentralDispatcher(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<Event>> arrayList) {
+    public CentralDispatcher(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList) {
         super(channel);
-        this.arrayList = arrayList;
-        this.startTime = System.currentTimeMillis();
-        Collections.synchronizedList(arrayList);
-        sort = new SorterThread(arrayList, ringBuffer);
-        sort.start();
-        DebsMetaData.generate("molding_machine_10M.metadata.nt");
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
 
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
-        Runnable sparQLProcessor = new SparQLProcessor(msg);
-        count++;
-        EXECUTOR.execute(sparQLProcessor);
 
 
-        if(count==63){
+
+        if(msg.equals(TERMINATION_MESSAGE)){
+            System.out.println(TERMINATION_MESSAGE);
             EXECUTOR.shutdown();
             try{
                 EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
                 System.out.println("-------------------------------------");
                 for(int i =0; i<arrayList.size(); i++){
-                    arrayList.get(i).put(new Event(-1l, new Object[]{}));
+                    ObservationGroup ob = new ObservationGroup(-1l, null);
+                    arrayList.get(i).put(ob);
                 }
-            } catch (InterruptedException e){
+            } catch (Exception e){
                 //do nothing
             }
 
+        } else {
+            Runnable sparQLProcessor = new SparQLProcessor(msg);
+            EXECUTOR.execute(sparQLProcessor);
         }
 
 
