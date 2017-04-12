@@ -75,8 +75,6 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
         try {
             rabbitMQExecutorPool = Executors.newFixedThreadPool(executorSize, threadFactory);
             this.arrayList = arrayList;
-            this.outputQueue = createQueueWithName(inputQueue);
-            this.inputQueue = createQueueWithName(outputQueue);
         }catch (Exception e)
         {
             e.printStackTrace();;
@@ -107,23 +105,23 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     }
 
     private void initCommunications() throws Exception {
-        outputQueue = createQueueWithName(getOutputQueueName());
-        inputQueue = createQueueWithName(getInputQueueName());
+        outputQueue = createQueueWithName(getOutputQueueName(), null);
+        inputQueue = createQueueWithName(getInputQueueName(), rabbitMQExecutorPool);
         registerConsumerFor(inputQueue);
     }
 
 
-    private RabbitQueue createQueueWithName(String name) throws Exception {
-        Channel channel = createConnection().createChannel();
+    private RabbitQueue createQueueWithName(String name, ExecutorService executorService) throws Exception {
+        Channel channel = createConnection(executorService).createChannel();
         channel.basicQos(getPrefetchCount());
         channel.queueDeclare(name, false, false, true, null);
         return new RabbitQueue(channel, name);
     }
 
-    private Connection createConnection() throws IOException, TimeoutException {
+    private Connection createConnection(ExecutorService executorService) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(getHost());
-        return factory.newConnection(rabbitMQExecutorPool);
+        return (executorService == null) ? factory.newConnection() : factory.newConnection(executorService);
     }
 
     private void registerConsumerFor(RabbitQueue queue) throws IOException {
