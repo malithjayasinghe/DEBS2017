@@ -1,6 +1,8 @@
 package org.wso2.siddhi.debs2017.output;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import org.wso2.siddhi.core.event.Event;
+
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
@@ -20,20 +22,20 @@ public class Anomaly implements Comparable<Anomaly>{
 
 
     private int identifier;
-    private Model model;
+    private Event event;
 
     public int getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
-    public Model getModel() {
-        return model;
+    public Event getEvent() {
+        return this.event;
     }
 
 
-    public Anomaly(int identifier, Model model) {
+    public Anomaly(int identifier, Event event) {
         this.identifier = identifier;
-        this.model = model;
+        this.event = event;
     }
 
 
