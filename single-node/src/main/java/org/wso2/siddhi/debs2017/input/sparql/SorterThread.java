@@ -7,6 +7,7 @@ import org.wso2.siddhi.debs2017.processor.EventWrapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -28,7 +29,7 @@ public class SorterThread extends Thread {
     public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
     private ArrayList<ObservationGroup> arr = new ArrayList<>();
     private ArrayList<Integer> arr2 = new ArrayList<>();
-    private static int size;
+    private static AtomicInteger size;
     private static RingBuffer<EventWrapper> ring;
     static int queNo = -1;
     // private Object[] termination = new A;
@@ -41,38 +42,38 @@ public class SorterThread extends Thread {
      */
     public SorterThread(ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList, RingBuffer<EventWrapper> ringBuffer) {
         this.arrayList = arrayList;
-        this.size = arrayList.size();
+        size = new AtomicInteger(arrayList.size());
         this.ring = ringBuffer;
-        for(int i=0; i<this.size; i++){
+        for(int i=0; i<size.get(); i++){
             this.arr2.add(queNo);
-            this.arr.add(new ObservationGroup(0l, null));
+            this.arr.add(new ObservationGroup(Long.MAX_VALUE, null));
         }
 
     }
 
     public void run() {
         while (true) {
-            for (int i = 0; i < this.size; i++) {
+            for (int i = 0; i < size.get(); i++) {
                 try {
-
                     if(arr2.get(i)==-1){
                         ObservationGroup ob =arrayList.get(i).take();
+                        System.out.println(ob.getTimestamp());
                         if(ob.getTimestamp()!=-1l){
 
                             arr.set(i, ob);
                             arr2.set(i, 0);
                         } else {
-                            // System.out.println(i+"Termination :"+arrayList.get(i).size()+" "+arrayList.get(i).poll()+" "+arrayList.get(i).peek());
+                            //System.out.println(i+"Termination :"+arrayList.get(i).size()+" "+arrayList.get(i).poll()+" "+arrayList.get(i).peek());
                             arrayList.remove(i);
+
                             arr.remove(i);
                             arr2.remove(i);
                             i= i-1;
-                            this.size = this.size -1;
-                            break;
+                            size.decrementAndGet();
+
 
                         }
 
-                        // System.out.println("\t --"+ob.getTimestamp());
 
                     }
 
@@ -83,7 +84,7 @@ public class SorterThread extends Thread {
                 }
 
             }
-            if(this.size==0){
+            if(size.get()==0){
                 System.out.println("Termination recieved");
                 long sequence = this.ring.next();  // Grab the next sequence
                 try {
@@ -109,7 +110,7 @@ public class SorterThread extends Thread {
     private synchronized void sort() {
         if (arr.size() > 0) {
             ObservationGroup currentOb = arr.get(0);
-            queNo =0;
+            queNo =arr2.get(0);
             for (int i = 1; i < arr.size(); i++) {
                 if (currentOb.getTimestamp() > arr.get(i).getTimestamp()) {
                     currentOb = arr.get(i);
@@ -117,11 +118,9 @@ public class SorterThread extends Thread {
 
                 }
             }
-            // arr = new ArrayList<>();
-            // arr2 = new ArrayList<>();
+
             //System.out.println("--"+arr.indexOf(currentOb)+"\t"+currentOb.getTimestamp());
 
-            // System.out.println(currentOb.getTimestamp());
 
             for (int i =0; i<currentOb.getDataArr().size(); i++){
                 long sequence = this.ring.next();  // Grab the next sequence
@@ -135,7 +134,7 @@ public class SorterThread extends Thread {
 
 
             arr2.set(queNo, -1);
-            arr.set(queNo, new ObservationGroup(0l, null));
+            //arr.set(queNo, new ObservationGroup(0l, null));
         }
     }
 

@@ -94,15 +94,14 @@ public class AlertGenerator {
     }
 
     private void publish(ArrayList<Anomaly> arrayList) {
-        for(int i=0; i<arr.size(); i++){
-            System.out.print(arr.get(i).getIdentifier()+"\t");
-        }
+
+
         Collections.sort(arrayList);
-        System.out.println();
-        for(int i=0; i<arr.size(); i++){
-            System.out.print(arr.get(i).getIdentifier()+"\t");
-        }
+
+
         for(int i =0; i<arrayList.size(); i++){
+
+
             Event event = arrayList.get(i).getEvent();
             this.probThresh = Double.parseDouble(event.getData()[3].toString());
             //this.timestamp = transformTimestamp((String) event.getData()[1]);
@@ -144,7 +143,7 @@ public class AlertGenerator {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            System.out.println(event);
+
         }
        arr = new ArrayList<>();
     }

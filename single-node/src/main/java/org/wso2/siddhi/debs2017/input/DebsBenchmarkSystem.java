@@ -19,9 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
+import org.wso2.siddhi.debs2017.input.sparql.RegexProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.SparQLProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -34,6 +36,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
@@ -64,15 +67,14 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR;
+    private static ExecutorService RMQ_EXECUTOR;
 
-    private ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
+    private ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = SingleNodeServer.arraylist;
+    private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
 
 
-    public DebsBenchmarkSystem(RingBuffer<EventWrapper> ringBuffer, String metadataFile, int executorSize, ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList){
-        Collections.synchronizedList(arrayList);
-        this.arrayList = arrayList;
-        SorterThread sort = new SorterThread(arrayList, ringBuffer);
-        sort.start();
+    public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec, int executorSize){
+        RMQ_EXECUTOR = Executors.newFixedThreadPool(rabbitMQExec);
         DebsMetaData.load(metadataFile);
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
 
@@ -102,24 +104,27 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     }
 
     private void initCommunications() throws Exception {
-        outputQueue = createQueueWithName(getOutputQueueName());
-        inputQueue = createQueueWithName(getInputQueueName());
+        outputQueue = createQueueWithName(getOutputQueueName(), null);
+        inputQueue = createQueueWithName(getInputQueueName() , RMQ_EXECUTOR);
         registerConsumerFor(inputQueue);
     }
 
 
 
-    private RabbitQueue createQueueWithName(String name) throws Exception {
-        Channel channel = createConnection().createChannel();
+    private RabbitQueue createQueueWithName(String name, ExecutorService executorService) throws Exception {
+        Channel channel = createConnection(executorService).createChannel();
         channel.basicQos(getPrefetchCount());
         channel.queueDeclare(name, false, false, true, null);
         return new RabbitQueue(channel, name);
     }
 
-    private Connection createConnection() throws IOException, TimeoutException {
+    private Connection createConnection(ExecutorService executorService) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(getHost());
-        return factory.newConnection();
+        if(executorService.equals(null)){
+            return factory.newConnection();
+        }
+        return factory.newConnection(executorService);
     }
 
     private void registerConsumerFor(RabbitQueue queue) throws IOException {
@@ -246,8 +251,14 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
                 // terminationMessageBarrier.countDown();
             } else {
                 //logger.debug("Repeating message: {}", message);
-                Runnable reader = new SparQLProcessor(message);
-                EXECUTOR.execute(reader);
+                if(isSparQL.get()){
+                    Runnable sparQLProcessor = new SparQLProcessor(message);
+                    System.out.println("sp");
+                    EXECUTOR.execute(sparQLProcessor);
+                } else {
+                    Runnable regexProcessor = new RegexProcessor(message);
+                    EXECUTOR.execute(regexProcessor);
+                }
 
                 //sends to output queue
                 //send(bytes);

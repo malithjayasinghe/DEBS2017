@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -43,6 +44,7 @@ public class SingleNodeServer {
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
     public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arraylist;
+    public static AtomicBoolean isSparQL;
     /**
      * 1 : input queue : -hobbit
      * 2 : output queue : metedataFilename
@@ -170,10 +172,13 @@ public class SingleNodeServer {
         }
     }
     public static void main(String[] args) {
-        int handlers = Integer.parseInt(args[4]);
-        if (args.length == 5) {
-            int executorsize = Integer.parseInt(args[2]);
-            int ringbuffersize = Integer.parseInt(args[3]);
+
+        if (args.length == 7) {
+            int rabbitMQExecutor = Integer.parseInt(args[2]);
+            isSparQL = new AtomicBoolean(Boolean.parseBoolean(args[3]));
+            int executorsize = Integer.parseInt(args[4]);
+            int ringbuffersize = Integer.parseInt(args[5]);
+            int handlers = Integer.parseInt(args[6]);
 
             arraylist = new ArrayList<>(executorsize);
             for(int i=0; i<executorsize; i++){
@@ -190,18 +195,14 @@ public class SingleNodeServer {
                 RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
                 DebsAnomalyDetector debsAnormalyDetector = null;
 
-//                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
-//                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
-//                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
-//
-//
-//                disruptor.handleEventsWith(sh1, sh2, sh3);
+                SorterThread sort = new SorterThread(arraylist, ring);
+                sort.start();
 
 
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
                 try {
-                    system = new DebsBenchmarkSystem(ring, metadata, executorsize, arraylist);
+                    system = new DebsBenchmarkSystem(metadata, rabbitMQExecutor, executorsize);
                     system.init();
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
@@ -251,7 +252,7 @@ public class SingleNodeServer {
                 DebsMetaData.load("molding_machine_10M.metadata.nt");
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
-                rmq.consume(inputQueue, ring, executorsize, arraylist);
+                rmq.consume(inputQueue, rabbitMQExecutor, executorsize );
 
             }
 

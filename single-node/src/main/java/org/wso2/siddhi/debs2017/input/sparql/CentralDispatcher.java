@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -38,24 +39,24 @@ import java.util.concurrent.TimeUnit;
 */
 public class CentralDispatcher extends DefaultConsumer {
 
-    private static int count = 0;
-    private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR;
     private  ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = SingleNodeServer.arraylist;
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
+    private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
 
 
     /**
      * Dispatchers events to the disruptor after sorting
      *
      * @param channel the channel
-     * @param ringBuffer the ring buffer
+     *
      * @param executorSize the size of the executor pool
      */
-    public CentralDispatcher(Channel channel, RingBuffer<EventWrapper> ringBuffer, int executorSize, ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList) {
+    public CentralDispatcher(Channel channel, int executorSize) {
         super(channel);
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
+
 
     }
 
@@ -79,8 +80,15 @@ public class CentralDispatcher extends DefaultConsumer {
             }
 
         } else {
-            Runnable sparQLProcessor = new SparQLProcessor(msg);
-            EXECUTOR.execute(sparQLProcessor);
+            if(isSparQL.get()){
+                Runnable sparQLProcessor = new SparQLProcessor(msg);
+                System.out.println("sp");
+                EXECUTOR.execute(sparQLProcessor);
+            } else {
+                Runnable regexProcessor = new RegexProcessor(msg);
+                EXECUTOR.execute(regexProcessor);
+            }
+
         }
 
 
