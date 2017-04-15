@@ -72,7 +72,8 @@ public class AlertGenerator {
     public void generateAlert(Event event) {
 
         this.currentTime = (String) event.getData()[1];
-        Anomaly anomaly = new Anomaly(Integer.parseInt(event.getData()[2].toString().split("_")[2]), event);
+        Anomaly anomaly = new Anomaly(Integer.parseInt(event.getData()[2].toString().split("_")[2]),
+                Integer.parseInt(event.getData()[0].toString().split("_")[1]),event);
 
         if(this.currentTime.equals(this.preTime)){
 
@@ -84,10 +85,7 @@ public class AlertGenerator {
             arr.add(anomaly);
         }
 
-        sum += System.currentTimeMillis() - dispatchedTime;
-        if (anomalyCount == 20000) {
-            System.out.println("Average Latency : " + (sum / anomalyCount));
-        }
+
 
 
     }
@@ -141,6 +139,11 @@ public class AlertGenerator {
                 channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+            sum += System.currentTimeMillis() - dispatchedTime;
+            System.out.println("Latency for event"+ "\t" + event + ":"  +  "\t" +(System.currentTimeMillis() - dispatchedTime));
+            if (anomalyCount == 600) {
+                System.out.println("Average Latency : " + (sum / anomalyCount));
             }
 
         }

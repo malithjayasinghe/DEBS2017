@@ -21,11 +21,12 @@ import org.wso2.siddhi.core.event.Event;
 public class Anomaly implements Comparable<Anomaly>{
 
 
-    private int identifier;
+    private int property;
     private Event event;
+    private int machine;
 
-    public int getIdentifier() {
-        return this.identifier;
+    public int getProperty() {
+        return this.property;
     }
 
     public Event getEvent() {
@@ -33,8 +34,9 @@ public class Anomaly implements Comparable<Anomaly>{
     }
 
 
-    public Anomaly(int identifier, Event event) {
-        this.identifier = identifier;
+    public Anomaly(int property, int machine , Event event) {
+        this.property = property;
+        this.machine = machine;
         this.event = event;
     }
 
@@ -42,9 +44,13 @@ public class Anomaly implements Comparable<Anomaly>{
 
     @Override
     public int compareTo(Anomaly anomaly) {
-        if(this.identifier==anomaly.identifier) {
-            return 0;
-        }else if(this.identifier>anomaly.identifier) {
+        if(this.property ==anomaly.property) {
+            if(this.machine > anomaly.machine)
+                return 1;
+            else
+                return -1;
+
+        }else if(this.property >anomaly.property) {
             return 1;
         }else {
             return -1;

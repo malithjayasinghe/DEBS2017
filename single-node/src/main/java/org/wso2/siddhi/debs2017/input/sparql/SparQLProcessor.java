@@ -63,7 +63,7 @@ public class SparQLProcessor implements Runnable{
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-              //  "ORDER BY DESC (?dimension)" +
+               // "ORDER BY (<http://www.w3.org/2001/XMLSchema#>:nonNegativeInteger(?dimension))" +
                 "";
 
         try {
@@ -96,6 +96,8 @@ public class SparQLProcessor implements Runnable{
                             Math.round(value.getDouble() * 10000.0) / 10000.0, //
                             centers,
                             probability});
+
+                  //  System.out.println(event);
 
                     arr.add(event);
 

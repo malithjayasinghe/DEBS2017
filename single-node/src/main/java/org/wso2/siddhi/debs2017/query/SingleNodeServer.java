@@ -247,7 +247,7 @@ public class SingleNodeServer {
                 createhandler(handlers,ring,debsAnormalyDetector,disruptor);
                 SorterThread sort = new SorterThread(arraylist, ring);
                 sort.start();
-                DebsMetaData.load("molding_machine_10M.metadata.nt");
+                DebsMetaData.generate("molding_machine_10M.metadata.nt");
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
                 rmq.consume(inputQueue, rabbitMQExecutor, executorsize );
