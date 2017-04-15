@@ -8,6 +8,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.input.sparql.CentralDispatcher;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -71,14 +73,11 @@ public class AlertGenerator {
 
         this.currentTime = (String) event.getData()[1];
         Anomaly anomaly = new Anomaly(Integer.parseInt(event.getData()[2].toString().split("_")[2]), event);
-        System.out.println(this.preTime+"\t"+this.currentTime);
+
         if(this.currentTime.equals(this.preTime)){
-            System.out.println("equalTime "+event);
+
             arr.add(anomaly);
         } else {
-            //flush the arr
-            System.out.println("diffTime "+event);
-
 
             publish(arr);
             this.preTime = this.currentTime;
@@ -162,6 +161,15 @@ public class AlertGenerator {
     public void terminate() {
 
         publish(arr);
+        long endTime = System.currentTimeMillis();
+
+
+        double runTime = (endTime-SingleNodeServer.startime)/1000.0;
+        System.out.println("Running time in sec\t:"+runTime);
+        System.out.println("Average throghput(msg)\t:"+ CentralDispatcher.count/runTime);
+        System.out.println("Average throghput(bytes)\t:"+ CentralDispatcher.bytesRec/runTime);
+
+
         Channel channel = rabbitMQPublisher.getChannel();
         String TERMINATION_MESSAGE = "~~Termination Message~~";
         try {

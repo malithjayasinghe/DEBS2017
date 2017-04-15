@@ -57,7 +57,7 @@ public class SorterThread extends Thread {
                 try {
                     if(arr2.get(i)==-1){
                         ObservationGroup ob =arrayList.get(i).take();
-                        System.out.println(ob.getTimestamp());
+
                         if(ob.getTimestamp()!=-1l){
 
                             arr.set(i, ob);
@@ -85,7 +85,7 @@ public class SorterThread extends Thread {
 
             }
             if(size.get()==0){
-                System.out.println("Termination recieved");
+                //System.out.println("Termination recieved");
                 long sequence = this.ring.next();  // Grab the next sequence
                 try {
                     EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor

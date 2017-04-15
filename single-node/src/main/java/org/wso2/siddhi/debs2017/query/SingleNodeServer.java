@@ -45,13 +45,9 @@ public class SingleNodeServer {
 
     public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arraylist;
     public static AtomicBoolean isSparQL;
-    /**
-     * 1 : input queue : -hobbit
-     * 2 : output queue : metedataFilename
-     * 3 : executor size
-     * 4 : ring buffersize
-     * 5 : no of handlers --@TODO
-     */
+
+
+    public static long startime;
 
     public static void createhandler(int handlersize,RingBuffer ring, DebsAnomalyDetector debsAnormalyDetector, Disruptor disruptor ){
         switch (handlersize){
@@ -172,6 +168,8 @@ public class SingleNodeServer {
         }
     }
     public static void main(String[] args) {
+
+        startime = System.currentTimeMillis();
 
         if (args.length == 7) {
             int rabbitMQExecutor = Integer.parseInt(args[2]);

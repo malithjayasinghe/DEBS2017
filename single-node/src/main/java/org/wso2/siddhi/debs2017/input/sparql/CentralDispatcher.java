@@ -44,7 +44,8 @@ public class CentralDispatcher extends DefaultConsumer {
     private  ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = SingleNodeServer.arraylist;
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
     private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
-
+    public static int count = 0;
+    public static long bytesRec = 0l;
 
     /**
      * Dispatchers events to the disruptor after sorting
@@ -66,11 +67,11 @@ public class CentralDispatcher extends DefaultConsumer {
 
 
         if(msg.equals(TERMINATION_MESSAGE)){
-            System.out.println(TERMINATION_MESSAGE);
+
             EXECUTOR.shutdown();
             try{
                 EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                System.out.println("-------------------------------------");
+
                 for(int i =0; i<arrayList.size(); i++){
                     ObservationGroup ob = new ObservationGroup(-1l, null);
                     arrayList.get(i).put(ob);
@@ -81,10 +82,15 @@ public class CentralDispatcher extends DefaultConsumer {
 
         } else {
             if(isSparQL.get()){
+               // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
+                count++;
+                bytesRec += body.length;
                 Runnable sparQLProcessor = new SparQLProcessor(msg);
-                System.out.println("sp");
                 EXECUTOR.execute(sparQLProcessor);
             } else {
+                //System.out.println(count+"\t"+bytesRec+"\t"+body.length);
+                count++;
+                bytesRec += body.length;
                 Runnable regexProcessor = new RegexProcessor(msg);
                 EXECUTOR.execute(regexProcessor);
             }
