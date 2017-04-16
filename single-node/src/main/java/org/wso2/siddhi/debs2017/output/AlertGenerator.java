@@ -142,9 +142,7 @@ public class AlertGenerator {
             }
             sum += System.currentTimeMillis() - dispatchedTime;
             System.out.println("Latency for event"+ "\t" + event + ":"  +  "\t" +(System.currentTimeMillis() - dispatchedTime));
-            if (anomalyCount == 600) {
-                System.out.println("Average Latency : " + (sum / anomalyCount));
-            }
+
 
         }
        arr = new ArrayList<>();
@@ -171,6 +169,7 @@ public class AlertGenerator {
         System.out.println("Running time in sec\t:"+runTime);
         System.out.println("Average throghput(msg)\t:"+ CentralDispatcher.count/runTime);
         System.out.println("Average throghput(bytes)\t:"+ CentralDispatcher.bytesRec/runTime);
+        System.out.println("Average Latency : " + (sum / anomalyCount));
 
 
         Channel channel = rabbitMQPublisher.getChannel();

@@ -66,11 +66,12 @@ public class DebsMetaData {
      *
      * @param datafile the name of the file
      */
-    public static void generate(String datafile) {
+    public static void generate(String datafile,int machines) {
+
         Model model = RDFDataMgr.loadModel(datafile);
         Query query = QueryFactory.create(queryString);
         try {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < machines; i++) {
                 QueryExecution qexec = QueryExecutionFactory.create(query, model);
                 ResultSet results = qexec.execSelect();
                 results = ResultSetFactory.copyResults(results);

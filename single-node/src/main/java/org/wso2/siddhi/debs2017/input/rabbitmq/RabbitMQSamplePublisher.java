@@ -30,20 +30,42 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMQSamplePublisher {
     private static String TASK_QUEUE_NAME = "test123";
 
+
+    /**
+     * input queue name
+     * no. of machines
+     * isTest -  true/false
+     *
+     */
     public static void main(String[] argv)
             throws java.io.IOException, TimeoutException {
 
         if (argv.length > 0) {
             TASK_QUEUE_NAME = argv[0];
         }
+        int machines = Integer.parseInt(argv[1]);
+
+        boolean isTest = Boolean.parseBoolean(argv[2]);
+
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
         channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+        BufferedReader reader;
         String data = "";
+        String delimeter;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("frmattedData_63.nt"));//molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt
+            if(isTest) {
+                reader = new BufferedReader(new FileReader("63-messages.txt"));
+                delimeter = "|";
+            }
+            else {
+                reader = new BufferedReader(new FileReader("frmattedData_63.nt"));
+                delimeter = "----";
+            }
+
+            //molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt//frmattedData_63.nt
             // read file line by line
             String line;
             Scanner scanner;
@@ -52,17 +74,23 @@ public class RabbitMQSamplePublisher {
                 scanner = new Scanner(line);
                 while (scanner.hasNext()) {
                     String dataInLine = scanner.next();
-                    if (dataInLine.contains("----")) {
+                    if (dataInLine.contains(delimeter)) {
                         if (data.length() > 100) {
-                            for (int i = 0; i < 5; i++) {
+                            for (int i = 0; i < machines; i++) {
                                 count++;
                                 System.out.println(count);
                                 // System.out.println(data);
                                 //Thread.sleep(5000);
                                 String data1 = data.replace("Machine_59", "Machine_" + i).replace("_59_", "_" + i + "_");
+                                if(isTest)
                                 channel.basicPublish("", TASK_QUEUE_NAME,
                                         MessageProperties.PERSISTENT_TEXT_PLAIN,
-                                        data1.getBytes());
+                                        data.getBytes());
+                                else
+                                    channel.basicPublish("", TASK_QUEUE_NAME,
+                                            MessageProperties.PERSISTENT_TEXT_PLAIN,
+                                            data1.getBytes());
+
                             }
                         }
                         data = "";

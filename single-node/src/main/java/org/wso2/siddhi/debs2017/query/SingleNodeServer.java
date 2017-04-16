@@ -168,10 +168,25 @@ public class SingleNodeServer {
         }
     }
     public static void main(String[] args) {
+        /**
+         * input queue
+         * output queue
+         * no. of rabbitmq executor threads
+         * is Sparql -  true/false
+         * no. of sparql/regex executor threads
+         * ringbuffersize
+         * no. of  disruptor handelrs
+         * no. of machines - for metadata generation
+         * istestcase - true/false
+         *
+         */
 
         startime = System.currentTimeMillis();
 
-        if (args.length == 7) {
+
+        if (args.length == 9) {
+            boolean isTestcase = Boolean.parseBoolean(args[8]);
+            int machines = Integer.parseInt(args[7]);
             int rabbitMQExecutor = Integer.parseInt(args[2]);
             isSparQL = new AtomicBoolean(Boolean.parseBoolean(args[3]));
             int executorsize = Integer.parseInt(args[4]);
@@ -247,7 +262,10 @@ public class SingleNodeServer {
                 createhandler(handlers,ring,debsAnormalyDetector,disruptor);
                 SorterThread sort = new SorterThread(arraylist, ring);
                 sort.start();
-                DebsMetaData.generate("molding_machine_10M.metadata.nt");
+                if(isTestcase)
+                    DebsMetaData.load("molding_machine_10M.metadata.nt");
+                else
+                DebsMetaData.generate("molding_machine_10M.metadata.nt",machines);
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
                 rmq.consume(inputQueue, rabbitMQExecutor, executorsize );
