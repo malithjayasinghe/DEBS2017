@@ -18,13 +18,14 @@ import org.wso2.siddhi.core.event.Event;
 * limitations under the License.
 */
 public class EventWrapper {
+
     private Event event;
 
     public Event getEvent() {
         return this.event;
     }
 
-    public void setEvent(Event ev){
+    public void setEvent(Event ev) {
         this.event = ev;
     }
 }
