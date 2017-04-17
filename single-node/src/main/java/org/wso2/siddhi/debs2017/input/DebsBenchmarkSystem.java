@@ -252,11 +252,11 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
             } else {
                 //logger.debug("Repeating message: {}", message);
                 if(isSparQL.get()){
-                    Runnable sparQLProcessor = new SparQLProcessor(message);
+                    Runnable sparQLProcessor = new SparQLProcessor(message,  System.currentTimeMillis());
                     System.out.println("sp");
                     EXECUTOR.execute(sparQLProcessor);
                 } else {
-                    Runnable regexProcessor = new RegexProcessor(message);
+                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
                     EXECUTOR.execute(regexProcessor);
                 }
 

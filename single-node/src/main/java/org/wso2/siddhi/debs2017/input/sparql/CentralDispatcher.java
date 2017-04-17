@@ -85,13 +85,13 @@ public class CentralDispatcher extends DefaultConsumer {
                // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
                 count++;
                 bytesRec += body.length;
-                Runnable sparQLProcessor = new SparQLProcessor(msg);
+                Runnable sparQLProcessor = new SparQLProcessor(msg, System.currentTimeMillis());
                 EXECUTOR.execute(sparQLProcessor);
             } else {
                 //System.out.println(count+"\t"+bytesRec+"\t"+body.length);
                 count++;
                 bytesRec += body.length;
-                Runnable regexProcessor = new RegexProcessor(msg);
+                Runnable regexProcessor = new RegexProcessor(msg, System.currentTimeMillis());
                 EXECUTOR.execute(regexProcessor);
             }
 
