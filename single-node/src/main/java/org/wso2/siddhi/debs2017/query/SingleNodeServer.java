@@ -39,6 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+//org.wso2.siddhi.debs2017.query.SingleNodeServer
 public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
@@ -219,7 +221,7 @@ public class SingleNodeServer {
                     system.init();
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
-                    alertGenerator = new AlertGenerator(rmqPublisher);
+                    alertGenerator = new AlertGenerator(rmqPublisher, false);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
                     createhandler(handlers,ring,debsAnormalyDetector,disruptor);
 
@@ -256,7 +258,7 @@ public class SingleNodeServer {
 
 
                 output = new RabbitQueue(channel, outputQueue);
-                AlertGenerator alertGenerator = new AlertGenerator(output);
+                AlertGenerator alertGenerator = new AlertGenerator(output, false);
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
 
                 createhandler(handlers,ring,debsAnormalyDetector,disruptor);

@@ -32,7 +32,6 @@ import java.util.HashMap;
 * limitations under the License.
 */
 public class AlertGenerator {
-
     private static int anomalyCount = 0;
     private Double probThresh;
     private String timestamp;
@@ -49,129 +48,102 @@ public class AlertGenerator {
     private StringWriter out;
     private long dispatchedTime;
     private static double sum = 0;
-
     public static ArrayList<Anomaly> arr;
     private String currentTime = "Timestamp_0";
     private String preTime = "Timestamp_-1";
+    private boolean sort = false;
 
     /**
      * initialize the parameters from the sidhhi event, to generate the alert
      *
-     * @param rabbitMQPublisher  publish to rabbitmq
+     * @param rabbitMQPublisher publish to rabbitmq
      */
-    public AlertGenerator(RabbitQueue rabbitMQPublisher) {
-
+    public AlertGenerator(RabbitQueue rabbitMQPublisher, boolean sort) {
         this.rabbitMQPublisher = rabbitMQPublisher;
+        this.sort = sort;
         arr = new ArrayList<>();
     }
-
 
     /**
      * generate the rdf model and publish to rabbitmq
      */
     public void generateAlert(Event event) {
-
+    if(!sort){
+            publishEvent(event);
+            return;
+        }
         this.currentTime = (String) event.getData()[1];
         Anomaly anomaly = new Anomaly(Integer.parseInt(event.getData()[2].toString().split("_")[2]),
-                Integer.parseInt(event.getData()[0].toString().split("_")[1]),event);
-
-        if(this.currentTime.equals(this.preTime)){
-
+                Integer.parseInt(event.getData()[0].toString().split("_")[1]), event);
+        if (this.currentTime.equals(this.preTime)) {
             arr.add(anomaly);
         } else {
-
             publish(arr);
             this.preTime = this.currentTime;
             arr.add(anomaly);
         }
-
-
-
-
     }
 
     private void publish(ArrayList<Anomaly> arrayList) {
-
-
         Collections.sort(arrayList);
-
-
-        for(int i =0; i<arrayList.size(); i++){
-
-
+        for (int i = 0; i < arrayList.size(); i++) {
             Event event = arrayList.get(i).getEvent();
-            this.probThresh = Double.parseDouble(event.getData()[3].toString());
-            //this.timestamp = transformTimestamp((String) event.getData()[1]);
-            this.timestamp = (String) event.getData()[1];
-            this.dimension = (String) event.getData()[2];
-            this.machineNumber = (String) event.getData()[0];
-            this.dispatchedTime = event.getTimestamp();
-
-
-
-            Model model = ModelFactory.createDefaultModel();
-            String anomalyName = "Anomaly_" + anomalyCount;
-            Resource r1 = model.createResource(anomaly + anomalyName);
-            Property type = model.createProperty(rdf + "type");
-            Resource r2 = model.createResource(ar + "Anomaly");
-            Property threshProb = model.createProperty(ar + "hasProbabilityOfObservedAbnormalSequence");
-            Property time = model.createProperty(ar + "hasTimeStamp");
-            Resource r4 = model.createResource(debs + timestamp);
-            Property dim = model.createProperty(ar + "inAbnormalDimension");
-            Resource r5 = model.createResource(wmm + dimension);
-            Property machine = model.createProperty(i40 + "machine");
-            Resource r6 = model.createResource(wmm + machineNumber);
-
-
-            model.add(r1, threshProb, model.createTypedLiteral(probThresh))
-                    .add(r1, time, r4)
-                    .add(r1, dim, r5)
-                    .add(r1, machine, r6)
-                    .add(r1, type, r2);
-
-            anomalyCount++;
-
-            String str = "N-TRIPLES";
-            out = new StringWriter();
-            model.write(out, str);
-            Channel channel = rabbitMQPublisher.getChannel();
-            try {
-                channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            sum += System.currentTimeMillis() - dispatchedTime;
-            System.out.println("Latency for event"+ "\t" + event + ":"  +  "\t" +(System.currentTimeMillis() - dispatchedTime));
-
-
+            publishEvent(event);
         }
-       arr = new ArrayList<>();
+        arr = new ArrayList<>();
     }
 
-    /**
-     * Transforms the time stamp
-     *
-     * @param time the time stamp string to be transformed
-     * @return converted time stamp
-     */
-    private String transformTimestamp(String time) {
-        String[] str = time.split("_");
-        return str[0].concat("_" + (Integer.parseInt(str[1]) - 5));
+    public void publishEvent(Event event) {
+        this.probThresh = Double.parseDouble(event.getData()[3].toString());
+        //this.timestamp = transformTimestamp((String) event.getData()[1]);
+        this.timestamp = (String) event.getData()[1];
+        this.dimension = (String) event.getData()[2];
+        this.machineNumber = (String) event.getData()[0];
+        this.dispatchedTime = event.getTimestamp();
+        Model model = ModelFactory.createDefaultModel();
+        String anomalyName = "Anomaly_" + anomalyCount;
+        Resource r1 = model.createResource(anomaly + anomalyName);
+        Property type = model.createProperty(rdf + "type");
+        Resource r2 = model.createResource(ar + "Anomaly");
+        Property threshProb = model.createProperty(ar + "hasProbabilityOfObservedAbnormalSequence");
+        Property time = model.createProperty(ar + "hasTimeStamp");
+        Resource r4 = model.createResource(debs + timestamp);
+        Property dim = model.createProperty(ar + "inAbnormalDimension");
+        Resource r5 = model.createResource(wmm + dimension);
+        Property machine = model.createProperty(i40 + "machine");
+        Resource r6 = model.createResource(wmm + machineNumber);
+
+        model.add(r1, threshProb, model.createTypedLiteral(probThresh))
+                .add(r1, time, r4)
+                .add(r1, dim, r5)
+                .add(r1, machine, r6)
+                .add(r1, type, r2);
+
+        anomalyCount++;
+        String str = "N-TRIPLES";
+        out = new StringWriter();
+        model.write(out, str);
+        Channel channel = rabbitMQPublisher.getChannel();
+        try {
+            channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sum += System.currentTimeMillis() - dispatchedTime;
+        System.out.println("Latency for event" + "\t" + event + ":" + "\t" + (System.currentTimeMillis() - dispatchedTime));
+
     }
 
     public void terminate() {
-
-        publish(arr);
+        if(!sort) {
+            publish(arr);
+        }
         long endTime = System.currentTimeMillis();
-
-
-        double runTime = (endTime-SingleNodeServer.startime)/1000.0;
-        System.out.println("Running time in sec\t:"+runTime);
-        System.out.println("Average throghput(msg)\t:"+ CentralDispatcher.count/runTime);
-        System.out.println("Average throghput(bytes)\t:"+ CentralDispatcher.bytesRec/runTime);
+        double runTime = (endTime - SingleNodeServer.startime) / 1000.0;
+        System.out.println("Running time in sec\t:" + runTime);
+        System.out.println("Average throghput(msg)\t:" + CentralDispatcher.count / runTime);
+        System.out.println("Average throghput(bytes)\t:" + CentralDispatcher.bytesRec / runTime);
         System.out.println("Average Latency : " + (sum / anomalyCount));
-
-
         Channel channel = rabbitMQPublisher.getChannel();
         String TERMINATION_MESSAGE = "~~Termination Message~~";
         try {
