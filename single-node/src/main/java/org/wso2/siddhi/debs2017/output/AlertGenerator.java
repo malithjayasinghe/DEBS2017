@@ -135,7 +135,7 @@ public class AlertGenerator {
     }
 
     public void terminate() {
-        if(!sort) {
+        if(sort) {
             publish(arr);
         }
         long endTime = System.currentTimeMillis();
