@@ -30,11 +30,15 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
     @Override
     public void onEvent(EventWrapper wrapper, long sequence, boolean b) throws Exception {
         Object[] o = wrapper.getEvent().getData();
-        String[] splitter = o[2].toString().split("_");
-        long partition = Long.parseLong(splitter[2]);
-        if (partition % NUM == ID) {
-            sq.setSequence(sequence);
-            sq.publish(wrapper.getEvent());
+        if(wrapper.getEvent().getTimestamp() == -1l){
+            System.out.println("siddhi : terminated");
+        } else {
+            String[] splitter = o[2].toString().split("_");
+            long partition = Long.parseLong(splitter[2]);
+            if (partition % NUM == ID) {
+                sq.setSequence(sequence);
+                sq.publish(wrapper.getEvent());
+            }
         }
 
     }

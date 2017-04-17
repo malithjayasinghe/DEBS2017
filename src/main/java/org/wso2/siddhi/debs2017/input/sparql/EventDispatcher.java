@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -41,7 +42,8 @@ public class EventDispatcher extends DefaultConsumer {
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR ;
-    public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
+    public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
+    private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
 
     /**
      * The constructor
@@ -67,7 +69,7 @@ public class EventDispatcher extends DefaultConsumer {
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
         sort.start();
-        DebsMetaData.generate("molding_machine_10M.metadata.nt");
+        DebsMetaData.load("molding_machine_10M.metadata.nt");
     }
 
     /**
@@ -81,13 +83,37 @@ public class EventDispatcher extends DefaultConsumer {
      */
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
-        count++;
-        if (count % 33500 == 0) {
-            double runTime = (System.currentTimeMillis() - startTime) / 1000;
-            System.out.println("Average Throughput " + (count / runTime));
+        if(msg.equals(TERMINATION_MESSAGE)){
+            System.out.println("event - Terminated");
+
+            EXECUTOR.shutdown();
+            try{
+                EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
+                for(int i =0; i<arrayList.size(); i++){
+                    ObservationGroup ob = new ObservationGroup(-1l, null);
+                    arrayList.get(i).put(ob);
+                }
+            } catch (Exception e){
+                //do nothing
+            }
+
+        } else {
+//            if(isSparQL.get()){
+                // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
+                count++;
+//                bytesRec += body.length;
+                Runnable sparQLProcessor = new SPARQLProcessor(msg);
+                EXECUTOR.execute(sparQLProcessor);
+//            } else{
+//                //System.out.println(count+"\t"+bytesRec+"\t"+body.length);
+//                count++;
+//                bytesRec += body.length;
+//                Runnable regexProcessor = new RegexProcessor(msg);
+//                EXECUTOR.execute(regexProcessor);
+//            }
+
         }
-        Runnable reader = new SPARQLProcessor(msg);
-        EXECUTOR.execute(reader);
     }
 
 }
