@@ -18,6 +18,7 @@ public class SortingThread extends Thread {
     private static RabbitMQPublisher rabbitMQPublisher;
     private static LinkedBlockingQueue<Event>[] blockingQueues;
     int anomalycount = 0;
+    private static int termination = 0;
 
     /**
      * The constructor
@@ -36,9 +37,17 @@ public class SortingThread extends Thread {
      *
      */
     public void run() {
+//        while (true) {
+//            checkQueue();
+//            sort();
+//        }
         while (true) {
-            checkQueue();
-            sort();
+            if(termination == 3)
+                break;
+            else {
+                checkQueue();
+                sort();
+            }
         }
 
     }
@@ -132,11 +141,20 @@ public class SortingThread extends Thread {
         for (int i = 0; i < blockingQueues.length; i++) {
             timeout = System.currentTimeMillis();
             while (true) {
-                if ((System.currentTimeMillis() - timeout) >= 2) {
-                    break;
-                } else if (blockingQueues[i].peek() != null) {
-                    sortingList.add(blockingQueues[i].peek());
-                    break;
+//                if ((System.currentTimeMillis() - timeout) >= 2) {
+//                    break;
+//                } else if (blockingQueues[i].peek() != null) {
+//                    sortingList.add(blockingQueues[i].peek());
+//                    break;
+//                }
+                try {
+                    if(blockingQueues[i].take().getTimestamp() == -1L){
+                        termination++;
+                    }else{
+                        sortingList.add(blockingQueues[i].take());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }

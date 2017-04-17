@@ -18,9 +18,9 @@ import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 * limitations under the License.
 */
 public class CentralDispatcher {
-    public static void start(String[] args) {
+    public static void main(String[] args) {
 
-        if(args.length == 10){
+        if(args.length == 9){
             int executorSize = Integer.parseInt(args[8]);
             String queue = args [0];
             String rmqHost = args [1];

@@ -31,23 +31,23 @@ public class DEBSServer {
 
         if(serverType == SERVERTYPE.OUTPUT_SERVER.ordinal())
         {
-            CentralDispatcher.start(args);
+            //CentralDispatcher.start(args);
         }
 
         if(serverType == SERVERTYPE.CENTRAL_DISPATCHER.ordinal())
         {
-            OutputServer.start(args);
+            //OutputServer.start(args);
         }
 
         if(serverType == SERVERTYPE.SIDDHI_SERVER.ordinal())
         {
-            SiddhiServer.start(args);
+           // SiddhiServer.start(args);
         }
 
 
         if(serverType == SERVERTYPE.RABBITMQ_PUBLISHER.ordinal())
         {
-            RabbitMQSampleDataPublisher.start(args);
+          //  RabbitMQSampleDataPublisher.start(args);
         }
 
 

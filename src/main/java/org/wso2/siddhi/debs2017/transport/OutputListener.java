@@ -80,24 +80,7 @@ public class OutputListener implements StreamListener {
             }
     }
 
-    /**
-     * prints the output
-     *
-     * @param events the events
-     */
-    private synchronized void print(Event[] events) {
 
-        count++;
-        System.out.println(count + "\t" + events[0]);
-        arr.add(System.currentTimeMillis() - events[0].getTimestamp());
-        if (arr.size() == 1) {
-            starttime = events[0].getTimestamp();
-        }
-        if (arr.size() % 100 == 0) {
-            endtime = events[0].getTimestamp();
-        }
-
-    }
 
 
 }
