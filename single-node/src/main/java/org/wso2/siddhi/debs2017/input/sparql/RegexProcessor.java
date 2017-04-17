@@ -26,6 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class RegexProcessor  implements Runnable{
     private String data;
     private LinkedBlockingQueue<ObservationGroup> queue;
+    private long timestamp;
 
     @Override
     public void run() {
@@ -52,7 +53,7 @@ public class RegexProcessor  implements Runnable{
 
         String [] observationArr = timeStampArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+observationGroup+">)(.)(<http://www.agtinternational.com/ontologies/I4.0#contains>)" +
                 "(.)(<http://project-hobbit.eu/resources/debs2017#)");
-
+        timeS = UnixConverter.getUnixTime(timeStamp);
         for(int i=1; i<observationArr.length; i++){
             String observation = observationArr[i].split(">")[0];
 
@@ -73,8 +74,8 @@ public class RegexProcessor  implements Runnable{
 
                     int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
                     double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
-                    timeS = UnixConverter.getUnixTime(timeStamp);
-                    Event event = new Event(System.currentTimeMillis(), new Object[]{
+
+                    Event event = new Event(this.timestamp, new Object[]{
                             machine,
                             time,
                             property,
@@ -104,8 +105,9 @@ public class RegexProcessor  implements Runnable{
 
     }
 
-    public RegexProcessor(String data){
+    public RegexProcessor(String data, long timestamp) {
         this.data = data;
+        this.timestamp = timestamp;
 
     }
 }

@@ -39,9 +39,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class SparQLProcessor implements Runnable{
     private String data;
     private LinkedBlockingQueue<ObservationGroup> queue;
+    private long timestamp;
 
-    public SparQLProcessor(String data) {
+    public SparQLProcessor(String data, long timestamp) {
         this.data = data;
+        this.timestamp = timestamp;
     }
 
 
@@ -68,6 +70,7 @@ public class SparQLProcessor implements Runnable{
 
         try {
             long timeS = 0l;
+            boolean flag = true;
             Model model = ModelFactory.createDefaultModel().read(IOUtils.toInputStream(this.data, "UTF-8"), null, "TURTLE");
 
             Query query = QueryFactory.create(queryString);
@@ -84,11 +87,14 @@ public class SparQLProcessor implements Runnable{
                 Literal value = solution.getLiteral("value");
                 String stateful = property.getLocalName();
                 if (DebsMetaData.getMetaData().containsKey(stateful)) {
-
+                    if(flag){
+                        timeS = UnixConverter.getUnixTime(timestamp.getLexicalForm());
+                        flag = false;
+                    }
                     int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
                     double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
-                    timeS = UnixConverter.getUnixTime(timestamp.getLexicalForm());
-                    Event event = new Event(System.currentTimeMillis(), new Object[]{
+
+                    Event event = new Event(this.timestamp, new Object[]{
                             machine.getLocalName(),
                             time.getLocalName(),
                             property.getLocalName(),
