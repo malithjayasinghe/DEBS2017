@@ -26,7 +26,6 @@ import java.util.HashMap;
 public class DebsMetaData {
 
 
-    private static HashMap<String, MetaDataItem> meta = new HashMap<>();
     private final static String queryString =
             "SELECT ?machine  ?dimension ?clusters  ?threshold WHERE { " +
                     "?machine <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/WeidmullerMetadata#MoldingMachine> ." +
@@ -36,13 +35,14 @@ public class DebsMetaData {
                     "?a <http://www.agtinternational.com/ontologies/WeidmullerMetadata#isThresholdForProperty> ?dimension ." +
                     "?a <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?threshold ." +
                     "}";
+    private static HashMap<String, MetaDataItem> meta = new HashMap<>();
 
     /**
      * Adds a value to meta data container
      *
-     * @param machineNumber machine number
-     * @param dimension dimension
-     * @param clusterCenters cluster center
+     * @param machineNumber        machine number
+     * @param dimension            dimension
+     * @param clusterCenters       cluster center
      * @param probabilityThreshold probability threshold
      */
     private static void addValue(String machineNumber, String dimension, int clusterCenters,
@@ -53,11 +53,9 @@ public class DebsMetaData {
     }
 
     /**
-     *
      * @return the meta data holder (i.e. hash map)
      */
-    public static HashMap<String, MetaDataItem> getMetaData()
-    {
+    public static HashMap<String, MetaDataItem> getMetaData() {
         return meta;
     }
 
@@ -66,7 +64,7 @@ public class DebsMetaData {
      *
      * @param datafile the name of the file
      */
-    public static void generate(String datafile,int machines) {
+    public static void generate(String datafile, int machines) {
 
         Model model = RDFDataMgr.loadModel(datafile);
         Query query = QueryFactory.create(queryString);
