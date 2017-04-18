@@ -102,8 +102,10 @@ public class EventDispatcher extends DefaultConsumer {
                 // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
                 count++;
 //                bytesRec += body.length;
-                Runnable sparQLProcessor = new SPARQLProcessor(msg);
-                EXECUTOR.execute(sparQLProcessor);
+//                Runnable sparQLProcessor = new SPARQLProcessor(msg);
+//                EXECUTOR.execute(sparQLProcessor);
+            Runnable regex = new RegexProcessor(msg);
+            EXECUTOR.execute(regex);
 //            } else{
 //                //System.out.println(count+"\t"+bytesRec+"\t"+body.length);
 //                count++;

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.sparql.EventDispatcher;
 import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
+import org.wso2.siddhi.debs2017.input.sparql.RegexProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.SPARQLProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
 import org.wso2.siddhi.debs2017.query.CentralDispatcher;
@@ -237,9 +238,11 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
             } else {
                 //logger.debug("Repeating message: {}", message);
 //                if(isSparQL.get()){
-                    Runnable sparQLProcessor = new SPARQLProcessor(message);
-                    System.out.println("sp");
-                    EXECUTOR.execute(sparQLProcessor);
+//                    Runnable sparQLProcessor = new SPARQLProcessor(message);
+//                    System.out.println("sp");
+//                    EXECUTOR.execute(sparQLProcessor);
+                Runnable regex = new RegexProcessor(message);
+                EXECUTOR.execute(regex);
 //                } else {
 //                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
 //                    EXECUTOR.execute(regexProcessor);
