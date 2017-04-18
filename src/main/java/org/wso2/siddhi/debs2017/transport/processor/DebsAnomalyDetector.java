@@ -36,7 +36,7 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
         if(wrapper.getEvent().getTimestamp() == -1l){
             System.out.println("debs : terminated");
             Event[] events = {wrapper.getEvent()};
-            siddhiClient.send("output", events);
+            //siddhiClient.send("output", events);
         } else {
             if (probability < threshold && probability > 0) {
                 send(wrapper.getEvent());

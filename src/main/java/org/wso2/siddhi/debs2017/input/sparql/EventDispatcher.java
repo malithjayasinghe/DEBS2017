@@ -8,6 +8,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.query.CentralDispatcher;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class EventDispatcher extends DefaultConsumer {
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR ;
-    public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
+    private static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = CentralDispatcher.arrayList;
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
 
     /**
@@ -59,11 +60,9 @@ public class EventDispatcher extends DefaultConsumer {
     public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3, int executorSize) {
         super(channel);
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
-        arrayList = new ArrayList<>(executorSize);
+
         startTime = System.currentTimeMillis();
-        for (int i = 0; i < executorSize; i++) {
-            arrayList.add(new LinkedBlockingQueue());
-        }
+
 
         //TODO: I do not think we need to synchronize the array list
         Collections.synchronizedList(arrayList);

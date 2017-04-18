@@ -1,6 +1,9 @@
 package org.wso2.siddhi.debs2017.transport;
 
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConnectionFactory;
+import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
@@ -24,9 +27,15 @@ import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 */
 public class OutputServer {
     public static void main(String[] args) {
-        if (args.length == 3) {
-            String host = args[0];
-            int port = Integer.parseInt(args[1]);
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+        if (args.length == 2) {
+
+
+            DebsBenchmarkOutput dbOut = new DebsBenchmarkOutput();
+            dbOut.init();
+
+            RabbitQueue output = dbOut.getOutputQueue();
             StreamDefinition streamDefinition = StreamDefinition.id("output").
                     attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
@@ -34,15 +43,45 @@ public class OutputServer {
                     attribute("value", Attribute.Type.DOUBLE).
                     attribute("threshold", Attribute.Type.DOUBLE).
                     attribute("node", Attribute.Type.INT);
-            RabbitMQPublisher rmq = new RabbitMQPublisher("output");
+           // RabbitMQPublisher rmq = new RabbitMQPublisher(output);
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
-            tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, rmq));
+            tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, output));
             ServerConfig serverConfig = new ServerConfig();
             serverConfig.setHost(host);
             serverConfig.setPort(port);
             tcpNettyServer.bootServer(serverConfig);
-        } else {
-            System.out.println("Expected two parameters : host , port");
+        }  else if (args.length >2) {
+
+            String outputQueue = args[2];
+            RabbitQueue output = null;
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost("127.0.0.1");
+            Channel channel = null;
+            try {
+                channel = factory.newConnection().createChannel();
+                channel.basicQos(1);
+                channel.queueDeclare(outputQueue, false, false, true, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            output = new RabbitQueue(channel, outputQueue);
+
+            StreamDefinition streamDefinition = StreamDefinition.id("output").
+                    attribute("machine", Attribute.Type.STRING).
+                    attribute("time", Attribute.Type.STRING).
+                    attribute("dimension", Attribute.Type.STRING).
+                    attribute("value", Attribute.Type.DOUBLE).
+                    attribute("threshold", Attribute.Type.DOUBLE).
+                    attribute("node", Attribute.Type.INT);
+           // RabbitMQPublisher rmq = new RabbitMQPublisher(outputQueue);
+            TcpNettyServer tcpNettyServer = new TcpNettyServer();
+            tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, output));
+            ServerConfig serverConfig = new ServerConfig();
+            serverConfig.setHost(host);
+            serverConfig.setPort(port);
+            tcpNettyServer.bootServer(serverConfig);
+            //System.out.println("Expected two parameters : host , port");
         }
 
     }

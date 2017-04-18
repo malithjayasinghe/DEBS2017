@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.query.CentralDispatcher;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -53,7 +54,7 @@ public class SPARQLProcessor implements Runnable {
     public void run() {
         ObservationGroup observationGroup;
         ArrayList<Event> arr = new ArrayList<>();
-        this.queue = EventDispatcher.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
+        this.queue = CentralDispatcher.arrayList.get(Integer.parseInt(Thread.currentThread().getName()));
         String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +

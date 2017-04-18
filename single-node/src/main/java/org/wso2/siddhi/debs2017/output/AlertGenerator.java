@@ -69,6 +69,7 @@ public class AlertGenerator {
      */
     public void generateAlert(Event event) {
     if(!sort){
+        System.out.println(event);
             publishEvent(event);
             return;
         }

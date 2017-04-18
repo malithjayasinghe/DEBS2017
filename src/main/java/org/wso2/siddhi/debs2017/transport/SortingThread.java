@@ -1,5 +1,6 @@
 package org.wso2.siddhi.debs2017.transport;
 
+import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.output.MultiNodeAlertGenerator;
 import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
@@ -15,7 +16,7 @@ public class SortingThread extends Thread {
     static long timeout;
     private static ArrayList<Event> sortingList = new ArrayList<>();
     Event currentEvent;
-    private static RabbitMQPublisher rabbitMQPublisher;
+    private static RabbitQueue rabbitMQPublisher;
     private static LinkedBlockingQueue<Event>[] blockingQueues;
     int anomalycount = 0;
     private static int termination = 0;
@@ -26,7 +27,7 @@ public class SortingThread extends Thread {
      * @param rmq queue to publish the final output
      * @param blockingQueues link blocking queues to pull the data out
      */
-    public SortingThread(RabbitMQPublisher rmq, LinkedBlockingQueue<Event>[] blockingQueues) {
+    public SortingThread(RabbitQueue rmq, LinkedBlockingQueue<Event>[] blockingQueues) {
         this.rabbitMQPublisher = rmq;
         this.blockingQueues = blockingQueues;
         addQueues();
@@ -37,18 +38,11 @@ public class SortingThread extends Thread {
      *
      */
     public void run() {
-//        while (true) {
-//            checkQueue();
-//            sort();
-//        }
         while (true) {
-            if(termination == 3)
-                break;
-            else {
-                checkQueue();
-                sort();
-            }
+            checkQueue();
+            sort();
         }
+
 
     }
 
@@ -141,21 +135,13 @@ public class SortingThread extends Thread {
         for (int i = 0; i < blockingQueues.length; i++) {
             timeout = System.currentTimeMillis();
             while (true) {
-//                if ((System.currentTimeMillis() - timeout) >= 2) {
-//                    break;
-//                } else if (blockingQueues[i].peek() != null) {
-//                    sortingList.add(blockingQueues[i].peek());
-//                    break;
-//                }
-                try {
-                    if(blockingQueues[i].take().getTimestamp() == -1L){
-                        termination++;
-                    }else{
-                        sortingList.add(blockingQueues[i].take());
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if ((System.currentTimeMillis() - timeout) >= 2) {
+                    break;
+                } else if (blockingQueues[i].peek() != null) {
+                    sortingList.add(blockingQueues[i].peek());
+                    break;
                 }
+
             }
         }
     }

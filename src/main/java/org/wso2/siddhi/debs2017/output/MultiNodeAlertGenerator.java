@@ -23,6 +23,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.MessageProperties;
+import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
 import java.io.StringWriter;
 
@@ -43,7 +46,7 @@ public class MultiNodeAlertGenerator {
     String xsd = "http://www.w3.org/2001/XMLSchema#";
     String wmm = "http://www.agtinternational.com/ontologies/WeidmullerMetadata#";
     String i40 = "http://www.agtinternational.com/ontologies/I4.0#";
-    private RabbitMQPublisher rabbitMQPublisher;
+    private RabbitQueue rabbitQueue;
     private StringWriter out;
     private long dispatchedTime;
     private static double sum = 0;
@@ -52,15 +55,15 @@ public class MultiNodeAlertGenerator {
      * initialize the parameters from the sidhhi event, to generate the alert
      *
      * @param event          sidhhi event
-     * @param rabbitMQPublisher  publish to rabbitmq
+     * @param rabbitQueue  publish to rabbitmq
      */
-    public MultiNodeAlertGenerator(Event event, RabbitMQPublisher rabbitMQPublisher) {
+    public MultiNodeAlertGenerator(Event event, RabbitQueue rabbitQueue) {
         this.probThresh = Double.toString((Double) event.getData()[3]);
         this.timestamp = transformTimestamp((String) event.getData()[1]);
         this.dimension = (String) event.getData()[2];
         this.machineNumber = (String) event.getData()[0];
         this.dispatchedTime = event.getTimestamp();
-        this.rabbitMQPublisher = rabbitMQPublisher;
+        this.rabbitQueue = rabbitQueue;
     }
 
     /**
@@ -90,7 +93,13 @@ public class MultiNodeAlertGenerator {
         String str = "N-TRIPLES";
         out = new StringWriter();
         model.write(out, str);
-        rabbitMQPublisher.publish(out.toString());
+        //rabbitMQPublisher.publish(out.toString());
+        Channel channel = rabbitQueue.getChannel();
+        try {
+            channel.basicPublish("", rabbitQueue.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         sum += System.currentTimeMillis() - dispatchedTime;
         if (anomalyCount == 2000) {
             System.out.println("Average Latency : " + (sum / anomalyCount));

@@ -1,5 +1,6 @@
 package org.wso2.siddhi.debs2017.transport;
 
+import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
@@ -39,7 +40,7 @@ public class OutputListener implements StreamListener {
      * @param streamDefinition the definition of the stream
      * @param rmq the rabitmq queue to publish the data
      */
-    public OutputListener(StreamDefinition streamDefinition, RabbitMQPublisher rmq) {
+    public OutputListener(StreamDefinition streamDefinition, RabbitQueue rmq) {
         this.streamDefinition = streamDefinition;
         SortingThread sorter = new SortingThread(rmq, blockingQueues);
         sorter.start();
