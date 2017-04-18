@@ -101,7 +101,7 @@ public class CorrectnessTestCase {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("inStream");
 
         //extract metadata
-        DebsMetaData.load("molding_machine_10M.metadata.nt");
+        DebsMetaData.load("../molding_machine_10M.metadata.nt");
 
         //load sparql
 
@@ -140,7 +140,7 @@ public class CorrectnessTestCase {
                 "";
 
         try {
-            Model model = RDFDataMgr.loadModel("molding_machine_10M.nt");
+            Model model = RDFDataMgr.loadModel("../molding_machine_10M.nt");
 
             com.hp.hpl.jena.query.Query query = QueryFactory.create(queryString);
             QueryExecution qexec = QueryExecutionFactory.create(query, model);
