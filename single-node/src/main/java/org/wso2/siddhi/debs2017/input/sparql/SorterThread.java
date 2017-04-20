@@ -95,7 +95,7 @@ public class SorterThread extends Thread {
             Event current = unsortedArray.get(0);
             queNo = arrayListStatus.get(0);
             for (int i = 1; i < unsortedArray.size(); i++) {
-                if (Long.parseLong(current.getData()[3].toString()) > Long.parseLong(unsortedArray.get(i).getData()[3].toString())) {
+                if (current.getTimestamp()> unsortedArray.get(i).getTimestamp()) {
                     current = unsortedArray.get(i);
                     queNo = i;
                 }
@@ -108,7 +108,7 @@ public class SorterThread extends Thread {
                 } finally {
                     this.ring.publish(sequence);
                 }
-        System.out.println(current);
+        //System.out.println(current);
 
 //                if(currentOb.getDataArr().get(i).getData()[2].equals("_59_66")){
 //                    System.out.println(currentOb.getDataArr().get(i).getData()[1]+"\t"+currentOb.getDataArr().get(i).getData()[2]+"\t"+currentOb.getDataArr().get(i).getData()[4]

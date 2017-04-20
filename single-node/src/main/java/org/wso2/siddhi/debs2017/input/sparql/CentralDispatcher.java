@@ -94,7 +94,7 @@ public class CentralDispatcher extends DefaultConsumer {
                 bytesRec += body.length;
 //                Runnable regexProcessor = new RegexProcessor(msg, System.currentTimeMillis());
 //                EXECUTOR.execute(regexProcessor);
-                Runnable patternProcessor = new PatternProcessor(msg, System.currentTimeMillis());
+                Runnable patternProcessor = new PatternProcessor(msg, System.nanoTime());
                 EXECUTOR.execute(patternProcessor);
             }
 

@@ -69,7 +69,7 @@ public class AlertGenerator {
      */
     public void generateAlert(Event event) {
     if(!sort){
-        System.out.println(event);
+        //System.out.println(event);
             publishEvent(event);
             return;
         }
@@ -130,8 +130,9 @@ public class AlertGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        sum += System.currentTimeMillis() - dispatchedTime;
-        System.out.println("Latency for event" + "\t" + event + ":" + "\t" + (System.currentTimeMillis() - dispatchedTime));
+        //System.out.println(out.toString());
+        sum += System.nanoTime() - dispatchedTime;
+        //System.out.println("Latency for event" + "\t" + event + ":" + "\t" + (System.currentTimeMillis() - dispatchedTime));
 
     }
 
