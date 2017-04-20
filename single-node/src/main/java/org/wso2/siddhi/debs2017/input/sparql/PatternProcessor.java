@@ -30,12 +30,15 @@ public class PatternProcessor implements Runnable{
     private LinkedBlockingQueue<Event> queue;
     private long timestamp;
 
-    private static Pattern patternTime = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>.<http://project-hobbit.eu/resources/debs2017#(.*)>");
+   /* private static Pattern patternTime = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>.<http://project-hobbit.eu/resources/debs2017#(.*)>");
     private static Pattern patternTimestamp = Pattern.compile("<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#dateTime>");
-    private static Pattern patternMachine = Pattern.compile("<http://www.agtinternational.com/ontologies/I4.0#machine>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(.*)>");
+    private static Pattern patternMachine = Pattern.compile("<http://www.agtinternational.com/ontologies/I4.0#machine>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(.*)>");*/
     private static  Pattern patternProperty = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observedProperty>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(.*)>");
     private static Pattern patternValue = Pattern.compile("<http://project-hobbit.eu/resources/debs2017#Value_.*>.<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#");
 
+    private String time;
+    private long uTime;
+    private String machine;
 
     @Override
     public void run() {
@@ -44,14 +47,11 @@ public class PatternProcessor implements Runnable{
         this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
 
 
-        String time = "";
-        String timeStamp = "";
-        String machine = "";
         String property = "";
         String value =  "";
 
 
-        Matcher matcher1 = patternTime.matcher(this.data);
+        /*Matcher matcher1 = patternTime.matcher(this.data);
         while (matcher1.find()) {
             time = matcher1.group(1);
         }
@@ -64,7 +64,7 @@ public class PatternProcessor implements Runnable{
         Matcher matcher3 = patternMachine.matcher(this.data);
         while (matcher3.find()) {
             machine = matcher3.group(1);
-        }
+        }*/
 
         Matcher matcher4 = patternProperty.matcher(this.data);
         Matcher matcher5 = patternValue.matcher(this.data);
@@ -83,7 +83,7 @@ public class PatternProcessor implements Runnable{
                         machine,
                         time,
                         property,
-                        timeS,
+                        uTime,
                         Math.round(Double.parseDouble(value) * 10000.0) / 10000.0, //
                         centers,
                         probability});
@@ -118,9 +118,12 @@ public class PatternProcessor implements Runnable{
 
 
 
-    public PatternProcessor(String data, long timestamp) {
+    public PatternProcessor(String data, long timestamp, String time, long utime, String machine) {
         this.data = data;
         this.timestamp = timestamp;
+        this.time = time;
+        this.uTime = utime;
+        this.machine = machine;
 
     }
 }

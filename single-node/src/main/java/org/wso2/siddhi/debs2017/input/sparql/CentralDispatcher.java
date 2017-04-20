@@ -7,6 +7,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
@@ -21,6 +22,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -46,6 +49,10 @@ public class CentralDispatcher extends DefaultConsumer {
     private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
     public static int count = 0;
     public static long bytesRec = 0l;
+
+    private static Pattern patternTime = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>.<http://project-hobbit.eu/resources/debs2017#(.*)>");
+    private static Pattern patternTimestamp = Pattern.compile("<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#dateTime>");
+    private static Pattern patternMachine = Pattern.compile("<http://www.agtinternational.com/ontologies/I4.0#machine>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(.*)>");
 
     /**
      * Dispatchers events to the disruptor after sorting
@@ -94,13 +101,49 @@ public class CentralDispatcher extends DefaultConsumer {
                 bytesRec += body.length;
 //                Runnable regexProcessor = new RegexProcessor(msg, System.currentTimeMillis());
 //                EXECUTOR.execute(regexProcessor);
-                Runnable patternProcessor = new PatternProcessor(msg, System.nanoTime());
+                Runnable patternProcessor = new PatternProcessor(msg, System.nanoTime(), processTime(msg), processUTime(msg), processMachine(msg));
                 EXECUTOR.execute(patternProcessor);
             }
 
         }
 
 
+
+    }
+
+    private String processMachine(String msg) {
+        String machine = "";
+
+        Matcher matcher3 = patternMachine.matcher(msg);
+        while (matcher3.find()) {
+            machine = matcher3.group(1);
+            break;
+        }
+        return machine;
+    }
+
+    private long processUTime(String msg) {
+
+        String timeStamp = "";
+
+        Matcher matcher2 = patternTimestamp.matcher(msg);
+        while (matcher2.find()) {
+            timeStamp = matcher2.group(1);
+            break;
+        }
+        return UnixConverter.getUnixTime(timeStamp);
+
+    }
+
+    private String processTime(String msg) {
+        String time = "";
+
+        Matcher matcher1 = patternTime.matcher(msg);
+        while (matcher1.find()) {
+            time = matcher1.group(1);
+            break;
+        }
+        return time;
 
     }
 }
