@@ -24,8 +24,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 */
 public class SorterThread extends Thread {
 
-    public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
-    private ArrayList<ObservationGroup> unsortedArray = new ArrayList<>();
+    public static ArrayList<LinkedBlockingQueue<Event>> arrayList;
+    private ArrayList<Event> unsortedArray = new ArrayList<>();
     private ArrayList<Integer> arrayListStatus = new ArrayList<>();
     private static int size;
     private static RingBuffer<EventWrapper> ring;
@@ -37,13 +37,13 @@ public class SorterThread extends Thread {
      * @param arrayList  the array list of link blocking queues
      * @param ringBuffer the ring buffer to publish
      */
-    public SorterThread(ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList, RingBuffer<EventWrapper> ringBuffer) {
+    public SorterThread(ArrayList<LinkedBlockingQueue<Event>> arrayList, RingBuffer<EventWrapper> ringBuffer) {
         this.arrayList = arrayList;
         size = arrayList.size();
         this.ring = ringBuffer;
         for (int i = 0; i < size; i++) {
             this.arrayListStatus.add(queNo);
-            this.unsortedArray.add(new ObservationGroup(Long.MAX_VALUE, null));
+            this.unsortedArray.add(new Event(Long.MAX_VALUE, null));
         }
     }
 
@@ -55,9 +55,9 @@ public class SorterThread extends Thread {
             while (true) {
                 for (int i = 0; i < size; i++) {
                     if (arrayListStatus.get(i) == -1) {
-                        ObservationGroup ob = arrayList.get(i).take();
-                        if (ob.getTimestamp() != -1l) {
-                            unsortedArray.set(i, ob);
+                        Event event = arrayList.get(i).take();
+                        if (event.getTimestamp() != -1l) {
+                            unsortedArray.set(i, event);
                             arrayListStatus.set(i, 0);
                         } else {
                             arrayList.remove(i);
@@ -92,23 +92,30 @@ public class SorterThread extends Thread {
      * Sort events based on their time stamp
      */
     private void sort() {
-            ObservationGroup currentOb = unsortedArray.get(0);
+            Event current = unsortedArray.get(0);
             queNo = arrayListStatus.get(0);
             for (int i = 1; i < unsortedArray.size(); i++) {
-                if (currentOb.getTimestamp() > unsortedArray.get(i).getTimestamp()) {
-                    currentOb = unsortedArray.get(i);
+                if (Long.parseLong(current.getData()[3].toString()) > Long.parseLong(unsortedArray.get(i).getData()[3].toString())) {
+                    current = unsortedArray.get(i);
                     queNo = i;
                 }
             }
-            for (int i = 0; i < currentOb.getDataArr().size(); i++) {
+
                 long sequence = this.ring.next();  // Grab the next sequence
                 try {
                     EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor
-                    wrapper.setEvent(currentOb.getDataArr().get(i));
+                    wrapper.setEvent(current);
                 } finally {
                     this.ring.publish(sequence);
                 }
-            }
+        System.out.println(current);
+
+//                if(currentOb.getDataArr().get(i).getData()[2].equals("_59_66")){
+//                    System.out.println(currentOb.getDataArr().get(i).getData()[1]+"\t"+currentOb.getDataArr().get(i).getData()[2]+"\t"+currentOb.getDataArr().get(i).getData()[4]
+//                    +"\t"+currentOb.getDataArr().get(i).getData()[5]);
+//                }
+
+
             arrayListStatus.set(queNo, -1);
         }
 

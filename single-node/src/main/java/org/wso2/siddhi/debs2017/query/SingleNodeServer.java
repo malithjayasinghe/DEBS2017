@@ -45,7 +45,7 @@ public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
-    public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arraylist;
+    public static ArrayList<LinkedBlockingQueue<Event>> arraylist;
     public static AtomicBoolean isSparQL;
 
 
@@ -197,7 +197,7 @@ public class SingleNodeServer {
 
             arraylist = new ArrayList<>(executorsize);
             for(int i=0; i<executorsize; i++){
-                arraylist.add(new LinkedBlockingQueue<ObservationGroup>());
+                arraylist.add(new LinkedBlockingQueue<Event>());
             }
             if (args[0].equals("-hobbit")) {
 

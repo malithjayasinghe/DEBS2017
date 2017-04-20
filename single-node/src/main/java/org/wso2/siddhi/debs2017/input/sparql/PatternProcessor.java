@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 */
 public class PatternProcessor implements Runnable{
     private String data;
-    private LinkedBlockingQueue<ObservationGroup> queue;
+    private LinkedBlockingQueue<Event> queue;
     private long timestamp;
 
     private static Pattern patternTime = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>.<http://project-hobbit.eu/resources/debs2017#(.*)>");
@@ -88,19 +88,24 @@ public class PatternProcessor implements Runnable{
                         centers,
                         probability});
 
-                arr.add(event);
+                //arr.add(event);
 
+                try {
+                    this.queue.put(event);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 //this.queue.put(event);
             }
 
         }
 
-        ob = new ObservationGroup(timeS, arr);
-        try {
-            this.queue.put(ob);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        ob = new ObservationGroup(timeS, arr);
+//        try {
+//            this.queue.put(ob);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
 
 

@@ -38,7 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 */
 public class SparQLProcessor implements Runnable{
     private String data;
-    private LinkedBlockingQueue<ObservationGroup> queue;
+    private LinkedBlockingQueue<Event> queue;
     private long timestamp;
 
     public SparQLProcessor(String data, long timestamp) {
@@ -105,14 +105,14 @@ public class SparQLProcessor implements Runnable{
 
                   //  System.out.println(event);
 
-                    arr.add(event);
+                    //arr.add(event);
 
-                    //this.queue.put(event);
+                    this.queue.put(event);
                 }
 
             }
-            observationGroup = new ObservationGroup(timeS, arr);
-            this.queue.put(observationGroup);
+//            observationGroup = new ObservationGroup(timeS, arr);
+//            this.queue.put(observationGroup);
 
         } catch (Exception e) {
             e.printStackTrace();

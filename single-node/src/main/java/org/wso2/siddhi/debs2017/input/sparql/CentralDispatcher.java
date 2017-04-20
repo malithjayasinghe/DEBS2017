@@ -41,7 +41,7 @@ public class CentralDispatcher extends DefaultConsumer {
 
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
     private static ExecutorService EXECUTOR;
-    private  ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = SingleNodeServer.arraylist;
+    private  ArrayList<LinkedBlockingQueue<Event>> arrayList = SingleNodeServer.arraylist;
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
     private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
     public static int count = 0;
@@ -73,7 +73,8 @@ public class CentralDispatcher extends DefaultConsumer {
                 EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
                 for(int i =0; i<arrayList.size(); i++){
-                    ObservationGroup ob = new ObservationGroup(-1l, null);
+                   // ObservationGroup ob = new ObservationGroup(-1l, null);
+                    Event ob = new Event(-1l, null);
                     arrayList.get(i).put(ob);
                 }
             } catch (Exception e){

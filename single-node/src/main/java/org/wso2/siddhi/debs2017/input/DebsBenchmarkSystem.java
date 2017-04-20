@@ -69,7 +69,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     private static ExecutorService EXECUTOR;
     private static ExecutorService RMQ_EXECUTOR;
 
-    private ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = SingleNodeServer.arraylist;
+    private ArrayList<LinkedBlockingQueue<Event>> arrayList = SingleNodeServer.arraylist;
     private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
 
 
@@ -242,8 +242,8 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
                     EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
                     System.out.println("-------------------------------------");
                     for(int i =0; i<arrayList.size(); i++){
-                        ObservationGroup ob = new ObservationGroup(-1l, null);
-                        arrayList.get(i).put(ob);
+                        Event ev =  new Event(-1l, null);
+                        arrayList.get(i).put(ev);
                     }
                 } catch (InterruptedException e){
                     //do nothing

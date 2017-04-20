@@ -25,7 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 */
 public class RegexProcessor  implements Runnable{
     private String data;
-    private LinkedBlockingQueue<ObservationGroup> queue;
+    private LinkedBlockingQueue<Event> queue;
     private long timestamp;
 
     @Override
@@ -84,9 +84,12 @@ public class RegexProcessor  implements Runnable{
                             centers,
                             probability});
 
-                    arr.add(event);
-
-                    //this.queue.put(event);
+                   // arr.add(event);
+                    try {
+                        this.queue.put(event);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -95,12 +98,12 @@ public class RegexProcessor  implements Runnable{
 
 
 
-            ob = new ObservationGroup(timeS, arr);
-        try {
-            this.queue.put(ob);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//            ob = new ObservationGroup(timeS, arr);
+//        try {
+//            this.queue.put(ob);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
 
     }

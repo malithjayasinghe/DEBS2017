@@ -57,8 +57,8 @@ public class RabbitMQSamplePublisher {
         String delimeter;
         try {
             if(isTest) {
-                reader = new BufferedReader(new FileReader("63-messages.txt"));
-                delimeter = "|";
+                reader = new BufferedReader(new FileReader("frmattedData_63.nt"));  //frmattedData_63.nt  formatted5000_1machine.txt
+                delimeter = "----";
             }
             else {
                 reader = new BufferedReader(new FileReader("frmattedData_63.nt"));
@@ -90,6 +90,14 @@ public class RabbitMQSamplePublisher {
                                     channel.basicPublish("", TASK_QUEUE_NAME,
                                             MessageProperties.PERSISTENT_TEXT_PLAIN,
                                             data1.getBytes());
+
+                                if(count==63){
+                                    String TERMINATION_MESSAGE = "~~Termination Message~~";
+                                    channel.basicPublish("", TASK_QUEUE_NAME,
+                                            MessageProperties.PERSISTENT_TEXT_PLAIN,
+                                            TERMINATION_MESSAGE.getBytes());
+                                    System.exit(0);
+                                }
 
                             }
                         }
