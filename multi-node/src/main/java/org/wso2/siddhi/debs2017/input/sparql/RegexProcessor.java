@@ -26,6 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class RegexProcessor  implements Runnable{
     private String data;
     private LinkedBlockingQueue<ObservationGroup> queue;
+    private long applicationTime;
 
 
     @Override
@@ -75,14 +76,16 @@ public class RegexProcessor  implements Runnable{
                     int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
                     double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
 
-                    Event event = new Event(System.currentTimeMillis(), new Object[]{
+                    Event event = new Event(applicationTime, new Object[]{
                             machine,
                             time,
                             property,
                             timeS,
                             Math.round(Double.parseDouble(value) * 10000.0) / 10000.0, //
                             centers,
-                            probability});
+                            probability,
+                            0
+                    });
 
                     arr.add(event);
 
@@ -95,7 +98,7 @@ public class RegexProcessor  implements Runnable{
 
 
 
-        ob = new ObservationGroup(timeS, arr);
+        ob = new ObservationGroup(applicationTime, arr);
         try {
             this.queue.put(ob);
         } catch (InterruptedException e) {
@@ -105,8 +108,15 @@ public class RegexProcessor  implements Runnable{
 
     }
 
+    public RegexProcessor(String data, long applicationTime) {
+        this.data = data;
+        this.applicationTime = applicationTime;
+
+
+    }
     public RegexProcessor(String data) {
         this.data = data;
+
 
 
     }

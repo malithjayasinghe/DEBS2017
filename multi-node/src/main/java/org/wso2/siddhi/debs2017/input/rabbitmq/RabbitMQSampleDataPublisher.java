@@ -54,13 +54,13 @@ public class RabbitMQSampleDataPublisher {
                     String dataInLine = scanner.next();
                     if (dataInLine.contains("----")) {
                         if (data.length() > 100) {
-                            for (int i = 0; i < 1; i++) {
+                            for (int i = 0; i < 10; i++) {
                                 count++;
                                 System.out.println(count);
-                                //String data1 = data.replace("Machine_59", "Machine_" + i).replace("_59_", "_" + i + "_");
+                                String data1 = data.replace("Machine_59", "Machine_" + i).replace("_59_", "_" + i + "_");
                                 channel.basicPublish("", TASK_QUEUE_NAME,
                                         MessageProperties.PERSISTENT_TEXT_PLAIN,
-                                        data.getBytes());
+                                        data1.getBytes());
                             }
                         }
                         data = "";

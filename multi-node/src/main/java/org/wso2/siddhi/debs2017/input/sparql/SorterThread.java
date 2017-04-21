@@ -128,9 +128,9 @@ public class SorterThread extends Thread {
 
                 //publish to all nodes
 
-                Event e1 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, -1.0, -1, -1.0, 0});
-                Event e2 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, -1.0, -1, -1.0, 1});
-                Event e3 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, -1.0, -1, -1.0, 2});
+                Event e1 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, -1.0, 0, -1.0, 0});
+                Event e2 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, -1.0, 1, -1.0, 1});
+                Event e3 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, -1.0, 2, -1.0, 2});
 
                 System.out.println("sorter - Terminated");
                     siddhiClient0.send("input", new Event[]{e1});

@@ -54,22 +54,25 @@ public class MultiNodeAlertGenerator {
     /**
      * initialize the parameters from the sidhhi event, to generate the alert
      *
-     * @param event          sidhhi event
+     *
      * @param rabbitQueue  publish to rabbitmq
      */
-    public MultiNodeAlertGenerator(Event event, RabbitQueue rabbitQueue) {
-        this.probThresh = Double.toString((Double) event.getData()[3]);
-        this.timestamp = transformTimestamp((String) event.getData()[1]);
-        this.dimension = (String) event.getData()[2];
-        this.machineNumber = (String) event.getData()[0];
-        this.dispatchedTime = event.getTimestamp();
+    public MultiNodeAlertGenerator(RabbitQueue rabbitQueue) {
+
         this.rabbitQueue = rabbitQueue;
     }
 
     /**
      * generate the rdf model and publish to rabbitmq
      */
-    public void generateAlert() {
+    public  void generateAlert(Event event) {
+        this.probThresh = Double.toString((Double) event.getData()[3]);
+        this.timestamp = transformTimestamp((String) event.getData()[1]);
+        this.dimension = (String) event.getData()[2];
+        this.machineNumber = (String) event.getData()[0];
+        this.dispatchedTime = event.getTimestamp();
+
+
 
         Model model = ModelFactory.createDefaultModel();
         String anomalyName = "Anomaly_" + anomalyCount;
@@ -117,5 +120,23 @@ public class MultiNodeAlertGenerator {
     private String transformTimestamp(String time) {
         String[] str = time.split("_");
         return str[0].concat("_" + (Integer.parseInt(str[1]) - 5));
+    }
+
+
+    public void terminate() {
+
+       /* long endTime = System.currentTimeMillis();
+       // double runTime = (endTime - SingleNodeServer.startime) / 1000.0;
+        System.out.println("Running time in sec\t:" + runTime);
+        System.out.println("Average throghput(msg)\t:" + CentralDispatcher.count / runTime);
+        System.out.println("Average throghput(bytes)\t:" + CentralDispatcher.bytesRec / runTime);
+        System.out.println("Average Latency : " + (sum / anomalyCount));*/
+        Channel channel = rabbitQueue.getChannel();
+        String TERMINATION_MESSAGE = "~~Termination Message~~";
+        try {
+            channel.basicPublish("", rabbitQueue.getName(), MessageProperties.PERSISTENT_BASIC, TERMINATION_MESSAGE.toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

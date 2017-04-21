@@ -41,7 +41,8 @@ public class SiddhiQuery {
         this.query = ("" +
                 "\n" +
                 "from inStream " +
-                "select machine, time, dimension, str:concat(machine, '-', dimension) as partitionId, uTime, value, node, centers, threshold " +
+                "select machine, time, dimension, str:concat(machine, '-', dimension) as partitionId, uTime, value, node," +
+                "centers, threshold " +
                 "insert into inStreamA;" +
                 "\n" +
                 "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering

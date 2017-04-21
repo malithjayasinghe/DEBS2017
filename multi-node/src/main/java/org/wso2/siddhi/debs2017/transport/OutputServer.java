@@ -26,9 +26,12 @@ import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 * limitations under the License.
 */
 public class OutputServer {
+    public static boolean isSort;
     public static void main(String[] args) {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
+        boolean  sort = Boolean.parseBoolean(args[3]);
+        isSort = sort;
         if (args.length == 2) {
 
 

@@ -78,7 +78,7 @@ public class DebsMetaData {
         Model model = RDFDataMgr.loadModel(datafile);
         Query query = QueryFactory.create(queryString);
         try {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 10; i++) {
                 QueryExecution qexec = QueryExecutionFactory.create(query, model);
                 ResultSet results = qexec.execSelect();
                 results = ResultSetFactory.copyResults(results);
