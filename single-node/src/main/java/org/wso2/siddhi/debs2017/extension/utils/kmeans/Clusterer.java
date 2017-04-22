@@ -121,7 +121,7 @@ public class Clusterer {
             for (int j = 0; j < noOfClusters; j++) {
                 cenVal = center.get(j);
                 diff = Math.abs(cenVal - dataItem);
-                diff = Math.round(diff * 10000.0) / 10000.0;
+                //diff = Math.round(diff * 10000.0) / 10000.0;
                 difference[j] = diff;
             }
             ArrayList<Integer> minList = getMinIndexA(difference);
