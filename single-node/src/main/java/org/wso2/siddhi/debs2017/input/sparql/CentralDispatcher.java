@@ -69,11 +69,11 @@ public class CentralDispatcher extends DefaultConsumer {
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-        String msg = new String(body, "UTF-8");
 
 
 
-        if(msg.equals(TERMINATION_MESSAGE)){
+
+        if(body.length<30){
 
             EXECUTOR.shutdown();
             try{
@@ -93,6 +93,7 @@ public class CentralDispatcher extends DefaultConsumer {
                // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
                 count++;
                 bytesRec += body.length;
+                String msg = new String(body, "UTF-8");
                 Runnable sparQLProcessor = new SparQLProcessor(msg, System.currentTimeMillis());
                 EXECUTOR.execute(sparQLProcessor);
             } else {
@@ -101,8 +102,12 @@ public class CentralDispatcher extends DefaultConsumer {
                 bytesRec += body.length;
 //                Runnable regexProcessor = new RegexProcessor(msg, System.currentTimeMillis());
 //                EXECUTOR.execute(regexProcessor);
-                Runnable patternProcessor = new PatternProcessor(msg, System.nanoTime(), processTime(msg), processUTime(msg), processMachine(msg));
-                EXECUTOR.execute(patternProcessor);
+//                String msg = new String(body, "UTF-8");
+//                Runnable patternProcessor = new PatternProcessor(msg, System.currentTimeMillis(), processTime(msg), processUTime(msg), processMachine(msg));
+//                EXECUTOR.execute(patternProcessor);
+
+                Runnable lineProcessor = new LineProcessor( body, System.nanoTime());
+                EXECUTOR.execute(lineProcessor);
             }
 
         }
