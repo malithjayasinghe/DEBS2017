@@ -2,6 +2,7 @@ package org.wso2.siddhi.debs2017.processor;
 
 import com.lmax.disruptor.EventHandler;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
 
 /*
@@ -19,7 +20,7 @@ import org.wso2.siddhi.debs2017.output.AlertGenerator;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
+public class DebsAnomalyDetector implements EventHandler<RabbitMessage> {
 
     private static AlertGenerator alertGenerator;
     private double probability;
@@ -27,15 +28,20 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
     static int count = 0;
 
     @Override
-    public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
-        Object[] o = wrapper.getEvent().getData();
-        if(wrapper.getEvent().getTimestamp() == -1l){
-            alertGenerator.terminate();
-        } else {
-            probability = Double.parseDouble(o[3].toString());
-            threshold = Double.parseDouble(o[4].toString());
-            if (probability < threshold && probability > 0) {
-                send(wrapper.getEvent());
+    public void onEvent(RabbitMessage wrapper, long l, boolean b) throws Exception {
+        if(wrapper.isStateful()) {
+            Object[] o = wrapper.getEvent().getData();
+            if (wrapper.getEvent().getTimestamp() == -1l) {
+                System.out.println("Termination published");
+                alertGenerator.terminate();
+            } else {
+                probability = Double.parseDouble(o[3].toString());
+                threshold = Double.parseDouble(o[4].toString());
+                if (probability < threshold && probability > 0) {
+                    System.out.println(wrapper.getEvent() + "anomaly--------------"+ "\t"+ l);
+
+                    send(wrapper.getEvent());
+                }
             }
         }
 

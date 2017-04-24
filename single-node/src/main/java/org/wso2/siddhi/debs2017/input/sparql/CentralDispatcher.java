@@ -2,10 +2,7 @@ package org.wso2.siddhi.debs2017.input.sparql;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.lmax.disruptor.RingBuffer;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.*;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
@@ -15,12 +12,7 @@ import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,44 +41,49 @@ public class CentralDispatcher extends DefaultConsumer {
     private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
     public static int count = 0;
     public static long bytesRec = 0l;
+    public RingBuffer<RabbitMessage> ringBuffer;
 
     private static Pattern patternTime = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>.<http://project-hobbit.eu/resources/debs2017#(.*)>");
     private static Pattern patternTimestamp = Pattern.compile("<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#dateTime>");
     private static Pattern patternMachine = Pattern.compile("<http://www.agtinternational.com/ontologies/I4.0#machine>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(.*)>");
-
+    Channel channel = null;
+    Connection con = null;
     /**
      * Dispatchers events to the disruptor after sorting
+     *  @param channel the channel
      *
-     * @param channel the channel
-     *
+     * @param connection
      * @param executorSize the size of the executor pool
      */
-    public CentralDispatcher(Channel channel, int executorSize) {
+    public CentralDispatcher(Channel channel, Connection connection, int executorSize) {
+
         super(channel);
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
+        this.channel = channel;
+        this.con = connection;
+
 
 
     }
 
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-
-
-
+     //   System.out.println(Thread.currentThread()+"\t"+body.length);
 
         if(body.length<30){
 
-            EXECUTOR.shutdown();
-            try{
-                EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-
-                for(int i =0; i<arrayList.size(); i++){
+            try {
+                getChannel().close();
+                getChannel().getConnection().close();
+               // for(int i =0; i<arrayList.size(); i++){
                    // ObservationGroup ob = new ObservationGroup(-1l, null);
-                    Event ob = new Event(-1l, null);
-                    arrayList.get(i).put(ob);
-                }
-            } catch (Exception e){
-                //do nothing
+                    RegexPattern.publishTerminate(System.nanoTime());
+               // }
+                System.out.println("termination received");
+//                channel.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+//            con.close();
 
         } else {
             if(isSparQL.get()){
@@ -100,14 +97,14 @@ public class CentralDispatcher extends DefaultConsumer {
                 //System.out.println(count+"\t"+bytesRec+"\t"+body.length);
                 count++;
                 bytesRec += body.length;
-//                Runnable regexProcessor = new RegexProcessor(msg, System.currentTimeMillis());
-//                EXECUTOR.execute(regexProcessor);
-//                String msg = new String(body, "UTF-8");
-//                Runnable patternProcessor = new PatternProcessor(msg, System.currentTimeMillis(), processTime(msg), processUTime(msg), processMachine(msg));
-//                EXECUTOR.execute(patternProcessor);
 
-                Runnable lineProcessor = new LineProcessor( body, System.nanoTime());
-                EXECUTOR.execute(lineProcessor);
+                /*Runnable lineProcessor = new LineProcessor( body, System.nanoTime());
+                lineProcessor.run();*/
+
+               RegexPattern regexPattern = new RegexPattern(body,System.nanoTime());
+               regexPattern.process();
+
+
             }
 
         }

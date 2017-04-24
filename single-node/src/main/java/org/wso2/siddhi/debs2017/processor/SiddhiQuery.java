@@ -8,6 +8,8 @@ import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 import org.wso2.siddhi.debs2017.extension.DimensionAggregator;
 import org.wso2.siddhi.debs2017.extension.TimestampAggregator;
+import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
+import org.wso2.siddhi.debs2017.output.AlertGenerator;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -30,12 +32,14 @@ public class SiddhiQuery {
     private final String inStreamDefinition;
     private final SiddhiManager siddhiManager;
     private ExecutionPlanRuntime executionPlanRuntime;
+    private AlertGenerator alertGenerator;
 
-    private RingBuffer<EventWrapper> buffer;
+    private RingBuffer<RabbitMessage> buffer;
     private long sequence;
 
 
-    public SiddhiQuery(RingBuffer<EventWrapper> buffer) {
+    public SiddhiQuery(RingBuffer<RabbitMessage> buffer, AlertGenerator alertGenerator) {
+        this.alertGenerator = alertGenerator;
 
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
                 "define stream inStream (machine string, time string, dimension string,  uTime long,  " +
@@ -75,11 +79,15 @@ public class SiddhiQuery {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
                 for (Event ev : events) {
-
-                      //  System.out.println(ev);
-
-
-                    publishEvent(ev);
+                  double probability = Double.parseDouble(ev.getData()[3].toString());
+                  double threshold = Double.parseDouble(ev.getData()[4].toString());
+                    //System.out.println(ev + "Sidhhi callback---------------");
+                      //publishEvent(ev);
+                    if (probability < threshold && probability > 0) {
+                        System.out.println(ev.getData() + "anomaly--------------");
+                        alertGenerator.generateAlert(ev);
+                       // send(wrapper.getEvent());
+                    }
 
                 }
             }
@@ -111,7 +119,7 @@ public class SiddhiQuery {
      */
     private synchronized void publishEvent(Event ev) {
         try {
-            EventWrapper wrapper = buffer.get(sequence);
+            RabbitMessage wrapper = buffer.get(sequence);
             wrapper.setEvent(ev);
         } finally {
             buffer.publish(sequence);

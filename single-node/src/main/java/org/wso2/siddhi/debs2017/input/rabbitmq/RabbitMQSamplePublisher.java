@@ -91,13 +91,7 @@ public class RabbitMQSamplePublisher {
                                             MessageProperties.PERSISTENT_TEXT_PLAIN,
                                             data1.getBytes());
 
-                                if(count==63){
-                                    String TERMINATION_MESSAGE = "~~Termination Message~~";
-                                    channel.basicPublish("", TASK_QUEUE_NAME,
-                                            MessageProperties.PERSISTENT_TEXT_PLAIN,
-                                            TERMINATION_MESSAGE.getBytes());
-                                    System.exit(0);
-                                }
+
 
                             }
                         }

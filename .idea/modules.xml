@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DEBS2017.iml" filepath="$PROJECT_DIR$/DEBS2017.iml" />
+      <module fileurl="file://$PROJECT_DIR$/multi-node/multi-node.iml" filepath="$PROJECT_DIR$/multi-node/multi-node.iml" />
       <module fileurl="file://$PROJECT_DIR$/single-node/single-node.iml" filepath="$PROJECT_DIR$/single-node/single-node.iml" />
     </modules>
   </component>

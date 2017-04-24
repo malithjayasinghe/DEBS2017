@@ -11,8 +11,7 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkSystem;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
-import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
-import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
+import org.wso2.siddhi.debs2017.input.sparql.*;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
 import org.wso2.siddhi.debs2017.processor.DebsAnomalyDetector;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
@@ -47,11 +46,12 @@ public class SingleNodeServer {
 
     public static ArrayList<LinkedBlockingQueue<Event>> arraylist;
     public static AtomicBoolean isSparQL;
+    public static RingBuffer<RabbitMessage> Buffer;
 
 
     public static long startime;
 
-    public static void createhandler(int handlersize,RingBuffer ring, DebsAnomalyDetector debsAnormalyDetector, Disruptor disruptor ){
+    /*public static void createhandler(int handlersize,RingBuffer ring, DebsAnomalyDetector debsAnormalyDetector, Disruptor disruptor ){
         switch (handlersize){
             case 2: {
 
@@ -168,7 +168,7 @@ public class SingleNodeServer {
             }
 
         }
-    }
+    }*/
     public static void main(String[] args) {
         /**
          * input queue
@@ -186,7 +186,7 @@ public class SingleNodeServer {
         startime = System.currentTimeMillis();
 
 
-        if (args.length == 9) {
+      //  if (args.length == 9) {
             boolean isTestcase = Boolean.parseBoolean(args[8]);
             int machines = Integer.parseInt(args[7]);
             int rabbitMQExecutor = Integer.parseInt(args[2]);
@@ -194,6 +194,7 @@ public class SingleNodeServer {
             int executorsize = Integer.parseInt(args[4]);
             int ringbuffersize = Integer.parseInt(args[5]);
             int handlers = Integer.parseInt(args[6]);
+           // boolean isSort = Boolean.parseBoolean(args[9]);
 
             arraylist = new ArrayList<>(executorsize);
             for(int i=0; i<executorsize; i++){
@@ -223,7 +224,7 @@ public class SingleNodeServer {
                     rmqPublisher = system.getOutputQueue();
                     alertGenerator = new AlertGenerator(rmqPublisher, false);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
-                    createhandler(handlers,ring,debsAnormalyDetector,disruptor);
+                    //createhandler(handlers,ring,debsAnormalyDetector,disruptor);
 
                     system.run();
                 } finally {
@@ -249,31 +250,55 @@ public class SingleNodeServer {
                     e.printStackTrace();
                 }
 
+                if(isTestcase)
+                    DebsMetaData.load("molding_machine_10M.metadata.nt");
+                else
+                    DebsMetaData.generate("molding_machine_10M.metadata.nt",machines);
+
+
 
                 Executor executor = Executors.newCachedThreadPool();
+                Executor executor1 = Executors.newCachedThreadPool();
                 int buffersize = ringbuffersize;
-                Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new, buffersize, executor);
-
-                RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
+                Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, buffersize, executor);
+                Buffer = disruptor.getRingBuffer();
 
 
                 output = new RabbitQueue(channel, outputQueue);
                 AlertGenerator alertGenerator = new AlertGenerator(output, false);
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
 
-                createhandler(handlers,ring,debsAnormalyDetector,disruptor);
-                SorterThread sort = new SorterThread(arraylist, ring);
-                sort.start();
-                if(isTestcase)
-                    DebsMetaData.load("molding_machine_10M.metadata.nt");
-                else
-                DebsMetaData.generate("molding_machine_10M.metadata.nt",machines);
+
+
+
+
+               /* Disruptor<RabbitMessage> disruptor1 = new Disruptor<RabbitMessage>(RabbitMessage::new, 128 , executor1);
+                Buffer = disruptor1.getRingBuffer();*/
+                RegexHandler reg = new RegexHandler(0,2,Buffer);
+                RegexHandler reg1 = new RegexHandler(1,2,Buffer);
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 2L, Buffer ,alertGenerator);
+                //SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, Buffer,alertGenerator);
+
+                disruptor.handleEventsWith(reg,reg1);
+                disruptor.after(reg,reg1).handleEventsWith(sh1);
+               // disruptor.after(sh1,sh2).handleEventsWith(debsAnormalyDetector);
+                disruptor.start();
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
                 rmq.consume(inputQueue, rabbitMQExecutor, executorsize );
 
+
+
+
+               // createhandler(handlers,ring,debsAnormalyDetector,disruptor);
+                /*SorterThread sort = new SorterThread(arraylist, ring);
+                sort.start();*/
+
+                //rmq.close();
+
+
             }
 
-        }
+        //}
     }
 }

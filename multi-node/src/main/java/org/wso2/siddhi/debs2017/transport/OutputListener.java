@@ -68,21 +68,21 @@ public class OutputListener implements StreamListener {
         if (node == 0)
             try {
                 blockingQueues.get(0).put(newEvent);
-               System.out.println("Queue 0" + newEvent);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         if (node == 1)
             try {
                 blockingQueues.get(1).put(newEvent);
-                System.out.println("Queue 1" + newEvent);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         if(node == 2)
             try {
                 blockingQueues.get(2).put(newEvent);
-                System.out.println("Queue 2" + newEvent);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

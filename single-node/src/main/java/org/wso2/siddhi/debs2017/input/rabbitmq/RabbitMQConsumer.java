@@ -1,5 +1,6 @@
 package org.wso2.siddhi.debs2017.input.rabbitmq;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.lmax.disruptor.RingBuffer;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -12,10 +13,7 @@ import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -36,29 +34,56 @@ public class RabbitMQConsumer {
 
     private static String TASK_QUEUE_NAME = "";
     static ExecutorService executors;
+     Connection connection;
+     Channel channel;
+     Consumer consumer;
 
     /**
      * Consumes the sample data
      */
     public void consume(String inputQueue, int rabbitMQExecutor, int executorsize) {
         TASK_QUEUE_NAME = inputQueue;
-        executors = Executors.newFixedThreadPool(rabbitMQExecutor);
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
+        executors = Executors.newFixedThreadPool(2,threadFactory);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("127.0.0.1");
-        final Connection connection;
-        final Channel channel;
-        final Consumer consumer;
+//        final Connection connection;
+//        final Channel channel;
+//        final Consumer consumer;
         try {
             connection = factory.newConnection(executors);
             channel = connection.createChannel();
-            consumer = new CentralDispatcher(channel, executorsize);
+            consumer = new CentralDispatcher(channel, connection, executorsize);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
+            System.out.println("--------------");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
+
+
     }
+//    public void close(){
+//        try {
+//
+//            executors.shutdown();
+//            try{
+//                executors.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+//
+//            } catch (Exception e){
+//                //do nothing
+//            }
+//            System.out.println("executor shuts down");
+//            channel.close();
+//            connection.close();
+//            System.out.println("Closed");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (TimeoutException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

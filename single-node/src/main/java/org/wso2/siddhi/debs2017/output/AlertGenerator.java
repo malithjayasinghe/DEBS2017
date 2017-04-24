@@ -145,7 +145,7 @@ public class AlertGenerator {
         System.out.println("Running time in sec\t:" + runTime);
         System.out.println("Average throghput(msg)\t:" + CentralDispatcher.count / runTime);
         System.out.println("Average throghput(bytes)\t:" + CentralDispatcher.bytesRec / runTime);
-        System.out.println("Average Latency : " + (sum / anomalyCount));
+        System.out.println("Average Latency : " + ((sum /1000000)/ anomalyCount));
         Channel channel = rabbitMQPublisher.getChannel();
         String TERMINATION_MESSAGE = "~~Termination Message~~";
         try {

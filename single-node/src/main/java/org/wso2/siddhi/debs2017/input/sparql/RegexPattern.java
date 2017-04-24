@@ -1,5 +1,6 @@
 package org.wso2.siddhi.debs2017.input.sparql;
 
+import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
@@ -14,24 +15,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/*
-* Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-public class LineProcessor implements Runnable {
+/**
+ * Created by sachini on 4/20/17.
+ */
+public class RegexPattern {
+    private static RingBuffer<RabbitMessage> ringBuffer;
     private final long timestamp;
     private byte [] data;
+    private boolean findProp = false;
     private LinkedBlockingQueue<Event> queue;
     static Pattern patternTime = Pattern.compile("ationResultTime>.<http://project-hobbit.eu/resources/debs2017#(\\w*)>");
     static Pattern patternTimestamp = Pattern.compile("valueLiteral>.\"(.*)\"\\^");
@@ -40,10 +31,11 @@ public class LineProcessor implements Runnable {
     static Pattern patternValue = Pattern.compile("debs2017#Value_.*>.<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#");
 
 
-     InputStream is = null;
-     BufferedReader bfReader = null;
-    @Override
-    public void run() {
+    InputStream is = null;
+    BufferedReader bfReader = null;
+
+    public void process() {
+
         long start =  System.currentTimeMillis();
         this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
         int count = 0;
@@ -51,6 +43,7 @@ public class LineProcessor implements Runnable {
         int valCount = 16;
         int nextOccurrence = 8;
 
+        String propertyLine="";
         String time = "";
         String timeStamp = "";
         String machine = "";
@@ -66,73 +59,55 @@ public class LineProcessor implements Runnable {
                 if(count==2){
                     Matcher matcher1 = patternTime.matcher(temp);
                     while (matcher1.find()) {
-                      //  System.out.println("----------------||-time");
+                        //  System.out.println("----------------||-time");
                         time = matcher1.group(1);
+
                     }
 
                 } else  if(count==3) {
                     Matcher matcher3 = patternMachine.matcher(temp);
                     while (matcher3.find()) {
-                      //  System.out.println("-----------------machine");
+                        //  System.out.println("-----------------machine");
                         machine = matcher3.group(1);
                     }
 
                 } else  if(count==8) {
+
                     //System.out.println(count+"\t"+temp);
                     Matcher matcher2 = patternTimestamp.matcher(temp);
                     while (matcher2.find()) {
                         timeStamp = matcher2.group(1);
-                       // System.out.println(timeStamp + "\t"+timeStamp.length());
+                        // System.out.println(timeStamp + "\t"+timeStamp.length());
                         uTime = UnixConverter.getUnixTime(timeStamp);
                     }
                 } else if (count==propCount){
+                   // findProp = true;
+                    propertyLine = temp;
                     // System.out.println(temp);
                     propCount+=nextOccurrence;
-                    Matcher matcher4 = patternProperty.matcher(temp);
-
-                    while (matcher4.find()) {
-                        property = matcher4.group(1);
-
-                    }
-
                 }else if (count==valCount){
                     // System.out.println(temp);
                     valCount+=nextOccurrence;
-                    Matcher matcher5 = patternValue.matcher(temp);
+                   // System.out.println("-----------------"+SingleNodeServer.Buffer.getBufferSize());
+                    long sequence = SingleNodeServer.Buffer.next();  // Grab the next sequence
+                    try {
+                     RabbitMessage    message = SingleNodeServer.Buffer.get(sequence); // Get the entry in the Disruptor
+                        message.setMachine(machine);
+                        message.setTimestamp(time);
+                        message.setTime(uTime);
+                        message.setProperty(propertyLine);
+                        message.setValue(temp);
+                        message.setLine(count);
+                        message.setApplicationTime(this.timestamp);
+                      //  System.out.println(machine + "\t" + timeStamp + "\t"+ uTime + "\t" + count + "\t" + propertyLine + "\t" + temp);
+                    } finally {
 
-                    while (matcher5.find()) {
+                        SingleNodeServer.Buffer.publish(sequence);
 
-                        value = matcher5.group(1);
-                        String stateful = property;
-                        if (DebsMetaData.getMetaData().containsKey(stateful)) {
-
-                            int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
-                            double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
-
-                            Event event = new Event(this.timestamp, new Object[]{
-                                    machine,
-                                    time,
-                                    property,
-                                    uTime,
-                                    Math.round(Double.parseDouble(value) * 10000.0) / 10000.0, //
-                                    centers,
-                                    probability});
-
-                            //arr.add(event);
-
-                            try {
-                                this.queue.put(event);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            //this.queue.put(event);
-                        }
-
-
+                       // System.out.println("Event published"+ "----------");
                     }
-
                 }
-              //  System.out.println(count+"\t"+temp);
+                //  System.out.println(count+"\t"+temp);
 
             }
         } catch (Exception e) {
@@ -145,14 +120,34 @@ public class LineProcessor implements Runnable {
             }
         }
 
-        System.out.println("Time for line processor"+ "\t"+(System.currentTimeMillis() - start));
+       // System.out.println("Time for line processor"+ "\t"+(System.currentTimeMillis() - start));
     }
-    
-    public LineProcessor(byte[] data, long timestamp) {
+
+
+    public static void publishTerminate(long timestamp){
+        long sequence = SingleNodeServer.Buffer.next();  // Grab the next sequence
+        try {
+            RabbitMessage wrapper = SingleNodeServer.Buffer.get(sequence); // Get the entry in the Disruptor
+            wrapper.setApplicationTime(timestamp);
+            wrapper.setStateful(true);
+            wrapper.setTerminated(true);
+            wrapper.setEvent(new Event(-1l, new Object[]{}));
+            //System.out.println(wrapper.getEvent());
+        } finally {
+
+            SingleNodeServer.Buffer.publish(sequence);
+//            System.out.println(sequence + "Termination sequence");
+//            System.out.println("Termination publised to disruptor");
+
+        }
+    }
+
+    public RegexPattern(byte[] data, long timestamp) {
         this.data = data;
         this.timestamp = timestamp;
+       // this.ringBuffer = ringBuffer;
 
-    
-        
+
+
     }
 }

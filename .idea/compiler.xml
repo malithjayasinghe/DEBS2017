@@ -6,11 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="multi-node" />
         <module name="single-node" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="DEBS2017" target="1.8" />
+      <module name="multi-node" target="1.8" />
       <module name="single-node" target="1.8" />
     </bytecodeTargetLevel>
   </component>

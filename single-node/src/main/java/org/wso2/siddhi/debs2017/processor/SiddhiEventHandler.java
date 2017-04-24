@@ -2,6 +2,8 @@ package org.wso2.siddhi.debs2017.processor;
 
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
+import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
+import org.wso2.siddhi.debs2017.output.AlertGenerator;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -18,40 +20,48 @@ import com.lmax.disruptor.RingBuffer;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class SiddhiEventHandler implements EventHandler<EventWrapper> {
+public class SiddhiEventHandler implements EventHandler<RabbitMessage> {
 
     private final long ID;
     private final long NUM;
     private final SiddhiQuery sq;
+    private RingBuffer<RabbitMessage> ringBuffer;
+    private static AlertGenerator alertGenerator;
 
 
     @Override
-    public void onEvent (EventWrapper wrapper , long sequence, boolean b) throws Exception {
+    public void onEvent (RabbitMessage message , long sequence, boolean b) throws Exception {
+       // System.out.println(sequence + "Sequence accessed by sidhhi");
+       // System.out.println(message.getEvent()+ "Sidhhi handler------------");
+        if(message.isStateful()) {
+            Object[] o = message.getEvent().getData();
+            if (message.getEvent().getTimestamp() == -1l) {
+                //System.out.println(("Termination received by sidhhi handler"));
+                alertGenerator.terminate();
+            } else {
+                //System.out.println(message.getEvent());
+                String[] splitter = o[2].toString().split("_");
+                long partition = Long.parseLong(splitter[2]);
+                //long partition = Long.parseLong(o[2].toString().substring(1));
+               // if (partition % NUM == ID) {
 
+                    //setting the buffer sequence
+                    sq.setSequence(sequence);
 
-        Object[] o = wrapper.getEvent().getData();
-        if(wrapper.getEvent().getTimestamp() == -1l){
-
-        } else {
-            String[] splitter = o[2].toString().split("_");
-            long partition = Long.parseLong(splitter[2]);
-            //long partition = Long.parseLong(o[2].toString().substring(1));
-            if (partition % NUM == ID) {
-
-                //setting the buffer sequence
-                sq.setSequence(sequence);
-
-
-                sq.publish(wrapper.getEvent());
+                    //publish event to sidhdhi
+                    sq.publish(message.getEvent());
+               // }
             }
         }
-
     }
 
-    public SiddhiEventHandler(long id, long num, RingBuffer<EventWrapper> ringBuffer){
+    public SiddhiEventHandler(long id, long num, RingBuffer<RabbitMessage> ringBuffer,AlertGenerator alertGenerator){
         this.ID = id;
         this.NUM = num;
-        this.sq = new SiddhiQuery(ringBuffer);
+        this.sq = new SiddhiQuery(ringBuffer,alertGenerator);
+        this.ringBuffer = ringBuffer;
+        this.alertGenerator = alertGenerator;
+
     }
 
 

@@ -72,9 +72,11 @@ public class SorterThread extends Thread {
                     long sequence = this.ring.next();  // Grab the next sequence
                     try {
                         EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor
+
                         wrapper.setEvent(new Event(-1l, new Object[]{}));
                     } finally {
-                        this.ring.publish(sequence);
+
+                       this.ring.publish(sequence);
                     }
                     break;
                 } else {
@@ -106,7 +108,8 @@ public class SorterThread extends Thread {
                     EventWrapper wrapper = this.ring.get(sequence); // Get the entry in the Disruptor
                     wrapper.setEvent(current);
                 } finally {
-                    this.ring.publish(sequence);
+                   // System.out.println("Time till publishing to ringbuffer"+"\t"+ current +"\t" +  (System.nanoTime()- current.getTimestamp())/1000000);
+                   this.ring.publish(sequence);
                 }
         //System.out.println(current);
 

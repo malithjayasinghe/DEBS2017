@@ -241,7 +241,8 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
 //                    Runnable sparQLProcessor = new SPARQLProcessor(message);
 //                    System.out.println("sp");
 //                    EXECUTOR.execute(sparQLProcessor);
-                Runnable regex = new RegexProcessor(message);
+                long time = System.nanoTime();
+                Runnable regex = new RegexProcessor(message,time);
                 EXECUTOR.execute(regex);
 //                } else {
 //                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
