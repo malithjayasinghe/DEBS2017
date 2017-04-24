@@ -47,13 +47,9 @@ public class SiddhiQuery {
 
         this.query = ("" +
                 "\n" +
-                "from inStream " +
-                "select machine, time, dimension, str:concat(machine, '-', dimension) as partitionId, uTime, value, centers, threshold " +
-                "insert into inStreamA;" +
-                "\n" +
-                "@info(name = 'query1') partition with ( partitionId of inStreamA) " +// perform clustering
+                "@info(name = 'query1') partition with ( dimension of inStream) " +// perform clustering
                 "begin " +
-                "from inStreamA#window.externalTime(uTime , 10) \n" +
+                "from inStream#window.externalTime(uTime , 10) \n" +
                 "select machine, singlenode:time(time) as time, dimension, singlenode:agg(value, centers, 10) as probaility, threshold " +
                 " insert into detectAnomaly  " + //inner stream
 //                "\n" +
@@ -84,7 +80,7 @@ public class SiddhiQuery {
                     //System.out.println(ev + "Sidhhi callback---------------");
                       //publishEvent(ev);
                     if (probability < threshold && probability > 0) {
-                        System.out.println(ev.getData() + "anomaly--------------");
+                       // System.out.println(ev.getData() + "anomaly--------------");
                         alertGenerator.generateAlert(ev);
                        // send(wrapper.getEvent());
                     }
