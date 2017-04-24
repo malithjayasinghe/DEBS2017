@@ -4,6 +4,7 @@ import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.MetaDataItem;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
 import java.util.regex.Matcher;
@@ -35,26 +36,28 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
 
             if (message.getApplicationTime() % NUM == ID) {
                 Matcher matcherProp = patternProperty.matcher(message.getProperty());
-                while (matcherProp.find()) {
+                if (matcherProp.find()) {
                     property = matcherProp.group(1);
                     // System.out.println(property + "Property");
                 }
                 String stateful = property;
-                if (DebsMetaData.getMetaData().containsKey(stateful)) {
+                MetaDataItem metaDataItem = DebsMetaData.getMetaData().get(stateful);
+                if (metaDataItem !=null) {
                     Matcher matchValue = patternValue.matcher(message.getValue());
-                    while (matchValue.find()) {
+                    if (matchValue.find()) {
                         value = matchValue.group(1);
                         //System.out.println(value + "Value");
                     }
-                    int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
-                    double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
+                    int centers = metaDataItem.getClusterCenters();
+                    double probability = metaDataItem.getProbabilityThreshold();
 
                     Event event = new Event(message.getApplicationTime(), new Object[]{
                             message.getMachine(),
                             message.getTimestamp(),
                             property,
                             message.getTime(),
-                            Math.round(Double.parseDouble(value) * 10000.0) / 10000.0, //
+                            Double.parseDouble(value),
+                            //Math.round(Double.parseDouble(value) * 10000.0) / 10000.0, //
                             centers,
                             probability});
                     //System.out.println(message.getMachine() + "\tt" + message.getTimestamp() + "\t"+ message.getTime() +"\t"

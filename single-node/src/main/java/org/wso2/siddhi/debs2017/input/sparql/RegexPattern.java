@@ -36,7 +36,7 @@ public class RegexPattern {
 
     public void process() {
 
-        long start =  System.currentTimeMillis();
+        //long start =  System.currentTimeMillis();
         this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
         int count = 0;
         int propCount = 12;
@@ -58,7 +58,7 @@ public class RegexPattern {
                 count++;
                 if(count==2){
                     Matcher matcher1 = patternTime.matcher(temp);
-                    while (matcher1.find()) {
+                    if (matcher1.find()) {
                         //  System.out.println("----------------||-time");
                         time = matcher1.group(1);
 
@@ -66,7 +66,7 @@ public class RegexPattern {
 
                 } else  if(count==3) {
                     Matcher matcher3 = patternMachine.matcher(temp);
-                    while (matcher3.find()) {
+                    if (matcher3.find()) {
                         //  System.out.println("-----------------machine");
                         machine = matcher3.group(1);
                     }
@@ -75,7 +75,7 @@ public class RegexPattern {
 
                     //System.out.println(count+"\t"+temp);
                     Matcher matcher2 = patternTimestamp.matcher(temp);
-                    while (matcher2.find()) {
+                    if (matcher2.find()) {
                         timeStamp = matcher2.group(1);
                         // System.out.println(timeStamp + "\t"+timeStamp.length());
                         uTime = UnixConverter.getUnixTime(timeStamp);
@@ -97,7 +97,7 @@ public class RegexPattern {
                         message.setTime(uTime);
                         message.setProperty(propertyLine);
                         message.setValue(temp);
-                        message.setLine(count);
+                       // message.setLine(count);
                         message.setApplicationTime(this.timestamp);
                       //  System.out.println(machine + "\t" + timeStamp + "\t"+ uTime + "\t" + count + "\t" + propertyLine + "\t" + temp);
                     } finally {
