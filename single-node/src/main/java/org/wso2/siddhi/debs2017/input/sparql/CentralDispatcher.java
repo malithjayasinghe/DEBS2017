@@ -53,12 +53,12 @@ public class CentralDispatcher extends DefaultConsumer {
      *  @param channel the channel
      *
      * @param connection
-     * @param executorSize the size of the executor pool
+     *
      */
-    public CentralDispatcher(Channel channel, Connection connection, int executorSize) {
+    public CentralDispatcher(Channel channel, Connection connection) {
 
         super(channel);
-        EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
+      //  EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
         this.channel = channel;
         this.con = connection;
 

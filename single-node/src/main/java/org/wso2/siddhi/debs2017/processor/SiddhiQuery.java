@@ -75,15 +75,16 @@ public class SiddhiQuery {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
                 for (Event ev : events) {
-                  double probability = Double.parseDouble(ev.getData()[3].toString());
+                    publishEvent(ev);
+                 /* double probability = Double.parseDouble(ev.getData()[3].toString());
                   double threshold = Double.parseDouble(ev.getData()[4].toString());
-                    //System.out.println(ev + "Sidhhi callback---------------");
-                      //publishEvent(ev);
+
+
                     if (probability < threshold && probability > 0) {
                        // System.out.println(ev.getData() + "anomaly--------------");
                         alertGenerator.generateAlert(ev);
                        // send(wrapper.getEvent());
-                    }
+                    }*/
 
                 }
             }

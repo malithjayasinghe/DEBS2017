@@ -37,7 +37,7 @@ public class RegexPattern {
     public void process() {
 
         //long start =  System.currentTimeMillis();
-        this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
+//        this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
         int count = 0;
         int propCount = 12;
         int valCount = 16;

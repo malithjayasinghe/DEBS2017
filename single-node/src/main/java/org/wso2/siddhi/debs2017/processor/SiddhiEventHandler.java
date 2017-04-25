@@ -37,20 +37,20 @@ public class SiddhiEventHandler implements EventHandler<RabbitMessage> {
             Object[] o = message.getEvent().getData();
             if (message.getEvent().getTimestamp() == -1l) {
                 //System.out.println(("Termination received by sidhhi handler"));
-                alertGenerator.terminate();
+               // alertGenerator.terminate();
             } else {
                 //System.out.println(message.getEvent());
                 String[] splitter = o[2].toString().split("_");
                 long partition = Long.parseLong(splitter[2]);
                 //long partition = Long.parseLong(o[2].toString().substring(1));
-               // if (partition % NUM == ID) {
+               if (partition % NUM == ID) {
 
                     //setting the buffer sequence
                     sq.setSequence(sequence);
 
                     //publish event to sidhdhi
                     sq.publish(message.getEvent());
-               // }
+               }
             }
         }
     }
