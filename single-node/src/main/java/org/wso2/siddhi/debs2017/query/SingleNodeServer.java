@@ -44,8 +44,6 @@ public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
-    public static ArrayList<LinkedBlockingQueue<Event>> arraylist;
-    public static AtomicBoolean isSparQL;
     public static RingBuffer<RabbitMessage> Buffer;
 
 
@@ -187,36 +185,27 @@ public class SingleNodeServer {
             boolean isTestcase = Boolean.parseBoolean(args[5]);
             int machines = Integer.parseInt(args[4]);
             int rabbitMQExecutor = Integer.parseInt(args[2]);
-           // isSparQL = new AtomicBoolean(Boolean.parseBoolean(args[3]));
-            //int executorsize = Integer.parseInt(args[4]);
             int ringbuffersize = Integer.parseInt(args[3]);
-           // int handlers = Integer.parseInt(args[6]);
-           // boolean isSort = Boolean.parseBoolean(args[9]);
 
-//            arraylist = new ArrayList<>(executorsize);
-//            for(int i=0; i<executorsize; i++){
-//                arraylist.add(new LinkedBlockingQueue<Event>());
-//            }
             if (args[0].equals("-hobbit")) {
 
                 String metadata = args[1];
                 RabbitQueue rmqPublisher = null;
                 AlertGenerator alertGenerator = null;
                 Executor executor = Executors.newCachedThreadPool();
-                int buffersize = ringbuffersize;
-                Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, buffersize, executor);
+
+                Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
                 Buffer = disruptor.getRingBuffer();
                 DebsAnomalyDetector debsAnormalyDetector = null;
 
-               /* SorterThread sort = new SorterThread(arraylist, ring);
-                sort.start();
-*/
+
 
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
                 try {
                     system = new DebsBenchmarkSystem(metadata, rabbitMQExecutor);
                     system.init();
+
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
                     alertGenerator = new AlertGenerator(rmqPublisher, false);
@@ -224,11 +213,11 @@ public class SingleNodeServer {
                     RegexHandler reg = new RegexHandler(0,2,Buffer);
                     RegexHandler reg1 = new RegexHandler(1,2,Buffer);
                     SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 2L, Buffer ,alertGenerator);
-                    //SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, Buffer,alertGenerator);
+                    SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, Buffer,alertGenerator);
 
                     disruptor.handleEventsWith(reg,reg1);
-                    disruptor.after(reg,reg1).handleEventsWith(sh1);
-                    // disruptor.after(sh1,sh2).handleEventsWith(debsAnormalyDetector);
+                    disruptor.after(reg,reg1).handleEventsWith(sh1, sh2);
+                    disruptor.after(sh1,sh2).handleEventsWith(debsAnormalyDetector);
                     disruptor.start();
                     //createhandler(handlers,ring,debsAnormalyDetector,disruptor);
 
@@ -264,9 +253,8 @@ public class SingleNodeServer {
 
 
                 Executor executor = Executors.newCachedThreadPool();
-                Executor executor1 = Executors.newCachedThreadPool();
-                int buffersize = ringbuffersize;
-                Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, buffersize, executor);
+
+                Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
                 Buffer = disruptor.getRingBuffer();
 
 
@@ -275,30 +263,20 @@ public class SingleNodeServer {
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
 
 
-
-
-
                 RegexHandler reg = new RegexHandler(0,2,Buffer);
                 RegexHandler reg1 = new RegexHandler(1,2,Buffer);
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 2L, Buffer ,alertGenerator);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, Buffer,alertGenerator);
+                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 1L, Buffer ,alertGenerator);
+                //SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, Buffer,alertGenerator);
 
                 disruptor.handleEventsWith(reg,reg1);
-                disruptor.after(reg,reg1).handleEventsWith(sh1,sh2);
-                disruptor.after(sh1,sh2).handleEventsWith(debsAnormalyDetector);
+                disruptor.after(reg,reg1).handleEventsWith(sh1);
+                disruptor.after(sh1).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
-                rmq.consume(inputQueue, rabbitMQExecutor );
+                rmq.consume(inputQueue, rabbitMQExecutor);
 
 
-
-
-               // createhandler(handlers,ring,debsAnormalyDetector,disruptor);
-                /*SorterThread sort = new SorterThread(arraylist, ring);
-                sort.start();*/
-
-                //rmq.close();
 
 
             }

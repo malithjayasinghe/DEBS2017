@@ -33,30 +33,27 @@ import java.util.concurrent.*;
 public class RabbitMQConsumer {
 
     private static String TASK_QUEUE_NAME = "";
-    static ExecutorService executors;
-     Connection connection;
-     Channel channel;
-     Consumer consumer;
+
+
 
     /**
      * Consumes the sample data
      */
-    public void consume(String inputQueue, int rabbitMQExecutor, int executorsize) {
+    public void consume(String inputQueue, int rabbitMQExecutor) {
         TASK_QUEUE_NAME = inputQueue;
-        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-        executors = Executors.newFixedThreadPool(2,threadFactory);
+        Connection connection;
+        Channel channel;
+        Consumer consumer;
+        ExecutorService executors = Executors.newFixedThreadPool(rabbitMQExecutor);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("127.0.0.1");
-//        final Connection connection;
-//        final Channel channel;
-//        final Consumer consumer;
+
         try {
             connection = factory.newConnection(executors);
             channel = connection.createChannel();
-            consumer = new CentralDispatcher(channel, connection, executorsize);
+            consumer = new CentralDispatcher(channel);
             boolean autoAck = true; // acknowledgment is covered below
             channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
-            System.out.println("--------------");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
@@ -65,25 +62,5 @@ public class RabbitMQConsumer {
 
 
     }
-//    public void close(){
-//        try {
-//
-//            executors.shutdown();
-//            try{
-//                executors.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-//
-//            } catch (Exception e){
-//                //do nothing
-//            }
-//            System.out.println("executor shuts down");
-//            channel.close();
-//            connection.close();
-//            System.out.println("Closed");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (TimeoutException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 }

@@ -1,8 +1,6 @@
 package org.wso2.siddhi.debs2017.input;
 
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.lmax.disruptor.RingBuffer;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -16,29 +14,15 @@ import org.hobbit.core.components.AbstractCommandReceivingComponent;
 import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
-import org.wso2.siddhi.debs2017.input.sparql.PatternProcessor;
-import org.wso2.siddhi.debs2017.input.sparql.RegexProcessor;
-import org.wso2.siddhi.debs2017.input.sparql.SparQLProcessor;
-import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
-import org.wso2.siddhi.debs2017.processor.EventWrapper;
-import org.wso2.siddhi.debs2017.query.SingleNodeServer;
+import org.wso2.siddhi.debs2017.input.sparql.RegexPattern;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -67,23 +51,17 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     private RabbitQueue inputQueue;
     private RabbitQueue outputQueue;
 
-
-    private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static ExecutorService EXECUTOR;
     private static ExecutorService RMQ_EXECUTOR;
-
-    private ArrayList<LinkedBlockingQueue<Event>> arrayList = SingleNodeServer.arraylist;
-    private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
 
 
     private static Pattern patternTime = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>.<http://project-hobbit.eu/resources/debs2017#(.*)>");
     private static Pattern patternTimestamp = Pattern.compile("<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#dateTime>");
     private static Pattern patternMachine = Pattern.compile("<http://www.agtinternational.com/ontologies/I4.0#machine>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(.*)>");
 
-    public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec, int executorSize){
+    public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec){
         RMQ_EXECUTOR = Executors.newFixedThreadPool(rabbitMQExec);
         DebsMetaData.load(metadataFile);
-        EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
+
 
     }
 
@@ -241,77 +219,22 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
     private void handleDelivery(byte[] bytes) {
         try {
-            String message = new String(bytes, CHARSET);
-            if (TERMINATION_MESSAGE.equals(message)) {
-                logger.debug("Got termination message");
-                EXECUTOR.shutdown();
-                try{
-                    EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                    System.out.println("-------------------------------------");
-                    for(int i =0; i<arrayList.size(); i++){
-                        Event ev =  new Event(-1l, null);
-                        arrayList.get(i).put(ev);
-                    }
-                } catch (InterruptedException e){
-                    //do nothing
-                }
-                // terminationMessageBarrier.countDown();
-            } else {
-                //logger.debug("Repeating message: {}", message);
-                if(isSparQL.get()){
-                    Runnable sparQLProcessor = new SparQLProcessor(message,  System.currentTimeMillis());
-                    System.out.println("sp");
-                    EXECUTOR.execute(sparQLProcessor);
-                } else {
-//                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
-//                    EXECUTOR.execute(regexProcessor);
-                    Runnable patternProcessor = new PatternProcessor(message, System.nanoTime(), processTime(message), processUTime(message), processMachine(message));
-                    EXECUTOR.execute(patternProcessor);
-                }
+            //String message = new String(bytes, CHARSET);
+            if(bytes.length<30){
+                    RegexPattern.publishTerminate(System.nanoTime());
 
-                //sends to output queue
-                //send(bytes);
+            } else {
+
+                RegexPattern regexPattern = new RegexPattern(bytes,System.nanoTime());
+                regexPattern.process();
+
+
             }
         } catch (Exception e) {
             logger.error("Exception", e);
         }
     }
 
-    private String processMachine(String msg) {
-        String machine = "";
-
-        Matcher matcher3 = patternMachine.matcher(msg);
-        while (matcher3.find()) {
-            machine = matcher3.group(1);
-            break;
-        }
-        return machine;
-    }
-
-    private long processUTime(String msg) {
-
-        String timeStamp = "";
-
-        Matcher matcher2 = patternTimestamp.matcher(msg);
-        while (matcher2.find()) {
-            timeStamp = matcher2.group(1);
-            break;
-        }
-        return UnixConverter.getUnixTime(timeStamp);
-
-    }
-
-    private String processTime(String msg) {
-        String time = "";
-
-        Matcher matcher1 = patternTime.matcher(msg);
-        while (matcher1.find()) {
-            time = matcher1.group(1);
-            break;
-        }
-        return time;
-
-    }
 
     @Override
     public void close()  {

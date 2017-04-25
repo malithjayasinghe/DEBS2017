@@ -32,13 +32,13 @@ public class DebsAnomalyDetector implements EventHandler<RabbitMessage> {
         if(wrapper.isStateful()) {
             Object[] o = wrapper.getEvent().getData();
             if (wrapper.getEvent().getTimestamp() == -1l) {
-                System.out.println("Termination published");
+               // System.out.println("Termination published");
                 alertGenerator.terminate();
             } else {
                 probability = Double.parseDouble(o[3].toString());
                 threshold = Double.parseDouble(o[4].toString());
                 if (probability < threshold && probability > 0) {
-                    System.out.println(wrapper.getEvent() + "anomaly--------------"+ "\t"+ l);
+                    //System.out.println(wrapper.getEvent() + "anomaly--------------"+ "\t"+ l);
 
                     send(wrapper.getEvent());
                 }

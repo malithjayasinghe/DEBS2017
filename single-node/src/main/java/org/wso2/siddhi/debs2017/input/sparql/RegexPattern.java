@@ -36,8 +36,6 @@ public class RegexPattern {
 
     public void process() {
 
-        //long start =  System.currentTimeMillis();
-//        this.queue = SingleNodeServer.arraylist.get(Integer.parseInt(Thread.currentThread().getName()));
         int count = 0;
         int propCount = 12;
         int valCount = 16;
@@ -47,8 +45,7 @@ public class RegexPattern {
         String time = "";
         String timeStamp = "";
         String machine = "";
-        String property = "";
-        String value =  "";
+
         long uTime = 0l;
         try {
             is = new ByteArrayInputStream(data);
@@ -59,7 +56,7 @@ public class RegexPattern {
                 if(count==2){
                     Matcher matcher1 = patternTime.matcher(temp);
                     if (matcher1.find()) {
-                        //  System.out.println("----------------||-time");
+
                         time = matcher1.group(1);
 
                     }
@@ -67,47 +64,41 @@ public class RegexPattern {
                 } else  if(count==3) {
                     Matcher matcher3 = patternMachine.matcher(temp);
                     if (matcher3.find()) {
-                        //  System.out.println("-----------------machine");
+
                         machine = matcher3.group(1);
                     }
 
                 } else  if(count==8) {
 
-                    //System.out.println(count+"\t"+temp);
+
                     Matcher matcher2 = patternTimestamp.matcher(temp);
                     if (matcher2.find()) {
                         timeStamp = matcher2.group(1);
-                        // System.out.println(timeStamp + "\t"+timeStamp.length());
                         uTime = UnixConverter.getUnixTime(timeStamp);
                     }
                 } else if (count==propCount){
-                   // findProp = true;
+
                     propertyLine = temp;
-                    // System.out.println(temp);
+
                     propCount+=nextOccurrence;
                 }else if (count==valCount){
-                    // System.out.println(temp);
+
                     valCount+=nextOccurrence;
-                   // System.out.println("-----------------"+SingleNodeServer.Buffer.getBufferSize());
+
                     long sequence = SingleNodeServer.Buffer.next();  // Grab the next sequence
-                    try {
-                     RabbitMessage    message = SingleNodeServer.Buffer.get(sequence); // Get the entry in the Disruptor
+
+                     RabbitMessage message = SingleNodeServer.Buffer.get(sequence); // Get the entry in the Disruptor
                         message.setMachine(machine);
                         message.setTimestamp(time);
                         message.setTime(uTime);
                         message.setProperty(propertyLine);
                         message.setValue(temp);
-                       // message.setLine(count);
                         message.setApplicationTime(this.timestamp);
-                      //  System.out.println(machine + "\t" + timeStamp + "\t"+ uTime + "\t" + count + "\t" + propertyLine + "\t" + temp);
-                    } finally {
-
                         SingleNodeServer.Buffer.publish(sequence);
 
-                       // System.out.println("Event published"+ "----------");
-                    }
+
                 }
-                //  System.out.println(count+"\t"+temp);
+
 
             }
         } catch (Exception e) {
@@ -132,12 +123,11 @@ public class RegexPattern {
             wrapper.setStateful(true);
             wrapper.setTerminated(true);
             wrapper.setEvent(new Event(-1l, new Object[]{}));
-            //System.out.println(wrapper.getEvent());
+
         } finally {
 
             SingleNodeServer.Buffer.publish(sequence);
-//            System.out.println(sequence + "Termination sequence");
-//            System.out.println("Termination publised to disruptor");
+
 
         }
     }
