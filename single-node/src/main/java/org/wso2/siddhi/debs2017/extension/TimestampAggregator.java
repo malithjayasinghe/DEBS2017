@@ -3,6 +3,7 @@ package org.wso2.siddhi.debs2017.extension;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.selector.attribute.aggregator.AttributeAggregator;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.util.ArrayList;
@@ -37,8 +38,8 @@ public class TimestampAggregator extends AttributeAggregator {
     @Override
     public Object processAdd(Object o) {
         arr.add(o.toString());
-        if(arr.size()==10){
-            return arr.get(4);
+        if(arr.size()== SingleNodeServer.windowSize){
+            return arr.get(SingleNodeServer.windowSize-SingleNodeServer.transitionsCount-1);
         }
         return arr.get(arr.size()-1);
     }

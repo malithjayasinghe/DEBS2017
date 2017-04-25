@@ -49,6 +49,12 @@ public class SingleNodeServer {
 
     public static long startime;
 
+    //ttl
+
+    public static int maxClusterIterations = 50;
+    public static int transitionsCount = 5;
+    public static int windowSize = 10;
+
     /*public static void createhandler(int handlersize,RingBuffer ring, DebsAnomalyDetector debsAnormalyDetector, Disruptor disruptor ){
         switch (handlersize){
             case 2: {

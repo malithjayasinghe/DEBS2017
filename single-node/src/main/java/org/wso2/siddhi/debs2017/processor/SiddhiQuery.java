@@ -10,6 +10,7 @@ import org.wso2.siddhi.debs2017.extension.DimensionAggregator;
 import org.wso2.siddhi.debs2017.extension.TimestampAggregator;
 import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -49,8 +50,8 @@ public class SiddhiQuery {
                 "\n" +
                 "@info(name = 'query1') partition with ( dimension of inStream) " +// perform clustering
                 "begin " +
-                "from inStream#window.externalTime(uTime , 10) \n" +
-                "select machine, singlenode:time(time) as time, dimension, singlenode:agg(value, centers, 10) as probaility, threshold " +
+                "from inStream#window.externalTime(uTime , "+ SingleNodeServer.windowSize+") \n" +
+                "select machine, singlenode:time(time) as time, dimension, singlenode:agg(value, centers ) as probaility, threshold " +
                 " insert into detectAnomaly  " + //inner stream
 //                "\n" +
 //                "from #outputStream \n " +

@@ -5,6 +5,7 @@ import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.selector.attribute.aggregator.AttributeAggregator;
 import org.wso2.siddhi.debs2017.extension.utils.kmeans.Clusterer;
 import org.wso2.siddhi.debs2017.extension.utils.markov.MarkovGenerator;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.util.ArrayList;
@@ -45,13 +46,13 @@ public class DimensionAggregator extends AttributeAggregator {
 
     public Object processAdd(Object[] objects) {
         arr.add((Double) objects[0]);
-        Clusterer cluster = new Clusterer((Integer) objects[1], 50, arr);//(Integer) objects[1]
+        Clusterer cluster = new Clusterer((Integer) objects[1], SingleNodeServer.maxClusterIterations, arr);//(Integer) objects[1]
         // Do the clustering on the elements present in the array list and return the center it belongs to
         cluster.cluster();
         //System.out.println(arr);
         ArrayList<Integer> centers = cluster.getCenterA(arr);
         //System.out.println(centers);
-        if (centers.size() >= ((Integer) objects[2])) {
+        if (centers.size() >= SingleNodeServer.windowSize) {
             markovModel.execute(centers);
             //get the total probability
             probability = markovModel.updateProbability(centers);

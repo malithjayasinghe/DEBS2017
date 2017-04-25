@@ -1,5 +1,7 @@
 package org.wso2.siddhi.debs2017.extension.utils.markov;
 
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -117,7 +119,7 @@ public class MarkovGenerator {
         int previousEvent = 0;
         double eventProbability = 1;
         double transitionalProb;
-        for (int i = eventOrder.size() - 5; i < eventOrder.size(); i++) {
+        for (int i = eventOrder.size() - SingleNodeServer.transitionsCount; i < eventOrder.size(); i++) {
             if (previousEvent == 0 && currentEvent == 0) {
                 currentEvent = eventOrder.get(i);
                 previousEvent = eventOrder.get(i - 1);
