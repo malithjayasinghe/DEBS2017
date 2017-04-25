@@ -1,21 +1,8 @@
 package org.wso2.siddhi.debs2017.input.sparql;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.lmax.disruptor.RingBuffer;
 import com.rabbitmq.client.*;
-import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.input.UnixConverter;
-import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.processor.EventWrapper;
-import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.

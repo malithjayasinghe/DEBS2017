@@ -6,7 +6,6 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MetaDataItem;
 import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
-import org.wso2.siddhi.debs2017.processor.EventWrapper;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.util.regex.Matcher;

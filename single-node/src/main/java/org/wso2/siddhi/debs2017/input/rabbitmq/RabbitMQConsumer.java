@@ -1,18 +1,12 @@
 package org.wso2.siddhi.debs2017.input.rabbitmq;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.lmax.disruptor.RingBuffer;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.sparql.CentralDispatcher;
-import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
-import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.concurrent.*;
 
 /*

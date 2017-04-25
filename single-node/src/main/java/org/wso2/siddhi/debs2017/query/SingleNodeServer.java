@@ -7,7 +7,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkSystem;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
@@ -15,14 +14,10 @@ import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 import org.wso2.siddhi.debs2017.input.sparql.*;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
 import org.wso2.siddhi.debs2017.processor.DebsAnomalyDetector;
-import org.wso2.siddhi.debs2017.processor.EventWrapper;
 import org.wso2.siddhi.debs2017.processor.SiddhiEventHandler;
 
-import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
