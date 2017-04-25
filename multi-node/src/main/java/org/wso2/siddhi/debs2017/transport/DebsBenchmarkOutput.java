@@ -1,34 +1,22 @@
 package org.wso2.siddhi.debs2017.transport;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.MessageProperties;
 import org.hobbit.core.Commands;
 import org.hobbit.core.Constants;
 import org.hobbit.core.components.AbstractCommandReceivingComponent;
 import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
-import org.wso2.siddhi.debs2017.input.sparql.SPARQLProcessor;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -59,16 +47,16 @@ public class DebsBenchmarkOutput extends AbstractCommandReceivingComponent {
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
 
 
-    public DebsBenchmarkOutput(){
+    public DebsBenchmarkOutput() {
 
     }
 
-    public RabbitQueue getOutputQueue(){
+    public RabbitQueue getOutputQueue() {
         return outputQueue;
     }
 
     @Override
-    public void init()  {
+    public void init() {
 
         try {
             logger.debug("Initializing...");
@@ -91,7 +79,6 @@ public class DebsBenchmarkOutput extends AbstractCommandReceivingComponent {
     }
 
 
-
     private RabbitQueue createQueueWithName(String name, ExecutorService executorService) throws Exception {
         Channel channel = createConnection(executorService).createChannel();
         channel.basicQos(getPrefetchCount());
@@ -102,7 +89,7 @@ public class DebsBenchmarkOutput extends AbstractCommandReceivingComponent {
     private Connection createConnection(ExecutorService executorService) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(getHost());
-        if(executorService.equals(null)){
+        if (executorService.equals(null)) {
             return factory.newConnection();
         }
         return factory.newConnection(executorService);
@@ -127,7 +114,7 @@ public class DebsBenchmarkOutput extends AbstractCommandReceivingComponent {
     }
 
     @Override
-    public void run()  {
+    public void run() {
 
         try {
 
@@ -151,12 +138,8 @@ public class DebsBenchmarkOutput extends AbstractCommandReceivingComponent {
     }
 
 
-
-
-
-
     @Override
-    public void close()  {
+    public void close() {
 
         try {
             super.close();

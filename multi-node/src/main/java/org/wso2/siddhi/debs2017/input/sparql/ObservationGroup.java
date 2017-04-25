@@ -35,7 +35,7 @@ public class ObservationGroup {
         return this.dataArr;
     }
 
-    public ObservationGroup(long timestamp, ArrayList<Event> arr){
+    public ObservationGroup(long timestamp, ArrayList<Event> arr) {
         this.timestamp = timestamp;
         this.dataArr = arr;
     }

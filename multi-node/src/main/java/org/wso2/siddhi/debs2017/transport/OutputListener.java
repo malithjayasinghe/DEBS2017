@@ -2,7 +2,6 @@ package org.wso2.siddhi.debs2017.transport;
 
 import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 
@@ -38,15 +37,14 @@ public class OutputListener implements StreamListener {
      * The constructor
      *
      * @param streamDefinition the definition of the stream
-     * @param rmq the rabitmq queue to publish the data
+     * @param rmq              the rabitmq queue to publish the data
      */
     public OutputListener(StreamDefinition streamDefinition, RabbitQueue rmq) {
         this.streamDefinition = streamDefinition;
-     SortingThread sorter = new SortingThread(rmq, blockingQueues);
+        SortingThread sorter = new SortingThread(rmq, blockingQueues);
         sorter.start();
-        System.out.println("Blocking queue size"+blockingQueues.size());
+        System.out.println("Blocking queue size" + blockingQueues.size());
     }
-
 
 
     @Override
@@ -79,7 +77,7 @@ public class OutputListener implements StreamListener {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        if(node == 2)
+        if (node == 2)
             try {
                 blockingQueues.get(2).put(newEvent);
 

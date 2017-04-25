@@ -1,19 +1,11 @@
 package org.wso2.siddhi.debs2017.transport.utils;
 
-import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQSampleDataPublisher;
-import org.wso2.siddhi.debs2017.query.CentralDispatcher;
-import org.wso2.siddhi.debs2017.transport.OutputServer;
-import org.wso2.siddhi.debs2017.transport.SiddhiServer;
-
 /**
- *
  * DEBS Server
- *
  */
 public class DEBSServer {
 
-    public enum SERVERTYPE
-    {
+    public enum SERVERTYPE {
         RABBITMQ_PUBLISHER,
         SIDDHI_SERVER,
         CENTRAL_DISPATCHER,
@@ -29,25 +21,21 @@ public class DEBSServer {
 
         int serverType = Integer.parseInt(args[0]);
 
-        if(serverType == SERVERTYPE.OUTPUT_SERVER.ordinal())
-        {
+        if (serverType == SERVERTYPE.OUTPUT_SERVER.ordinal()) {
             //CentralDispatcher.start(args);
         }
 
-        if(serverType == SERVERTYPE.CENTRAL_DISPATCHER.ordinal())
-        {
+        if (serverType == SERVERTYPE.CENTRAL_DISPATCHER.ordinal()) {
             //OutputServer.start(args);
         }
 
-        if(serverType == SERVERTYPE.SIDDHI_SERVER.ordinal())
-        {
-           // SiddhiServer.start(args);
+        if (serverType == SERVERTYPE.SIDDHI_SERVER.ordinal()) {
+            // SiddhiServer.start(args);
         }
 
 
-        if(serverType == SERVERTYPE.RABBITMQ_PUBLISHER.ordinal())
-        {
-          //  RabbitMQSampleDataPublisher.start(args);
+        if (serverType == SERVERTYPE.RABBITMQ_PUBLISHER.ordinal()) {
+            //  RabbitMQSampleDataPublisher.start(args);
         }
 
 

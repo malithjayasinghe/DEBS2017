@@ -1,15 +1,9 @@
 package org.wso2.siddhi.debs2017.transport;
 
 import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.dsl.Disruptor;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.transport.processor.EventWrapper;
-import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 
 /*
@@ -28,40 +22,37 @@ import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 * limitations under the License.
 */
 public class SiddhiListener implements StreamListener {
-       // private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.callback.LogStreamListener.class);
-        private StreamDefinition streamDefinition;
-        private RingBuffer<EventWrapper> ringBuffer;
+    // private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.callback.LogStreamListener.class);
+    private StreamDefinition streamDefinition;
+    private RingBuffer<EventWrapper> ringBuffer;
 
-        public SiddhiListener(StreamDefinition streamDefinition, RingBuffer<EventWrapper> ring) {
-            this.streamDefinition = streamDefinition;
-            this.ringBuffer = ring;
+    public SiddhiListener(StreamDefinition streamDefinition, RingBuffer<EventWrapper> ring) {
+        this.streamDefinition = streamDefinition;
+        this.ringBuffer = ring;
 
-        }
+    }
 
-        @Override
-        public StreamDefinition getStreamDefinition() {
-            return streamDefinition;
-        }
+    @Override
+    public StreamDefinition getStreamDefinition() {
+        return streamDefinition;
+    }
 
-        @Override
-        public void onEvent(Event event) {
+    @Override
+    public void onEvent(Event event) {
 
-        }
+    }
 
-        @Override
-        public void onEvents(Event[] events) {
+    @Override
+    public void onEvents(Event[] events) {
 
-            for(int i =0; i<events.length; i++){
-                long sequence = this.ringBuffer.next();  // Grab the next sequence
-                try
-                {
-                    EventWrapper wrapper = this.ringBuffer.get(sequence); // Get the entry in the Disruptor
-                    wrapper.setEvent(events[i]);
-                }
-                finally
-                {
-                    this.ringBuffer.publish(sequence);
-                }
+        for (int i = 0; i < events.length; i++) {
+            long sequence = this.ringBuffer.next();  // Grab the next sequence
+            try {
+                EventWrapper wrapper = this.ringBuffer.get(sequence); // Get the entry in the Disruptor
+                wrapper.setEvent(events[i]);
+            } finally {
+                this.ringBuffer.publish(sequence);
             }
         }
     }
+}

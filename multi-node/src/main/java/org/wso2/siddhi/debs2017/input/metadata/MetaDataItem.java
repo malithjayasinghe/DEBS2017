@@ -31,6 +31,7 @@ public class MetaDataItem {
         return clusterCenters;
 
     }
+
     public synchronized double getProbabilityThreshold() {
         return probabilityThreshold;
     }
@@ -44,10 +45,9 @@ public class MetaDataItem {
     }
 
     /**
-     *
      * @return the machine number string
      */
-    public String getMachineNumber(){
+    public String getMachineNumber() {
         return machineNumber;
     }
 }

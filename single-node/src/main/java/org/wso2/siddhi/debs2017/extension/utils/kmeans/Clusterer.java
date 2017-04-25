@@ -1,7 +1,6 @@
 package org.wso2.siddhi.debs2017.extension.utils.kmeans;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -18,6 +17,10 @@ import java.util.Collections;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * Clusterer
+ */
 public class Clusterer {
 
     private int noOfClusters;
@@ -151,6 +154,7 @@ public class Clusterer {
         minList.add(minIndex);
         for (int i = 0; i < diff.length; i++) {
             if (diff[minIndex] == diff[i] && minIndex != i) {
+                //if (Math.abs(diff[minIndex] - diff[i]) < 0.0001 && minIndex != i) {
                 minList.add(i);
             }
         }

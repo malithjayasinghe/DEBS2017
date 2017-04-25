@@ -5,6 +5,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import org.wso2.siddhi.debs2017.input.sparql.EventDispatcher;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,8 +32,7 @@ public class RabbitMQConsumer {
     private static ExecutorService EXECUTORS = Executors.newFixedThreadPool(8);
 
     /**
-     *  Consumes the sample data
-     *
+     * Consumes the sample data
      */
     public void consume(String queue, String host, String host1, int port1, String host2, int port2, String host3, int port3, int executorSize) {
         TASK_QUEUE_NAME = queue;

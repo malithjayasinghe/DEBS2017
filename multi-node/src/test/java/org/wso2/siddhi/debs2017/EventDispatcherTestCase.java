@@ -1,6 +1,5 @@
 package org.wso2.siddhi.debs2017;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 
 

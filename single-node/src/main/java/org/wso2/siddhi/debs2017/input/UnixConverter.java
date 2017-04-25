@@ -21,14 +21,18 @@ import java.util.TimeZone;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * UnixConverter
+ */
 public class UnixConverter {
-    public static long getUnixTime(String data){
-        String source = data.substring(0, 10)+" "+data.substring(11, 19);
+    public static long getUnixTime(String data) {
+        String source = data.substring(0, 10) + " " + data.substring(11, 19);
         String timeZ = data.substring(19);
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date dateTime;
         df.setTimeZone(TimeZone.getTimeZone(timeZ));
         dateTime = df.parse(source, new ParsePosition(0));
-        return new Long(dateTime.getTime())/1000;
+        return dateTime.getTime() / 1000;
     }
 }

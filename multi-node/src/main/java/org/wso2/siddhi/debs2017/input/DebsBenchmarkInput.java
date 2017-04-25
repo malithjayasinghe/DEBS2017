@@ -7,7 +7,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.MessageProperties;
 import org.hobbit.core.Commands;
 import org.hobbit.core.Constants;
 import org.hobbit.core.components.AbstractCommandReceivingComponent;
@@ -15,10 +14,8 @@ import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.sparql.EventDispatcher;
 import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
 import org.wso2.siddhi.debs2017.input.sparql.RegexProcessor;
-import org.wso2.siddhi.debs2017.input.sparql.SPARQLProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
 import org.wso2.siddhi.debs2017.query.CentralDispatcher;
 
@@ -32,7 +29,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -65,10 +61,10 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
     private static ExecutorService RMQ_EXECUTOR;
 
     private ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = CentralDispatcher.arrayList;
-   // private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
+    // private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
 
 
-    public DebsBenchmarkInput(String metadataFile, String client1host, int client1port, String client2host, int client2port, String client3host, int client3port, int executorSize){
+    public DebsBenchmarkInput(String metadataFile, String client1host, int client1port, String client2host, int client2port, String client3host, int client3port, int executorSize) {
         RMQ_EXECUTOR = Executors.newFixedThreadPool(8);
         DebsMetaData.load(metadataFile);
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
@@ -78,7 +74,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
 
 
     @Override
-    public void init()  {
+    public void init() {
 
         try {
             logger.debug("Initializing...");
@@ -98,10 +94,9 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
 
     private void initCommunications() throws Exception {
 
-        inputQueue = createQueueWithName(getInputQueueName() , RMQ_EXECUTOR);
+        inputQueue = createQueueWithName(getInputQueueName(), RMQ_EXECUTOR);
         registerConsumerFor(inputQueue);
     }
-
 
 
     private RabbitQueue createQueueWithName(String name, ExecutorService executorService) throws Exception {
@@ -114,7 +109,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
     private Connection createConnection(ExecutorService executorService) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(getHost());
-        if(executorService.equals(null)){
+        if (executorService.equals(null)) {
             return factory.newConnection();
         }
         return factory.newConnection(executorService);
@@ -155,7 +150,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
     }
 
     @Override
-    public void run()  {
+    public void run() {
 
         try {
 
@@ -217,21 +212,20 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
     }
 
 
-
     private void handleDelivery(byte[] bytes) {
         try {
             String message = new String(bytes, CHARSET);
             if (TERMINATION_MESSAGE.equals(message)) {
                 logger.debug("Got termination message");
                 EXECUTOR.shutdown();
-                try{
+                try {
                     EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
                     System.out.println("-------------------------------------");
-                    for(int i =0; i<arrayList.size(); i++){
+                    for (int i = 0; i < arrayList.size(); i++) {
                         ObservationGroup ob = new ObservationGroup(-1l, null);
                         arrayList.get(i).put(ob);
                     }
-                } catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     //do nothing
                 }
                 // terminationMessageBarrier.countDown();
@@ -242,7 +236,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
 //                    System.out.println("sp");
 //                    EXECUTOR.execute(sparQLProcessor);
                 long time = System.nanoTime();
-                Runnable regex = new RegexProcessor(message,time);
+                Runnable regex = new RegexProcessor(message, time);
                 EXECUTOR.execute(regex);
 //                } else {
 //                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
@@ -258,7 +252,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
     }
 
     @Override
-    public void close()  {
+    public void close() {
 
         try {
             super.close();

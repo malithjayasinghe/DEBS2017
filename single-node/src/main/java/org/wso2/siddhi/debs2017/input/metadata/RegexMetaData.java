@@ -1,9 +1,14 @@
 package org.wso2.siddhi.debs2017.input.metadata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,10 +31,16 @@ import java.util.regex.Pattern;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * RegexMetaData
+ */
 public class RegexMetaData {
 
-    private static Pattern patternPropety = Pattern.compile("rty>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(\\w*)>");
-    private static Pattern patternProbability= Pattern.compile("e#valueLiteral>.\"(.*)\"");
+    private static final Logger logger = LoggerFactory.getLogger(RegexMetaData.class);
+    private static Pattern patternPropety = Pattern.compile("rty>.<http://www.agtinternational." +
+            "com/ontologies/WeidmullerMetadata#(\\w*)>");
+    private static Pattern patternProbability = Pattern.compile("e#valueLiteral>.\"(.*)\"");
     private static Pattern patternClusters = Pattern.compile("mberOfClusters>.\"(.*)\"");
 
     private static InputStream is = null;
@@ -39,10 +50,10 @@ public class RegexMetaData {
 
 
     public static void load(String filePath) {
-        //long start = System.currentTimeMillis();
+
         Path path = Paths.get(filePath);
         //Path path = Paths.get("molding_machine_10M.metadata.nt");
-        int count= 0;
+        int count = 0;
         int nextOccurence = 6;
 
 
@@ -51,48 +62,48 @@ public class RegexMetaData {
         int probCount = 9;
 
         String property = "";
-        int clusters  = 0;
+        int clusters = 0;
         double probabilty = 0.0;
 
         try {
             byte[] data = Files.readAllBytes(path);
 
             is = new ByteArrayInputStream(data);
-            bfReader = new BufferedReader(new InputStreamReader(is));
+            bfReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             String temp = null;
             while ((temp = bfReader.readLine()) != null) {
                 count++;
 
-                // System.out.println(count+"\t"+temp);
-                if(count==propCount){
-                    propCount +=nextOccurence;
+                if (count == propCount) {
+                    propCount += nextOccurence;
 
                     Matcher matcheProp = patternPropety.matcher(temp);
-                    if (matcheProp.find()){
+                    if (matcheProp.find()) {
                         property = matcheProp.group(1);
                     }
 
-                } else if(count==clusterCount){
-                    clusterCount +=nextOccurence;
+                } else if (count == clusterCount) {
+                    clusterCount += nextOccurence;
 
                     Matcher matcher = patternClusters.matcher(temp);
-                    if (matcher.find()){
-                        clusters= Integer.parseInt(matcher.group(1));
-                    }
-
-                } if(count==probCount){
-                    probCount +=nextOccurence;
-
-                    Matcher matcher = patternProbability.matcher(temp);
-                    if (matcher.find()){
-                        probabilty = Double.parseDouble(matcher.group(1));
-                        addValue(property, clusters, probabilty);
-                      //  System.out.println(property+","+clusters+","+probabilty);
+                    if (matcher.find()) {
+                        clusters = Integer.parseInt(matcher.group(1));
                     }
 
                 }
-                if (count==335){
-                    // System.out.println();
+                if (count == probCount) {
+                    probCount += nextOccurence;
+
+                    Matcher matcher = patternProbability.matcher(temp);
+                    if (matcher.find()) {
+                        probabilty = Double.parseDouble(matcher.group(1));
+                        addValue(property, clusters, probabilty);
+
+                    }
+
+                }
+                if (count == 335) {
+
                     count = 1;
                     propCount = 5;
                     clusterCount = 7;
@@ -101,22 +112,25 @@ public class RegexMetaData {
 
 
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            logger.debug(e.getMessage());
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
         } finally {
             try {
-                if (is != null) is.close();
+                if (is != null) {
+                    is.close();
+                }
             } catch (Exception ex) {
-
+                logger.debug(ex.getMessage());
             }
         }
-        //System.out.println(System.currentTimeMillis()-start);
-        //System.out.println(time+"\t"+timeStamp+"\t"+machine);
+
 
     }
 
-    private static void addValue( String dimension, int clusterCenters,
-                                  double probabilityThreshold) {
+    private static void addValue(String dimension, int clusterCenters,
+                                 double probabilityThreshold) {
         MetaDataItem dm = new MetaDataItem(dimension, clusterCenters, probabilityThreshold);
         String mapKey = dm.getDimension();
         meta.put(mapKey, dm);
@@ -128,10 +142,10 @@ public class RegexMetaData {
 
 
     public static void generate(String filePath, int machines) {
-        //long start = System.currentTimeMillis();
+
         Path path = Paths.get(filePath);
-        //Path path = Paths.get("molding_machine_10M.metadata.nt");
-        int count= 0;
+
+        int count = 0;
         int nextOccurence = 6;
 
 
@@ -140,60 +154,65 @@ public class RegexMetaData {
         int probCount = 9;
 
         String property = "";
-        int clusters  = 0;
+        int clusters = 0;
         double probabilty = 0.0;
 
         try {
             byte[] data = Files.readAllBytes(path);
 
             is = new ByteArrayInputStream(data);
-            bfReader = new BufferedReader(new InputStreamReader(is));
-            String temp = null;
+            bfReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            String temp;
+
             while ((temp = bfReader.readLine()) != null) {
                 count++;
 
-                // System.out.println(count+"\t"+temp);
-                if(count==propCount){
-                    propCount +=nextOccurence;
+
+                if (count == propCount) {
+                    propCount += nextOccurence;
 
                     Matcher matcheProp = patternPropety.matcher(temp);
-                    if (matcheProp.find()){
+                    if (matcheProp.find()) {
                         property = matcheProp.group(1);
                     }
 
-                } else if(count==clusterCount){
-                    clusterCount +=nextOccurence;
+                } else if (count == clusterCount) {
+                    clusterCount += nextOccurence;
 
                     Matcher matcher = patternClusters.matcher(temp);
-                    if (matcher.find()){
-                        clusters= Integer.parseInt(matcher.group(1));
+                    if (matcher.find()) {
+                        clusters = Integer.parseInt(matcher.group(1));
                     }
 
-                } if(count==probCount){
-                    probCount +=nextOccurence;
+                }
+                if (count == probCount) {
+                    probCount += nextOccurence;
 
                     Matcher matcher = patternProbability.matcher(temp);
-                    if (matcher.find()){
+                    if (matcher.find()) {
                         probabilty = Double.parseDouble(matcher.group(1));
-                        for (int i =0; i<machines; i++) {
-                            property = property.replace("_59_", "_"+i+"_");
+                        for (int i = 0; i < machines; i++) {
+                            property = property.replace("_59_", "_" + i + "_");
                             addValue(property, clusters, probabilty);
                         }
 
-                     //   System.out.println(property+","+clusters+","+probabilty);
                     }
 
                 }
 
 
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            logger.debug(e.getMessage());
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
         } finally {
             try {
-                if (is != null) is.close();
+                if (is != null) {
+                    is.close();
+                }
             } catch (Exception ex) {
-
+                logger.debug(ex.getMessage());
             }
         }
     }

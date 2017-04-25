@@ -2,8 +2,6 @@ package org.wso2.siddhi.debs2017.input.sparql;
 
 import org.wso2.siddhi.core.event.Event;
 
-import java.util.regex.Pattern;
-
 /**
  * Created by sachini on 4/20/17.
  */
@@ -46,7 +44,6 @@ public class RabbitMessage {
     }
 
 
-
     public Event getEvent() {
         return event;
     }
@@ -54,7 +51,6 @@ public class RabbitMessage {
     public void setEvent(Event event) {
         this.event = event;
     }
-
 
 
     public long getTime() {
@@ -98,11 +94,6 @@ public class RabbitMessage {
     }
 
 
-
-
-
-
-
     public int getLine() {
         return line;
     }
@@ -110,10 +101,6 @@ public class RabbitMessage {
     public void setLine(int line) {
         this.line = line;
     }
-
-
-
-
 
 
 }

@@ -2,10 +2,7 @@ package org.wso2.siddhi.debs2017.transport;
 
 import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
 import org.wso2.siddhi.debs2017.output.MultiNodeAlertGenerator;
-import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
-import org.wso2.siddhi.query.api.expression.condition.In;
 
 import java.util.ArrayList;
 import java.util.Collections;

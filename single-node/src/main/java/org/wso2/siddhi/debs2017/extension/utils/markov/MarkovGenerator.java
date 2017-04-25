@@ -4,6 +4,7 @@ import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -20,6 +21,10 @@ import java.util.HashMap;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * MarkovGenerator
+ */
 public class MarkovGenerator {
     private int currentCenter = 0;
     private int previousCenter = 0;
@@ -76,18 +81,20 @@ public class MarkovGenerator {
                 temp.put(currentCenter, eventDataHolder);
             } else {
                 /**
-                 *   if there is no transiton from the previous center to the current center,create a new eventDataHolder
-                 *   object and store it in the hashmap containing transitions from the previous center
+                 *   if there is no transiton from the previous center to the current center,create
+                 *   a new eventDataHolder object and store it in the hashmap
+                 *   containing transitions from the previous center
                  */
                 EventDataHolder newEvent = new EventDataHolder();
                 newEvent.setEventCount(1);
                 temp.put(currentCenter, newEvent);
             }
             /**
-             * update the transitional probabilities for each event having transitions from the particualr previous center
+             * update the transitional probabilities for each event having transitions from
+             * the particualr previous center
              */
-            for (Integer key : temp.keySet()) {
-                eventDataHolder = temp.get(key);
+            for (Map.Entry<Integer, EventDataHolder> entry : temp.entrySet()) {
+                eventDataHolder = entry.getValue();
                 eventDataHolder.setProbability(eventDataHolder.getEventCount() / total);
             }
             //store the updated hashmap for transitions from the particular previous center
@@ -119,7 +126,8 @@ public class MarkovGenerator {
         int previousEvent = 0;
         double eventProbability = 1;
         double transitionalProb;
-        for (int i = eventOrder.size() - SingleNodeServer.transitionsCount; i < eventOrder.size(); i++) {
+        for (int i = eventOrder.size() - SingleNodeServer.transitionsCount; i < eventOrder.size();
+             i++) {
             if (previousEvent == 0 && currentEvent == 0) {
                 currentEvent = eventOrder.get(i);
                 previousEvent = eventOrder.get(i - 1);

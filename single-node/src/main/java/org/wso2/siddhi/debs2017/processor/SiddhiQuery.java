@@ -9,7 +9,6 @@ import org.wso2.siddhi.core.stream.output.StreamCallback;
 import org.wso2.siddhi.debs2017.extension.DimensionAggregator;
 import org.wso2.siddhi.debs2017.extension.TimestampAggregator;
 import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
-import org.wso2.siddhi.debs2017.output.AlertGenerator;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 /*
@@ -27,36 +26,36 @@ import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * Siddhi Query
+ */
 public class SiddhiQuery {
     private final InputHandler inputHandler;
     private final String query;
     private final String inStreamDefinition;
     private final SiddhiManager siddhiManager;
     private ExecutionPlanRuntime executionPlanRuntime;
-    private AlertGenerator alertGenerator;
 
     private RingBuffer<RabbitMessage> buffer;
     private long sequence;
 
 
-    public SiddhiQuery(RingBuffer<RabbitMessage> buffer, AlertGenerator alertGenerator) {
-        this.alertGenerator = alertGenerator;
+    public SiddhiQuery(RingBuffer<RabbitMessage> buffer) {
 
         this.inStreamDefinition = "@config(async = 'true')\n" + //@config(async = 'true')@plan:async
-                "define stream inStream (machine string, time string, dimension string,  uTime long,  " +
-                "value double, centers int, threshold double);";
+                "define stream inStream (machine string, time string, dimension string,  " +
+                "uTime long, value double, centers int, threshold double);";
 
         this.query = ("" +
                 "\n" +
-                "@info(name = 'query1') partition with ( dimension of inStream) " +// perform clustering
+                "@info(name = 'query1') partition with ( dimension of inStream) " +
                 "begin " +
-                "from inStream#window.externalTime(uTime , "+ SingleNodeServer.windowSize+") \n" +
-                "select machine, singlenode:time(time) as time, dimension, singlenode:agg(value, centers ) as probaility, threshold " +
+                "from inStream#window.externalTime(uTime , " + SingleNodeServer.windowSize + ") " +
+                "\n" +
+                "select machine, singlenode:time(time) as time, dimension, " +
+                "singlenode:agg(value, centers ) as probaility, threshold " +
                 " insert into detectAnomaly  " + //inner stream
-//                "\n" +
-//                "from #outputStream \n " +
-//                "select machine, time, dimension, debs2017:markovnew(center,10) as probability, threshold, node " +
-//                "insert into detectAnomaly " +
                 "end;");
 
         this.siddhiManager = new SiddhiManager();
@@ -77,15 +76,6 @@ public class SiddhiQuery {
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
                 for (Event ev : events) {
                     publishEvent(ev);
-                 /* double probability = Double.parseDouble(ev.getData()[3].toString());
-                  double threshold = Double.parseDouble(ev.getData()[4].toString());
-
-
-                    if (probability < threshold && probability > 0) {
-                       // System.out.println(ev.getData() + "anomaly--------------");
-                        alertGenerator.generateAlert(ev);
-                       // send(wrapper.getEvent());
-                    }*/
 
                 }
             }
@@ -95,10 +85,10 @@ public class SiddhiQuery {
 
     public void publish(Event obj) {
         try {
-            // inputHandler.send(obj.getData());
+
             inputHandler.send(obj);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+
         }
 
     }

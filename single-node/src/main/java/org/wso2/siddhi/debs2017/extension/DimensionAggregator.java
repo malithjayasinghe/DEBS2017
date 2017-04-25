@@ -25,6 +25,10 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * DimensionAggregator
+ */
 public class DimensionAggregator extends AttributeAggregator {
     MarkovGenerator markovModel = new MarkovGenerator();
     private ArrayList<Integer> centers;
@@ -32,7 +36,8 @@ public class DimensionAggregator extends AttributeAggregator {
     private ArrayList<Double> arr = new ArrayList<>();
 
 
-    protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
+    protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext
+            executionPlanContext) {
 
     }
 
@@ -46,12 +51,14 @@ public class DimensionAggregator extends AttributeAggregator {
 
     public Object processAdd(Object[] objects) {
         arr.add((Double) objects[0]);
-        Clusterer cluster = new Clusterer((Integer) objects[1], SingleNodeServer.maxClusterIterations, arr);//(Integer) objects[1]
-        // Do the clustering on the elements present in the array list and return the center it belongs to
+        Clusterer cluster = new Clusterer((Integer) objects[1],
+                SingleNodeServer.maxClusterIterations, arr);
+
+        // Do the clustering on the elements present in the array list and return
+        // the center it belongs to
         cluster.cluster();
-        //System.out.println(arr);
         ArrayList<Integer> centers = cluster.getCenterA(arr);
-        //System.out.println(centers);
+
         if (centers.size() >= SingleNodeServer.windowSize) {
             markovModel.execute(centers);
             //get the total probability

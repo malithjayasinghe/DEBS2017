@@ -1,7 +1,6 @@
 package org.wso2.siddhi.debs2017.kmeans;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /*
@@ -34,8 +33,8 @@ public class Clusterer {
      * The constructor
      *
      * @param noOfClusters the numbers of cluster centers
-     * @param maxIter the maximum number of iterations
-     * @param dataSet the data set
+     * @param maxIter      the maximum number of iterations
+     * @param dataSet      the data set
      */
     public Clusterer(int noOfClusters, int maxIter, ArrayList<Double> dataSet) {
         this.noOfClusters = noOfClusters;
@@ -53,7 +52,7 @@ public class Clusterer {
         this.clusterGroup = new ArrayList[this.noOfClusters];
         //get the first k distinct values from the data. This will be used to initialize the cluster centers
 
-        int distinctCount =0;
+        int distinctCount = 0;
         ArrayList<Double> distinctValues = new ArrayList<>();
         for (int i = 0; i < dataSize; i++) {
             if (!distinctValues.contains(data.get(i))) {
@@ -73,7 +72,6 @@ public class Clusterer {
 
     /**
      * Perform clustering
-     *
      */
     public void cluster() {
         int iter = 0;
@@ -96,7 +94,6 @@ public class Clusterer {
 
     /**
      * reinitialize the cluster centres and store the old ones
-     *
      */
     private void reinitializeCluster() {
         for (int i = 0; i < noOfClusters; i++) {
@@ -110,8 +107,8 @@ public class Clusterer {
     /**
      * base on the data points assigned to the cluster, recalculates the cluster center
      *
-     * @param doubles  the cluster
-     * @return  the new cluster center
+     * @param doubles the cluster
+     * @return the new cluster center
      */
     private Double average(ArrayList<Double> doubles) {
         double sum = 0;
@@ -135,17 +132,17 @@ public class Clusterer {
             for (int j = 0; j < noOfClusters; j++) {
                 cenVal = center.get(j);
                 diff = Math.abs(cenVal - dataItem);
-                diff =  Math.round(diff * 10000.0) / 10000.0;
+                diff = Math.round(diff * 10000.0) / 10000.0;
                 difference[j] = diff;
 
             }
             ArrayList<Integer> minList = getMinIndexA(difference);
-            if(minList.size()==1){
+            if (minList.size() == 1) {
                 clusterGroup[minList.get(0)].add(dataItem);
             } else {
                 int minIndex = minList.get(0);
-                for (int j =1; j<minList.size(); j++){
-                    if(center.get(minIndex)<center.get(minList.get(j))) {
+                for (int j = 1; j < minList.size(); j++) {
+                    if (center.get(minIndex) < center.get(minList.get(j))) {
                         minIndex = minList.get(j);
                     }
                 }
@@ -161,14 +158,14 @@ public class Clusterer {
         ArrayList<Integer> minList = new ArrayList<>();
 
         for (int i = 1; i < diff.length; i++) {
-            if (diff[minIndex] >  diff[i]) {
-               minIndex = i;
+            if (diff[minIndex] > diff[i]) {
+                minIndex = i;
             }
         }
         minList.add(minIndex);
         for (int i = 0; i < diff.length; i++) {
 
-            if (diff[minIndex] ==  diff[i] && minIndex!= i) {
+            if (diff[minIndex] == diff[i] && minIndex != i) {
                 minList.add(i);
             }
 
@@ -181,7 +178,7 @@ public class Clusterer {
      * calculates distance between each data point and cluster and returns the closest center
      *
      * @param diff the distance to each cluster center for a data point
-     * @return  the closest cluster
+     * @return the closest cluster
      */
     private int getMinIndex(double[] diff) {
         int minIndex = 0;
@@ -210,25 +207,25 @@ public class Clusterer {
         return getMinIndex(minDist) + 1;
     }
 
-    public int[] getCenter(ArrayList<Double> data){
-        int [] output = new int[data.size()];
+    public int[] getCenter(ArrayList<Double> data) {
+        int[] output = new int[data.size()];
         double[] minDist = new double[noOfClusters];
-        for(int i=0; i<data.size(); i++){
+        for (int i = 0; i < data.size(); i++) {
             for (int j = 0; j < noOfClusters; j++) {
                 minDist[j] = (Math.abs(center.get(j) - data.get(i)));
             }
-            output[i] = getMinIndex(minDist) +1;
+            output[i] = getMinIndex(minDist) + 1;
         }
         return output;
     }
 
-    public ArrayList<Integer> getCenterA(ArrayList<Double> data){
+    public ArrayList<Integer> getCenterA(ArrayList<Double> data) {
         ArrayList<Integer> output = new ArrayList<>();
-        for(int i=0; i<data.size(); i++){
+        for (int i = 0; i < data.size(); i++) {
             for (int j = 0; j < noOfClusters; j++) {
-               if(clusterGroup[j].contains(data.get(i))){
-                   output.add(j+1);
-               }
+                if (clusterGroup[j].contains(data.get(i))) {
+                    output.add(j + 1);
+                }
             }
         }
         return output;

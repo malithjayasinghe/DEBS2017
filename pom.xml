@@ -1,5 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!--<parent>-->
+        <!--<groupId>org.wso2</groupId>-->
+        <!--<artifactId>wso2</artifactId>-->
+        <!--<version>5</version>-->
+    <!--</parent>-->
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.siddhi.debs2017</groupId>
     <artifactId>DEBS2017</artifactId>
@@ -19,7 +25,6 @@
         <slf4j.version>1.7.15</slf4j.version>
         <junit.version>4.11</junit.version>
     </properties>
-
 
 
     <dependencies>
@@ -99,17 +104,16 @@
             <version>3.3.2.wso2v2</version>
         </dependency>
 
-       <!-- <dependency>
-            <groupId>org.wso2.orbit.com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.3.2.wso2v2</version>
-        </dependency> -->
+        <!-- <dependency>
+             <groupId>org.wso2.orbit.com.lmax</groupId>
+             <artifactId>disruptor</artifactId>
+             <version>3.3.2.wso2v2</version>
+         </dependency> -->
         <!--<dependency>-->
-            <!--<groupId>com.rabbitmq</groupId>-->
-            <!--<artifactId>amqp-client</artifactId>-->
-            <!--<version>4.1.0</version>-->
+        <!--<groupId>com.rabbitmq</groupId>-->
+        <!--<artifactId>amqp-client</artifactId>-->
+        <!--<version>4.1.0</version>-->
         <!--</dependency>-->
-
 
 
     </dependencies>

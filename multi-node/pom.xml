@@ -12,7 +12,6 @@
     <artifactId>multi-node</artifactId>
 
 
-
     <build>
         <plugins>
             <plugin>
@@ -78,11 +77,14 @@
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <manifestEntries>
-                                <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
-                                <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+                                <X-Compile-Source-JDK>${maven.compiler.source}
+                                </X-Compile-Source-JDK>
+                                <X-Compile-Target-JDK>${maven.compiler.target}
+                                </X-Compile-Target-JDK>
                             </manifestEntries>
                         </transformer>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                     </transformers>
                 </configuration>
                 <executions>
@@ -103,7 +105,9 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQSampleDataPublisher</mainClass>
+                            <mainClass>
+                                org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQSampleDataPublisher
+                            </mainClass>
                         </manifest>
                     </archive>
                 </configuration>

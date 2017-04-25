@@ -6,7 +6,6 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.query.CentralDispatcher;
 
@@ -42,7 +41,7 @@ public class EventDispatcher extends DefaultConsumer {
     private static int count = 0;
     private static long startTime;
     private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static ExecutorService EXECUTOR ;
+    private static ExecutorService EXECUTOR;
     private static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = CentralDispatcher.arrayList;
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
 
@@ -50,12 +49,12 @@ public class EventDispatcher extends DefaultConsumer {
      * The constructor
      *
      * @param channel the channel
-     * @param host1 the host 1
-     * @param port1 the port 1
-     * @param host2 the host 2
-     * @param port2 the port 2
-     * @param host3 the host 3
-     * @param port3 the port 3
+     * @param host1   the host 1
+     * @param port1   the port 1
+     * @param host2   the host 2
+     * @param port2   the port 2
+     * @param host3   the host 3
+     * @param port3   the port 3
      */
     public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3, int executorSize) {
         super(channel);
@@ -75,37 +74,37 @@ public class EventDispatcher extends DefaultConsumer {
      * Handle delivery
      *
      * @param consumerTag the consumer tag
-     * @param envelope the envelop
-     * @param properties the properties
-     * @param body the body
+     * @param envelope    the envelop
+     * @param properties  the properties
+     * @param body        the body
      * @throws IOException thrown if an IO exception occurs
      */
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body, "UTF-8");
-        if(msg.equals(TERMINATION_MESSAGE)){
+        if (msg.equals(TERMINATION_MESSAGE)) {
             System.out.println("event - Terminated");
 
             EXECUTOR.shutdown();
-            try{
+            try {
                 EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
-                for(int i =0; i<arrayList.size(); i++){
+                for (int i = 0; i < arrayList.size(); i++) {
                     ObservationGroup ob = new ObservationGroup(-1l, null);
                     arrayList.get(i).put(ob);
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 //do nothing
             }
 
         } else {
 //            if(isSparQL.get()){
-                // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
-                count++;
-                long time = System.nanoTime();
+            // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
+            count++;
+            long time = System.nanoTime();
 //                bytesRec += body.length;
 //                Runnable sparQLProcessor = new SPARQLProcessor(msg);
 //                EXECUTOR.execute(sparQLProcessor);
-            Runnable regex = new RegexProcessor(msg,time);
+            Runnable regex = new RegexProcessor(msg, time);
             EXECUTOR.execute(regex);
 //            } else{
 //                //System.out.println(count+"\t"+bytesRec+"\t"+body.length);

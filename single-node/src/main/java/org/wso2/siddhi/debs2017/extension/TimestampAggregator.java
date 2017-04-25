@@ -23,10 +23,16 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * TimestampAggregator
+ */
 public class TimestampAggregator extends AttributeAggregator {
     ArrayList<String> arr = new ArrayList<>();
+
     @Override
-    protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext executionPlanContext) {
+    protected void init(ExpressionExecutor[] expressionExecutors, ExecutionPlanContext
+            executionPlanContext) {
 
     }
 
@@ -38,10 +44,10 @@ public class TimestampAggregator extends AttributeAggregator {
     @Override
     public Object processAdd(Object o) {
         arr.add(o.toString());
-        if(arr.size()== SingleNodeServer.windowSize){
-            return arr.get(SingleNodeServer.windowSize-SingleNodeServer.transitionsCount-1);
+        if (arr.size() == SingleNodeServer.windowSize) {
+            return arr.get(SingleNodeServer.windowSize - SingleNodeServer.transitionsCount - 1);
         }
-        return arr.get(arr.size()-1);
+        return arr.get(arr.size() - 1);
     }
 
     @Override

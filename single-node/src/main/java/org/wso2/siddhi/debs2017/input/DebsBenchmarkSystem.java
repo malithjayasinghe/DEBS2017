@@ -25,7 +25,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
@@ -42,9 +41,12 @@ import java.util.regex.Pattern;
 * limitations under the License.
 */
 
+/**
+ * DebsBenchmarkSystem
+ */
 public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     private static final Logger logger = LoggerFactory.getLogger(DebsBenchmarkSystem.class);
-    private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
+    private static final String terminationMessage = "~~Termination Message~~";
     private static final Charset CHARSET = Charset.forName("UTF-8");
 
     private final CountDownLatch startExecutionBarrier = new CountDownLatch(1);
@@ -53,26 +55,25 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     private RabbitQueue inputQueue;
     private RabbitQueue outputQueue;
 
-    private static ExecutorService RMQ_EXECUTOR;
+    private ExecutorService rmqExecutor;
 
-    public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec){
-        RMQ_EXECUTOR = Executors.newFixedThreadPool(rabbitMQExec);
-        if(SingleNodeServer.isRegex){
+    public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec) {
+        rmqExecutor = Executors.newFixedThreadPool(rabbitMQExec);
+        if (SingleNodeServer.isRegex) {
             RegexMetaData.load(metadataFile);
         } else {
             DebsMetaData.load(metadataFile);
         }
 
 
-
     }
 
-    public RabbitQueue getOutputQueue(){
+    public RabbitQueue getOutputQueue() {
         return outputQueue;
     }
 
     @Override
-    public void init()  {
+    public void init() {
 
         try {
             logger.debug("Initializing...");
@@ -80,35 +81,38 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
             String hobbitSessionId = getHobbitSessionId();
             if (hobbitSessionId.equals(Constants.HOBBIT_SESSION_ID_FOR_BROADCASTS) ||
                     hobbitSessionId.equals(Constants.HOBBIT_SESSION_ID_FOR_PLATFORM_COMPONENTS)) {
-                throw new IllegalStateException("Wrong hobbit session id. It must not be equal to HOBBIT_SESSION_ID_FOR_BROADCASTS or HOBBIT_SESSION_ID_FOR_PLATFORM_COMPONENTS");
+                throw new IllegalStateException("Wrong hobbit session id. It must not be equal " +
+                        "to HOBBIT_SESSION_ID_FOR_BROADCASTS or " +
+                        "HOBBIT_SESSION_ID_FOR_PLATFORM_COMPONENTS");
             }
             initCommunications();
             logger.debug("Initialized");
         } catch (Exception e) {
-            e.printStackTrace();
+            //logger.debug(e.getStackTrace());
         }
 
     }
 
     private void initCommunications() throws Exception {
         outputQueue = createQueueWithName(getOutputQueueName(), null);
-        inputQueue = createQueueWithName(getInputQueueName() , RMQ_EXECUTOR);
+        inputQueue = createQueueWithName(getInputQueueName(), rmqExecutor);
         registerConsumerFor(inputQueue);
     }
 
 
-
-    private RabbitQueue createQueueWithName(String name, ExecutorService executorService) throws Exception {
+    private RabbitQueue createQueueWithName(String name, ExecutorService executorService)
+            throws Exception {
         Channel channel = createConnection(executorService).createChannel();
         channel.basicQos(getPrefetchCount());
         channel.queueDeclare(name, false, false, true, null);
         return new RabbitQueue(channel, name);
     }
 
-    private Connection createConnection(ExecutorService executorService) throws IOException, TimeoutException {
+    private Connection createConnection(ExecutorService executorService) throws IOException,
+            TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(getHost());
-        if(executorService.equals(null)){
+        if (executorService == null) {
             return factory.newConnection();
         }
         return factory.newConnection(executorService);
@@ -149,20 +153,21 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     }
 
     @Override
-    public void run()  {
-
+    public void run() {
         try {
-
             logger.debug("Sending SYSTEM_READY_SIGNAL...");
             sendToCmdQueue(Commands.SYSTEM_READY_SIGNAL);   // Notifies PlatformController that it is ready to start
-            logger.debug("Waiting for TASK_GENERATION_FINISHED...");
             startExecutionBarrier.await();
+            logger.debug("Waiting for TASK_GENERATION_FINISHED...");
             logger.debug("Starting system execution...");
             execute();
             logger.debug("Finished");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug(e.getMessage());
         }
+
 
     }
 
@@ -174,8 +179,9 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     }
 
     /**
-     * This is where system execution starts when it receives {@code Commands.TASK_GENERATION_FINISHED}
-     * from the PlatformController. Since all the processing done upon receiving a message in {@link #handleDelivery(byte[])}
+     * This is where system execution starts when it receives {@code Commands.TASK_GENERATION_
+     * FINISHED}from the PlatformController. Since all the processing done upon receiving a message
+     * in {@link #handleDelivery(byte[])}
      * this method is just blocked.
      */
     private void execute() {
@@ -194,10 +200,11 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
         try {
 
-            logger.debug("Sending termination message to: {} sender: {}", outputQueue.getName(), this);
-            send(TERMINATION_MESSAGE);
+            logger.debug("Sending termination message to: {} sender: {}", outputQueue.getName(),
+                    this);
+            send(terminationMessage);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug(e.getMessage());
         }
     }
 
@@ -206,28 +213,29 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
             send(string.getBytes(CHARSET));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug(e.getMessage());
         }
     }
 
-    private void send(byte[] bytes)  {
+    private void send(byte[] bytes) {
         Channel channel = outputQueue.getChannel();
         try {
-            channel.basicPublish("", outputQueue.getName(), MessageProperties.PERSISTENT_BASIC, bytes);
+            channel.basicPublish("", outputQueue.getName(), MessageProperties.PERSISTENT_BASIC,
+                    bytes);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug(e.getMessage());
         }
     }
 
     private void handleDelivery(byte[] bytes) {
         try {
             //String message = new String(bytes, CHARSET);
-            if(bytes.length<30){
-                    RegexPattern.publishTerminate(System.nanoTime());
+            if (bytes.length < 30) {
+                RegexPattern.publishTerminate(System.nanoTime());
 
             } else {
 
-                RegexPattern regexPattern = new RegexPattern(bytes,System.nanoTime());
+                RegexPattern regexPattern = new RegexPattern(bytes, System.nanoTime());
                 regexPattern.process();
 
 
@@ -239,7 +247,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
 
     @Override
-    public void close()  {
+    public void close() {
 
         try {
             super.close();

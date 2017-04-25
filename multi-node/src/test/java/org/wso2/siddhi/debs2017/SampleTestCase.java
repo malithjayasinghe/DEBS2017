@@ -10,8 +10,6 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.system.StreamRDF;
-import org.wso2.siddhi.debs2017.input.UnixConverter;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 
 /*
@@ -32,9 +30,9 @@ import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 public class SampleTestCase {
 
     @org.junit.Test
-    public void Test1 (){
+    public void Test1() {
 
-            String queryString = "" +
+        String queryString = "" +
                 "SELECT ?observation ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
                 "?observation <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup> ." +
@@ -47,47 +45,47 @@ public class SampleTestCase {
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-                 "ORDER BY (?timestamp)"+
+                "ORDER BY (?timestamp)" +
                 "";
 
 
-      //  StreamRDF destination = new StreamRDF();
-      //  RDFDataMgr.parse(destination, "https://ckan.project-hobbit.eu/dataset/fd77e948-c193-4233-8842-fcc84e197491/resource/b0ead17d-65f5-448f-84ff-25d40df652a3/download/iotcore.ttl") ;
+        //  StreamRDF destination = new StreamRDF();
+        //  RDFDataMgr.parse(destination, "https://ckan.project-hobbit.eu/dataset/fd77e948-c193-4233-8842-fcc84e197491/resource/b0ead17d-65f5-448f-84ff-25d40df652a3/download/iotcore.ttl") ;
 
-            try {
-                Model model = RDFDataMgr.loadModel("molding_machine_1M.nt");
+        try {
+            Model model = RDFDataMgr.loadModel("molding_machine_1M.nt");
 
-                com.hp.hpl.jena.query.Query query = QueryFactory.create(queryString);
-                QueryExecution qexec = QueryExecutionFactory.create(query, model);
-                ResultSet results = qexec.execSelect();
-                results = ResultSetFactory.copyResults(results);
-                for (; results.hasNext(); ) {
-                    QuerySolution solution = results.nextSolution();
-                    Resource ob = solution.getResource("observation");
+            com.hp.hpl.jena.query.Query query = QueryFactory.create(queryString);
+            QueryExecution qexec = QueryExecutionFactory.create(query, model);
+            ResultSet results = qexec.execSelect();
+            results = ResultSetFactory.copyResults(results);
+            for (; results.hasNext(); ) {
+                QuerySolution solution = results.nextSolution();
+                Resource ob = solution.getResource("observation");
 
-                    Resource time = solution.getResource("time"); // Get a result variable - must be a resource
-                    Resource property = solution.getResource("dimension");
-                    Resource machine = solution.getResource("machine");
-                    Literal timestamp = solution.getLiteral("timestamp");
-                    Literal value = solution.getLiteral("value");
+                Resource time = solution.getResource("time"); // Get a result variable - must be a resource
+                Resource property = solution.getResource("dimension");
+                Resource machine = solution.getResource("machine");
+                Literal timestamp = solution.getLiteral("timestamp");
+                Literal value = solution.getLiteral("value");
 
-                    String machineName = machine.getLocalName();
-                    String dimension = property.getLocalName();
-                    if (DebsMetaData.getMetaData().keySet().contains(machineName+dimension) &&  !value.toString().contains("#string")) { //&& property.getLocalName().equals("_59_5")
-                        if(property.getLocalName().equals("_59_31")){
-                            System.out.println(ob.getLocalName()+"\t"+machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getDouble());
-
-                        }
+                String machineName = machine.getLocalName();
+                String dimension = property.getLocalName();
+                if (DebsMetaData.getMetaData().keySet().contains(machineName + dimension) && !value.toString().contains("#string")) { //&& property.getLocalName().equals("_59_5")
+                    if (property.getLocalName().equals("_59_31")) {
+                        System.out.println(ob.getLocalName() + "\t" + machine.getLocalName() + "\t" + time.getLocalName() + "\t" + timestamp.getValue() + "\t" + property.getLocalName() + "\t" + value.getDouble());
 
                     }
+
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-            //tw
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        //tw
+
+    }
 
 
 }

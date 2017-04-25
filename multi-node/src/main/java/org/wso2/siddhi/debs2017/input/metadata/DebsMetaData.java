@@ -19,7 +19,13 @@
 
 package org.wso2.siddhi.debs2017.input.metadata;
 
-import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -48,24 +54,22 @@ public class DebsMetaData {
     /**
      * Adds a value to meta data container
      *
-     * @param machineNumber machine number
-     * @param dimension dimension
-     * @param clusterCenters cluster center
+     * @param machineNumber        machine number
+     * @param dimension            dimension
+     * @param clusterCenters       cluster center
      * @param probabilityThreshold probability threshold
      */
     private static void addValue(String machineNumber, String dimension, int clusterCenters,
-                         double probabilityThreshold) {
+                                 double probabilityThreshold) {
         MetaDataItem dm = new MetaDataItem(machineNumber, dimension, clusterCenters, probabilityThreshold);
         String mapKey = dm.getDimension();
         meta.put(mapKey, dm);
     }
 
     /**
-     *
      * @return the meta data holder (i.e. hash map)
      */
-    public static HashMap<String, MetaDataItem> getMetaData()
-    {
+    public static HashMap<String, MetaDataItem> getMetaData() {
         return meta;
     }
 
@@ -118,7 +122,7 @@ public class DebsMetaData {
                 Literal thresh = solution.getLiteral("threshold");
                 // DebsMetaData db = new DebsMetaData();
                 DebsMetaData.addValue(machine.getLocalName(), property.getLocalName()
-                      , cluster.getInt(), thresh.getDouble());
+                        , cluster.getInt(), thresh.getDouble());
             }
         } catch (Exception e) {
             e.printStackTrace();

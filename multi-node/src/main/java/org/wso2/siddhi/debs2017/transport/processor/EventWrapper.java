@@ -2,8 +2,6 @@ package org.wso2.siddhi.debs2017.transport.processor;
 
 import org.wso2.siddhi.core.event.Event;
 
-import java.beans.EventSetDescriptor;
-
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
@@ -26,7 +24,7 @@ public class EventWrapper {
         return this.event;
     }
 
-    public void setEvent(Event ev){
+    public void setEvent(Event ev) {
         this.event = ev;
     }
 }

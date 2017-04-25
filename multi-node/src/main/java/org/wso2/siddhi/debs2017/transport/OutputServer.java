@@ -4,10 +4,9 @@ package org.wso2.siddhi.debs2017.transport;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import org.hobbit.core.data.RabbitQueue;
-import org.wso2.siddhi.debs2017.output.RabbitMQPublisher;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyServer;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
-import org.wso2.siddhi.debs2017.transport.utils.TcpNettyServer;
 import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 
 /*
@@ -27,10 +26,11 @@ import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 */
 public class OutputServer {
     public static boolean isSort;
+
     public static void main(String[] args) {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
-        boolean  sort = Boolean.parseBoolean(args[3]);
+        boolean sort = Boolean.parseBoolean(args[3]);
         isSort = sort;
         if (args.length == 2) {
 
@@ -46,14 +46,14 @@ public class OutputServer {
                     attribute("value", Attribute.Type.DOUBLE).
                     attribute("threshold", Attribute.Type.DOUBLE).
                     attribute("node", Attribute.Type.INT);
-           // RabbitMQPublisher rmq = new RabbitMQPublisher(output);
+            // RabbitMQPublisher rmq = new RabbitMQPublisher(output);
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
             tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, output));
             ServerConfig serverConfig = new ServerConfig();
             serverConfig.setHost(host);
             serverConfig.setPort(port);
             tcpNettyServer.bootServer(serverConfig);
-        }  else if (args.length >2) {
+        } else if (args.length > 2) {
 
             String outputQueue = args[2];
             RabbitQueue output = null;
@@ -77,7 +77,7 @@ public class OutputServer {
                     attribute("value", Attribute.Type.DOUBLE).
                     attribute("threshold", Attribute.Type.DOUBLE).
                     attribute("node", Attribute.Type.INT);
-           // RabbitMQPublisher rmq = new RabbitMQPublisher(outputQueue);
+            // RabbitMQPublisher rmq = new RabbitMQPublisher(outputQueue);
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
             tcpNettyServer.addStreamListener(new OutputListener(streamDefinition, output));
             ServerConfig serverConfig = new ServerConfig();

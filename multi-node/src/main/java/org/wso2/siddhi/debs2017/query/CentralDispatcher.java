@@ -27,7 +27,7 @@ public class CentralDispatcher {
 
     public static void main(String[] args) {
 
-        if(args.length == 9){
+        if (args.length == 9) {
             String client1host = args[2];
             int client1port = Integer.parseInt(args[3]);
             String client2host = args[4];
@@ -42,22 +42,21 @@ public class CentralDispatcher {
                 arrayList.add(new LinkedBlockingQueue());
             }
 
-            if(args[0].equals("-hobbit")){
+            if (args[0].equals("-hobbit")) {
 
-                    String metadata = args[1];
+                String metadata = args[1];
 
 
+                try {
+                    DebsBenchmarkInput db = new DebsBenchmarkInput(metadata, client1host, client1port, client2host, client2port, client3host, client3port, executorSize);
+                    db.init();
+                    db.run();
 
-                    try {
-                        DebsBenchmarkInput db = new DebsBenchmarkInput(metadata,client1host, client1port, client2host, client2port, client3host, client3port, executorSize);
-                        db.init();
-                        db.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-            }else {
+            } else {
 
                 String queue = args[0];
                 String rmqHost = args[1];

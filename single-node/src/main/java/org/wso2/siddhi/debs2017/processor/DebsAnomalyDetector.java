@@ -20,26 +20,26 @@ import org.wso2.siddhi.debs2017.output.AlertGenerator;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * DebsAnomalyDetector
+ */
 public class DebsAnomalyDetector implements EventHandler<RabbitMessage> {
 
     private static AlertGenerator alertGenerator;
     private double probability;
     private double threshold;
-    static int count = 0;
 
     @Override
     public void onEvent(RabbitMessage wrapper, long l, boolean b) throws Exception {
-        if(wrapper.isStateful()) {
+        if (wrapper.isStateful()) {
             Object[] o = wrapper.getEvent().getData();
-            if (wrapper.getEvent().getTimestamp() == -1l) {
-               // System.out.println("Termination published");
+            if (wrapper.getEvent().getTimestamp() == -1L) {
                 alertGenerator.terminate();
             } else {
                 probability = Double.parseDouble(o[3].toString());
                 threshold = Double.parseDouble(o[4].toString());
                 if (probability < threshold && probability > 0) {
-                    //System.out.println(wrapper.getEvent() + "anomaly--------------"+ "\t"+ l);
-
                     send(wrapper.getEvent());
                 }
             }
@@ -49,10 +49,10 @@ public class DebsAnomalyDetector implements EventHandler<RabbitMessage> {
 
     /**
      * Generates an alert
+     *
      * @param event the event to generate the alert from
      */
     private synchronized void send(Event event) {
-        count++;
         alertGenerator.generateAlert(event);
     }
 

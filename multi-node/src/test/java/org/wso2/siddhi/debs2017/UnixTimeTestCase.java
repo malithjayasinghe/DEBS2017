@@ -1,13 +1,5 @@
 package org.wso2.siddhi.debs2017;
 
-import org.wso2.siddhi.debs2017.input.UnixConverter;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Scanner;
-
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *

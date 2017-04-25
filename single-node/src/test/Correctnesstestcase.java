@@ -1,4 +1,3 @@
-import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
  */
 public class Correctnesstestcase {
     ArrayList<Object[]> arr = new ArrayList<>();
+
     @org.junit.Test
     public void Test1() {
 
@@ -54,17 +54,17 @@ public class Correctnesstestcase {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
 
-                for(Event ev : events){
+                for (Event ev : events) {
 
-                    double val = (double)ev.getData()[3];
-                    if(val<0.005) {
+                    double val = (double) ev.getData()[3];
+                    if (val < 0.005) {
                         System.out.println(ev.getData()[0] + "\t" + ev.getData()[1] + "\t" + ev.getData()[2] + "\t" + ev.getData()[3] + "\n");
-                        String [] str = ev.getData()[1].toString().split("_");
+                        String[] str = ev.getData()[1].toString().split("_");
 
                         String property = ev.getData()[2].toString();
-                        String timestamp = str[0].concat("_"+(Integer.parseInt(str[1])-5));
+                        String timestamp = str[0].concat("_" + (Integer.parseInt(str[1]) - 5));
                         double probability = Double.parseDouble(ev.getData()[3].toString());
-                        switch (property+timestamp) {
+                        switch (property + timestamp) {
                             case "_59_31Timestamp_24":
                                 Assert.assertEquals(probability, 0.004115226337448559, 0.000001);
                                 break;
@@ -97,7 +97,7 @@ public class Correctnesstestcase {
         sparql();
         try {
 
-            for(int i =0; i<arr.size(); i++){
+            for (int i = 0; i < arr.size(); i++) {
                 inputHandler.send(arr.get(i));
 
             }
@@ -106,7 +106,6 @@ public class Correctnesstestcase {
         }
 
         executionPlanRuntime.start();
-
 
 
     }
@@ -125,7 +124,7 @@ public class Correctnesstestcase {
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-                "ORDER BY (?timestamp)"+
+                "ORDER BY (?timestamp)" +
                 "";
 
         try {
@@ -149,7 +148,7 @@ public class Correctnesstestcase {
                 String machineName = machine.getLocalName();
                 String dimension = property.getLocalName();
                 // System.out.println(DebsMetaData.getMetaData().keySet());
-                if (DebsMetaData.getMetaData().keySet().contains(dimension) &&  !value.toString().contains("#string")) {
+                if (DebsMetaData.getMetaData().keySet().contains(dimension) && !value.toString().contains("#string")) {
                     arr.add(new Object[]{
                             machineName,
                             time.getLocalName(),

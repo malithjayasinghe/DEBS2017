@@ -17,7 +17,7 @@ import org.wso2.siddhi.core.event.Event;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class Anomaly implements Comparable<Anomaly>{
+public class Anomaly implements Comparable<Anomaly> {
 
 
     private int property;
@@ -33,22 +33,21 @@ public class Anomaly implements Comparable<Anomaly>{
     }
 
 
-    public Anomaly( int machine , int property ,Event event) {
+    public Anomaly(int machine, int property, Event event) {
         this.property = property;
         this.machine = machine;
         this.event = event;
     }
 
 
-
     @Override
     public int compareTo(Anomaly anomaly) {
-        if(this.machine == anomaly.machine){
-            if(this.property > anomaly.property)
+        if (this.machine == anomaly.machine) {
+            if (this.property > anomaly.property)
                 return 1;
             else
                 return -1;
-        }else if(this.machine >anomaly.machine)
+        } else if (this.machine > anomaly.machine)
             return 1;
         else
             return -1;

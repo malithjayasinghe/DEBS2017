@@ -11,13 +11,16 @@ import org.wso2.siddhi.debs2017.input.DebsBenchmarkSystem;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
-import org.wso2.siddhi.debs2017.input.sparql.*;
+import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
+import org.wso2.siddhi.debs2017.input.sparql.RegexHandler;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
 import org.wso2.siddhi.debs2017.processor.DebsAnomalyDetector;
 import org.wso2.siddhi.debs2017.processor.SiddhiEventHandler;
 
+import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -35,6 +38,10 @@ import java.util.concurrent.Executors;
 * limitations under the License.
 */
 
+/**
+ * Entry point of the Single Node solution
+ */
+
 public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
@@ -43,7 +50,7 @@ public class SingleNodeServer {
 
 
     public static long startime;
-    public  static boolean isRegex = true;
+    public static boolean isRegex = true;
 
     //ttl
 
@@ -67,33 +74,33 @@ public class SingleNodeServer {
         startime = System.currentTimeMillis();
 
 
-      if (args.length == 9) {
-          int rabbitMQExecutor = Integer.parseInt(args[2]);
-          isRegex = Boolean.parseBoolean(args[3]);
-          int regexHandlers = Integer.parseInt(args[4]);
-          int siddhiHandlers = Integer.parseInt(args[5]);
-          int ringbuffersize = Integer.parseInt(args[6]);
-          boolean isTestcase = Boolean.parseBoolean(args[7]);
-          int machines = Integer.parseInt(args[8]);
+        if (args.length == 9) {
+            int rabbitMQExecutor = Integer.parseInt(args[2]);
+            isRegex = Boolean.parseBoolean(args[3]);
+            int regexHandlers = Integer.parseInt(args[4]);
+            int siddhiHandlers = Integer.parseInt(args[5]);
+            int ringbuffersize = Integer.parseInt(args[6]);
+            boolean isTestcase = Boolean.parseBoolean(args[7]);
+            int machines = Integer.parseInt(args[8]);
 
-          //Disruptor
-          Executor executor = Executors.newCachedThreadPool();
-          Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
+            //Disruptor
+            Executor executor = Executors.newCachedThreadPool();
+            Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
 
-          buffer = disruptor.getRingBuffer();
-          //Creating RegexHandlers
-          RegexHandler [] regexHandlerArr = new RegexHandler[regexHandlers];
-          for(int i = 0; i<regexHandlers; i++){
-              regexHandlerArr[i] = new RegexHandler(i, regexHandlers, buffer);
-          }
+            buffer = disruptor.getRingBuffer();
+            //Creating RegexHandlers
+            RegexHandler[] regexHandlerArr = new RegexHandler[regexHandlers];
+            for (int i = 0; i < regexHandlers; i++) {
+                regexHandlerArr[i] = new RegexHandler(i, regexHandlers, buffer);
+            }
 
-          //Create SiddhiHandlers
-          SiddhiEventHandler [] siddhiEventHandlerArr = new SiddhiEventHandler[siddhiHandlers];
-          for(int i = 0; i<siddhiHandlers; i++){
-              siddhiEventHandlerArr[i] = new SiddhiEventHandler(i, siddhiHandlers, buffer);
-          }
+            //Create SiddhiHandlers
+            SiddhiEventHandler[] siddhiEventHandlerArr = new SiddhiEventHandler[siddhiHandlers];
+            for (int i = 0; i < siddhiHandlers; i++) {
+                siddhiEventHandlerArr[i] = new SiddhiEventHandler(i, siddhiHandlers, buffer);
+            }
 
-          //Map to the disruptor
+            //Map to the disruptor
 
 
             if (args[0].equals("-hobbit")) {
@@ -105,7 +112,6 @@ public class SingleNodeServer {
                 DebsAnomalyDetector debsAnormalyDetector = null;
 
 
-
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
                 try {
@@ -114,7 +120,7 @@ public class SingleNodeServer {
 
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
-                    alertGenerator = new AlertGenerator(rmqPublisher, false);
+                    alertGenerator = new AlertGenerator(rmqPublisher);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
 
 
@@ -144,40 +150,55 @@ public class SingleNodeServer {
                     channel = factory.newConnection().createChannel();
                     channel.basicQos(1);
                     channel.queueDeclare(outputQueue, false, false, true, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (TimeoutException e) {
+                    logger.debug(e.getMessage());
+                } catch (IOException e) {
+                    logger.debug(e.getMessage());
                 }
 
                 //check if regex
-                if(isRegex){
-                    if(isTestcase){
-                        switch (machines){
-                            case 1 : RegexMetaData.load("molding_machine_10M.metadata.nt"); break;
-                            case 2 : RegexMetaData.load("molding_machine_10M.metadata.nt"); break;
-                            case 3 : RegexMetaData.load("10molding_machine_5000dp.metadata.nt"); break;
+                if (isRegex) {
+                    if (isTestcase) {
+                        switch (machines) {
+                            case 1:
+                                RegexMetaData.load("molding_machine_10M.metadata.nt");
+                                break;
+                            case 2:
+                                RegexMetaData.load("molding_machine_10M.metadata.nt");
+                                break;
+                            case 3:
+                                RegexMetaData.load("10molding_machine_5000dp.metadata.nt");
+                                break;
+                            default:
+                                break;
                         }
-                    } else  {
+                    } else {
                         RegexMetaData.generate("molding_machine_10M.metadata.nt", machines);
                     }
                 } else {
-                    if(isTestcase){
-                        switch (machines){
-                            case 1 : DebsMetaData.load("molding_machine_10M.metadata.nt"); break;
-                            case 2 : DebsMetaData.load("molding_machine_10M.metadata.nt"); break;
-                            case 3 : DebsMetaData.load("10molding_machine_5000dp.metadata.nt"); break;
+                    if (isTestcase) {
+                        switch (machines) {
+                            case 1:
+                                DebsMetaData.load("molding_machine_10M.metadata.nt");
+                                break;
+                            case 2:
+                                DebsMetaData.load("molding_machine_10M.metadata.nt");
+                                break;
+                            case 3:
+                                DebsMetaData.load("10molding_machine_5000dp.metadata.nt");
+                                break;
+                            default:
+                                break;
                         }
-                    } else  {
+                    } else {
                         DebsMetaData.generate("molding_machine_10M.metadata.nt", machines);
                     }
                 }
 
 
-
-
                 output = new RabbitQueue(channel, outputQueue);
-                AlertGenerator alertGenerator = new AlertGenerator(output, false);
+                AlertGenerator alertGenerator = new AlertGenerator(output);
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
-
 
 
                 disruptor.handleEventsWith(regexHandlerArr);
@@ -187,7 +208,6 @@ public class SingleNodeServer {
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
                 rmq.consume(inputQueue, rabbitMQExecutor);
-
 
 
             }

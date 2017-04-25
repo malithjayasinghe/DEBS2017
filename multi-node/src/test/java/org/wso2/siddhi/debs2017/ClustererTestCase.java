@@ -2,9 +2,7 @@ package org.wso2.siddhi.debs2017;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-
 import org.wso2.siddhi.debs2017.kmeans.Clusterer;
-
 
 import java.util.ArrayList;
 
@@ -47,7 +45,6 @@ public class ClustererTestCase {
         Assert.assertEquals(cl.getCenter(10.0), 3);
 
 
-
     }
 
     @org.junit.Test
@@ -62,10 +59,9 @@ public class ClustererTestCase {
         input.add(4.0);
         input.add(5.0);
 
-        Clusterer test =new Clusterer(2, 10, input);
+        Clusterer test = new Clusterer(2, 10, input);
         test.cluster();
         Assert.assertEquals(test.getCenter(6.0), 2);
-
 
 
     }
@@ -78,16 +74,12 @@ public class ClustererTestCase {
         ArrayList<Double> input = new ArrayList<>();
         input.add(7.0);
         //input.add(8.0);
-        Clusterer test =new Clusterer(3, 10, input);
+        Clusterer test = new Clusterer(3, 10, input);
         test.cluster();
         Assert.assertEquals(test.getCenter(8.0), 1);
 
 
-
     }
-
-
-
 
 
     @org.junit.Test
@@ -96,7 +88,7 @@ public class ClustererTestCase {
         ArrayList<Double> input = new ArrayList<>();
         //input.add(7.0);
         //input.add(8.0);
-        Clusterer test =new Clusterer(3, 10, input);
+        Clusterer test = new Clusterer(3, 10, input);
         // log.info("Test case 1 result : "+test.getEventCount());
         // System.out.println(test.getEventCount(8.0));
         test.cluster();
@@ -124,7 +116,7 @@ public class ClustererTestCase {
         input.add(7.0);
         input.add(7.0);
         //input.add(8.0);
-        Clusterer test =new Clusterer(3, 10, input);
+        Clusterer test = new Clusterer(3, 10, input);
         // log.info("Test case 1 result : "+test.getCenter());
         // System.out.println(test.getCenter(8.0));
         test.cluster();
@@ -132,6 +124,7 @@ public class ClustererTestCase {
 
 
     }
+
     @org.junit.Test
     public void Test6() throws InterruptedException {
         log.info("ClustererTestCase TestCase 06");
@@ -151,13 +144,13 @@ public class ClustererTestCase {
         input.add(7.0);
         input.add(7.0);
         //input.add(8.0);
-        Clusterer test =new Clusterer(3, 10, input);
+        Clusterer test = new Clusterer(3, 10, input);
         test.cluster();
         input.add(8.0);
-        int [] output = test.getCenter(input);
+        int[] output = test.getCenter(input);
 
-        for(int i =0; i<output.length; i++){
-           Assert.assertEquals(1, output[i]);
+        for (int i = 0; i < output.length; i++) {
+            Assert.assertEquals(1, output[i]);
         }
 
 
@@ -172,13 +165,13 @@ public class ClustererTestCase {
         input.add(2.0);
         input.add(7.0);
         input.add(5.0);
-        Clusterer test =new Clusterer(2, 100, input);
+        Clusterer test = new Clusterer(2, 100, input);
         test.cluster();
         input.add(6.0);
-        int [] output = test.getCenter(input);
-        int [] actual = {1,2,1,2,2,2};
+        int[] output = test.getCenter(input);
+        int[] actual = {1, 2, 1, 2, 2, 2};
 
-        for(int i =0; i<output.length; i++){
+        for (int i = 0; i < output.length; i++) {
 
             Assert.assertEquals(actual[i], output[i]);
         }
@@ -196,14 +189,14 @@ public class ClustererTestCase {
         input.add(7.0);
         input.add(5.0);
         input.add(6.0);
-        Clusterer test =new Clusterer(2, 100, input);
+        Clusterer test = new Clusterer(2, 100, input);
         test.cluster();
 
         input.add(1.0);
-        int [] output = test.getCenter(input);
-        int [] actual = {1,2,1,1,1,2};
+        int[] output = test.getCenter(input);
+        int[] actual = {1, 2, 1, 1, 1, 2};
 
-        for(int i =0; i<output.length; i++){
+        for (int i = 0; i < output.length; i++) {
 
             Assert.assertEquals(actual[i], output[i]);
         }
@@ -248,7 +241,7 @@ public class ClustererTestCase {
         test.cluster();
 
 
-            Assert.assertEquals(1, test.getCenter(0.0));
+        Assert.assertEquals(1, test.getCenter(0.0));
 
     }
 
@@ -264,6 +257,7 @@ public class ClustererTestCase {
         Assert.assertEquals(1, test.getCenter(0.0));
 
     }
+
     @org.junit.Test
     public void Test12() throws InterruptedException {
         log.info("ClustererTestCase TestCase 08");
@@ -309,7 +303,7 @@ public class ClustererTestCase {
 
         System.out.println(test.getCenterA(input));
 
-       // Assert.assertEquals(1, test.getCenter(-1.0));
+        // Assert.assertEquals(1, test.getCenter(-1.0));
 
     }
 

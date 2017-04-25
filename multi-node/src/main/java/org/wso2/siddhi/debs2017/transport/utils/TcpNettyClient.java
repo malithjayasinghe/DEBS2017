@@ -10,7 +10,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.apache.log4j.Logger;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.tcp.transport.handlers.EventEncoder;
 import org.wso2.siddhi.tcp.transport.utils.EventComposite;
@@ -65,7 +64,7 @@ public class TcpNettyClient {
             channel = bootstrap.connect(host, port).sync().channel();
             sessionId = UUID.randomUUID() + "-" + hostAndPort;
         } catch (InterruptedException e) {
-            System.out.println("Error connecting to '" + hostAndPort + "', " + e.getMessage()+"\n"+e);
+            System.out.println("Error connecting to '" + hostAndPort + "', " + e.getMessage() + "\n" + e);
         }
     }
 
@@ -78,7 +77,7 @@ public class TcpNettyClient {
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (!future.isSuccess()) {
                     System.out.println("Error sending events to '" + hostAndPort + "' on stream '" + streamId +
-                            "', " + future.cause() + ", dropping events " + Arrays.deepToString(events)+"\n"+future.cause());
+                            "', " + future.cause() + ", dropping events " + Arrays.deepToString(events) + "\n" + future.cause());
                 }
             }
         });

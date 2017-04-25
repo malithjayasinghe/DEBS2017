@@ -8,7 +8,6 @@ import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
 import org.wso2.siddhi.debs2017.transport.utils.TcpNettyServer;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
-
 import org.wso2.siddhi.tcp.transport.config.ServerConfig;
 
 import java.util.concurrent.Executor;
@@ -31,7 +30,7 @@ import java.util.concurrent.Executors;
 */
 public class SiddhiServer {
 
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         if (args.length == 5) {
             int ringBufferSize = Integer.parseInt(args[4]);
             String hostServer = args[0];

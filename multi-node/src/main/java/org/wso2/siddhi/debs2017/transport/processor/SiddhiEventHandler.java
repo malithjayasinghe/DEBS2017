@@ -3,8 +3,6 @@ package org.wso2.siddhi.debs2017.transport.processor;
 
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
-import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.transport.processor.SiddhiQuery;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -30,7 +28,7 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
     @Override
     public void onEvent(EventWrapper wrapper, long sequence, boolean b) throws Exception {
         Object[] o = wrapper.getEvent().getData();
-        if(wrapper.getEvent().getTimestamp() == -1l){
+        if (wrapper.getEvent().getTimestamp() == -1l) {
             System.out.println("siddhi : terminated");
         } else {
             String[] splitter = o[2].toString().split("_");

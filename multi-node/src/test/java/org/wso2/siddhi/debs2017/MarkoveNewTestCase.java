@@ -29,9 +29,9 @@ public class MarkoveNewTestCase {
     Markovnew markovnew = new Markovnew();
     //private int[] center = {1,2,2,2,2,3,2,3,2,3,2,1};
     //private int[] center = {1,2,2,2,2,3,2,3,1,3,2};
-    private int[] center = {1,2,3,3,3,2,2,1,2,2};
+    private int[] center = {1, 2, 3, 3, 3, 2, 2, 1, 2, 2};
 
-    private  double[] results = {0.10546875, 0.10546875, 0.03456, 0.03456,0.015625,0.015625};
+    private double[] results = {0.10546875, 0.10546875, 0.03456, 0.03456, 0.015625, 0.015625};
 
     private ArrayList<Integer> centers = new ArrayList<>();
     int shift = 0;
@@ -44,15 +44,14 @@ public class MarkoveNewTestCase {
             centers.add(center[i]);
 
             System.out.println(centers);
-            if(centers.size() ==10) {
+            if (centers.size() == 10) {
                 markovnew.execute(centers);
                 prob = markovnew.updateProbability(centers);
                 System.out.println(prob);
 
-               Assert.assertEquals(0.020833333333333332,prob,0.0);
+                Assert.assertEquals(0.020833333333333332, prob, 0.0);
 
             }
-
 
 
         }

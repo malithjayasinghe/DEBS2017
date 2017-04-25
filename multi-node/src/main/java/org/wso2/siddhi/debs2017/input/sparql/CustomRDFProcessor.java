@@ -12,9 +12,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.apache.commons.io.IOUtils;
-import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.debs2017.input.UnixConverter;
-import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -33,45 +30,45 @@ import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 */
 public class CustomRDFProcessor {
 
-    public void sparql(String rdf){
-        String [] observationGroupArr = rdf.split("(>)(.)(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)(.)(<http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup>)");
+    public void sparql(String rdf) {
+        String[] observationGroupArr = rdf.split("(>)(.)(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)(.)(<http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup>)");
         String observationGroup = observationGroupArr[0].split("#")[1];
 
-        String [] timeArr = observationGroupArr[1].split("(<http://project-hobbit.eu/resources/debs2017#"+observationGroup+">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>)" +
+        String[] timeArr = observationGroupArr[1].split("(<http://project-hobbit.eu/resources/debs2017#" + observationGroup + ">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>)" +
                 "(.)(<http://project-hobbit.eu/resources/debs2017#)");
         String time = timeArr[1].split(">")[0];
 
-        String [] machineArr = timeArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+observationGroup+">)(.)(<http://www.agtinternational.com/ontologies/I4.0#machine>)" +
+        String[] machineArr = timeArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + observationGroup + ">)(.)(<http://www.agtinternational.com/ontologies/I4.0#machine>)" +
                 "(.)(<http://www.agtinternational.com/ontologies/WeidmullerMetadata#)");
         String machine = machineArr[1].split(">")[0];
 
-        String [] timeStampArr = machineArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+time+">)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)" +
+        String[] timeStampArr = machineArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + time + ">)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)" +
                 "(.)(\")");
         String timeStamp = timeStampArr[1].split("\"")[0];
 
-        String [] observationArr = timeStampArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+observationGroup+">)(.)(<http://www.agtinternational.com/ontologies/I4.0#contains>)" +
+        String[] observationArr = timeStampArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + observationGroup + ">)(.)(<http://www.agtinternational.com/ontologies/I4.0#contains>)" +
                 "(.)(<http://project-hobbit.eu/resources/debs2017#)");
 
-        for(int i=1; i<observationArr.length; i++){
+        for (int i = 1; i < observationArr.length; i++) {
             String observation = observationArr[i].split(">")[0];
 
-            String [] propertyArr = observationArr[i].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+observation+">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observedProperty>)" +
+            String[] propertyArr = observationArr[i].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + observation + ">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observedProperty>)" +
                     "(.)(<http://www.agtinternational.com/ontologies/WeidmullerMetadata#)");
 
             String property = propertyArr[1].split(">")[0];
 
-            String [] valueArr = propertyArr[1].split("(.)(>)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)(.)(\")");//9433.11"^^<http://www.w3.org/2001/XMLSchema#double>
+            String[] valueArr = propertyArr[1].split("(.)(>)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)(.)(\")");//9433.11"^^<http://www.w3.org/2001/XMLSchema#double>
 
-            if(!valueArr[1].contains("#string")){
+            if (!valueArr[1].contains("#string")) {
                 String value = valueArr[1].split("\"")[0];
-              //  System.out.println(machine+"\t"+time+"\t"+timeStamp+"\t"+property+"\t"+value);
+                //  System.out.println(machine+"\t"+time+"\t"+timeStamp+"\t"+property+"\t"+value);
             }
 
             //String output = outtputArr[1].split(">")[0];
         }
     }
 
-    public void sparqljena(String message){
+    public void sparqljena(String message) {
         String queryString = "" +
                 "SELECT ?observation ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
@@ -104,7 +101,7 @@ public class CustomRDFProcessor {
                 Literal value = solution.getLiteral("value");
                 if (!value.toString().contains("#string")) {
 
-                   // System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
+                    // System.out.println(machine.getLocalName()+"\t"+time.getLocalName()+"\t"+timestamp.getValue()+"\t"+property.getLocalName()+"\t"+value.getFloat());
                 }
             }
 

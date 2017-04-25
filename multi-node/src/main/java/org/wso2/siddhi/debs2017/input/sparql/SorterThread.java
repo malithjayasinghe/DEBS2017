@@ -1,7 +1,6 @@
 package org.wso2.siddhi.debs2017.input.sparql;
 
 
-import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
@@ -40,13 +39,14 @@ public class SorterThread extends Thread {
 
     /**
      * The construntor
+     *
      * @param arrayList : list of linked blocking queues
-     * @param host1 : host of siddhi worker 1
-     * @param port1 : port of siddhi worker 1
-     * @param host2 : host of siddhi worker 2
-     * @param port2 : port of siddhi worker 2
-     * @param host3 : host of siddhi worker 3
-     * @param port3 : port of siddhi worker 3
+     * @param host1     : host of siddhi worker 1
+     * @param port1     : port of siddhi worker 1
+     * @param host2     : host of siddhi worker 2
+     * @param port2     : port of siddhi worker 2
+     * @param host3     : host of siddhi worker 3
+     * @param port3     : port of siddhi worker 3
      */
 
     public SorterThread(ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList, String host1, int port1, String host2, int port2, String host3, int port3) {
@@ -55,7 +55,7 @@ public class SorterThread extends Thread {
         this.siddhiClient0.connect(host1, port1);
         this.siddhiClient1.connect(host2, port2);
         this.siddhiClient2.connect(host3, port3);
-        for(int i=0; i<size.get(); i++){
+        for (int i = 0; i < size.get(); i++) {
             this.arr2.add(queNo);
             this.arr.add(new ObservationGroup(Long.MAX_VALUE, null));
         }
@@ -97,10 +97,10 @@ public class SorterThread extends Thread {
         while (true) {
             for (int i = 0; i < size.get(); i++) {
                 try {
-                    if(arr2.get(i)==-1){
-                        ObservationGroup ob =arrayList.get(i).take();
+                    if (arr2.get(i) == -1) {
+                        ObservationGroup ob = arrayList.get(i).take();
 
-                        if(ob.getTimestamp()!=-1l){
+                        if (ob.getTimestamp() != -1l) {
 
                             arr.set(i, ob);
                             arr2.set(i, 0);
@@ -110,7 +110,7 @@ public class SorterThread extends Thread {
 
                             arr.remove(i);
                             arr2.remove(i);
-                            i= i-1;
+                            i = i - 1;
                             size.decrementAndGet();
                         }
 
@@ -118,13 +118,12 @@ public class SorterThread extends Thread {
                     }
 
 
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
             }
-            if(size.get()==0){
+            if (size.get() == 0) {
 
                 //publish to all nodes
 
@@ -133,9 +132,9 @@ public class SorterThread extends Thread {
                 Event e3 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, -1.0, 2, -1.0, 2});
 
                 System.out.println("sorter - Terminated");
-                    siddhiClient0.send("input", new Event[]{e1});
-                    siddhiClient1.send("input", new Event[]{e2});
-                    siddhiClient2.send("input", new Event[]{e3});
+                siddhiClient0.send("input", new Event[]{e1});
+                siddhiClient1.send("input", new Event[]{e2});
+                siddhiClient2.send("input", new Event[]{e3});
                 /*
                 attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
@@ -155,8 +154,10 @@ public class SorterThread extends Thread {
 
         }
     }
+
     /**
      * Takes in the event, substrings the numerical part of the timestamp and returns it as a integer
+     *
      * @param event : event
      * @return : integer output of the numerical value
      */
@@ -167,14 +168,13 @@ public class SorterThread extends Thread {
     }
 
 
-
     /**
      * gets the event with smallest timestamp of the temporary list, which holds the first event of each queue
      */
     private synchronized void sort() {
         if (arr.size() > 0) {
             ObservationGroup currentOb = arr.get(0);
-            queNo =arr2.get(0);
+            queNo = arr2.get(0);
             for (int i = 1; i < arr.size(); i++) {
                 if (currentOb.getTimestamp() > arr.get(i).getTimestamp()) {
                     currentOb = arr.get(i);
@@ -186,7 +186,7 @@ public class SorterThread extends Thread {
             //System.out.println("--"+arr.indexOf(currentOb)+"\t"+currentOb.getTimestamp());
 
 
-            for (int i =0; i<currentOb.getDataArr().size(); i++){
+            for (int i = 0; i < currentOb.getDataArr().size(); i++) {
                 Event e = currentOb.getDataArr().get(i);
                 System.out.println(e);
                 long machineNo = Long.parseLong(e.getData()[0].toString().split("_")[1]);
@@ -204,8 +204,6 @@ public class SorterThread extends Thread {
 
 
             }
-
-
 
 
             arr2.set(queNo, -1);

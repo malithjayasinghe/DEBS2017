@@ -7,14 +7,16 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import org.hobbit.core.data.RabbitQueue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.sparql.CentralDispatcher;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
+import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -31,7 +33,12 @@ import java.util.HashMap;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * Alert Generator
+ */
 public class AlertGenerator {
+
     private static int anomalyCount = 0;
     private Double probThresh;
     private String timestamp;
@@ -47,56 +54,33 @@ public class AlertGenerator {
     private RabbitQueue rabbitMQPublisher;
     private StringWriter out;
     private long dispatchedTime;
-    private static double sum = 0;
-    public static ArrayList<Anomaly> arr;
-    private String currentTime = "Timestamp_0";
-    private String preTime = "Timestamp_-1";
-    private boolean sort = false;
+    private double sum = 0;
+
+    private static final Logger logger = LoggerFactory.getLogger(AlertGenerator.class);
+
+
 
     /**
      * initialize the parameters from the sidhhi event, to generate the alert
      *
      * @param rabbitMQPublisher publish to rabbitmq
      */
-    public AlertGenerator(RabbitQueue rabbitMQPublisher, boolean sort) {
+    public AlertGenerator(RabbitQueue rabbitMQPublisher) {
         this.rabbitMQPublisher = rabbitMQPublisher;
-        this.sort = sort;
-        arr = new ArrayList<>();
+
     }
 
     /**
      * generate the rdf model and publish to rabbitmq
      */
     public void generateAlert(Event event) {
-//    if(!sort){
-        //System.out.println(event);
-            publishEvent(event);
-           // return;
-//        }
-//        this.currentTime = (String) event.getData()[1];
-//        Anomaly anomaly = new Anomaly(Integer.parseInt(event.getData()[2].toString().split("_")[2]),
-//                Integer.parseInt(event.getData()[0].toString().split("_")[1]), event);
-//        if (this.currentTime.equals(this.preTime)) {
-//            arr.add(anomaly);
-//        } else {
-//            publish(arr);
-//            this.preTime = this.currentTime;
-//            arr.add(anomaly);
-//        }
+
+        publishEvent(event);
     }
 
-    private void publish(ArrayList<Anomaly> arrayList) {
-        Collections.sort(arrayList);
-        for (int i = 0; i < arrayList.size(); i++) {
-            Event event = arrayList.get(i).getEvent();
-            publishEvent(event);
-        }
-        arr = new ArrayList<>();
-    }
 
     public void publishEvent(Event event) {
         this.probThresh = Double.parseDouble(event.getData()[3].toString());
-        //this.timestamp = transformTimestamp((String) event.getData()[1]);
         this.timestamp = (String) event.getData()[1];
         this.dimension = (String) event.getData()[2];
         this.machineNumber = (String) event.getData()[0];
@@ -126,32 +110,31 @@ public class AlertGenerator {
         model.write(out, str);
         Channel channel = rabbitMQPublisher.getChannel();
         try {
-            channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
+            channel.basicPublish("", rabbitMQPublisher.getName(),
+                    MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
         }
         System.out.println(out.toString());
         sum += System.nanoTime() - dispatchedTime;
-        //System.out.println("Latency for event" + "\t" + event + ":" + "\t" + (System.currentTimeMillis() - dispatchedTime));
 
     }
 
     public void terminate() {
-//        if(sort) {
-//            publish(arr);
-//        }
+
         long endTime = System.currentTimeMillis();
         double runTime = (endTime - SingleNodeServer.startime) / 1000.0;
-        System.out.println("Running time in sec\t:" + runTime);
-        System.out.println("Average throghput(msg)\t:" + CentralDispatcher.count / runTime);
-        System.out.println("Average throghput(bytes)\t:" + CentralDispatcher.bytesRec / runTime);
-        System.out.println("Average Latency : " + ((sum /1000000)/ anomalyCount));
+        logger.info("Running time in sec\t:" + runTime);
+        logger.info("Average throghput(msg)\t:" + CentralDispatcher.count / runTime);
+        logger.info("Average throghput(bytes)\t:" + CentralDispatcher.bytesRec / runTime);
+        logger.info("Average Latency : " + ((sum / 1000000) / anomalyCount));
         Channel channel = rabbitMQPublisher.getChannel();
-        String TERMINATION_MESSAGE = "~~Termination Message~~";
+        String terminationMessage = "~~Termination Message~~";
         try {
-            channel.basicPublish("", rabbitMQPublisher.getName(), MessageProperties.PERSISTENT_BASIC, TERMINATION_MESSAGE.toString().getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
+            channel.basicPublish("", rabbitMQPublisher.getName(),
+                    MessageProperties.PERSISTENT_BASIC, terminationMessage.getBytes());
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
         }
     }
 }

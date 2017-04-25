@@ -29,6 +29,7 @@ public class MetaDataItem {
         return clusterCenters;
 
     }
+
     public synchronized double getProbabilityThreshold() {
         return probabilityThreshold;
     }

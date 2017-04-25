@@ -23,7 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class RegexProcessor  implements Runnable{
+public class RegexProcessor implements Runnable {
     private String data;
     private LinkedBlockingQueue<ObservationGroup> queue;
     private long applicationTime;
@@ -37,35 +37,35 @@ public class RegexProcessor  implements Runnable{
 
         long timeS = 0l;
 
-        String [] observationGroupArr = data.split("(>)(.)(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)(.)(<http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup>)");
+        String[] observationGroupArr = data.split("(>)(.)(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)(.)(<http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup>)");
         String observationGroup = observationGroupArr[0].split("#")[1];
 
-        String [] timeArr = observationGroupArr[1].split("(<http://project-hobbit.eu/resources/debs2017#"+observationGroup+">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>)" +
+        String[] timeArr = observationGroupArr[1].split("(<http://project-hobbit.eu/resources/debs2017#" + observationGroup + ">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>)" +
                 "(.)(<http://project-hobbit.eu/resources/debs2017#)");
         String time = timeArr[1].split(">")[0];
 
-        String [] machineArr = timeArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+observationGroup+">)(.)(<http://www.agtinternational.com/ontologies/I4.0#machine>)" +
+        String[] machineArr = timeArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + observationGroup + ">)(.)(<http://www.agtinternational.com/ontologies/I4.0#machine>)" +
                 "(.)(<http://www.agtinternational.com/ontologies/WeidmullerMetadata#)");
         String machine = machineArr[1].split(">")[0];
 
-        String [] timeStampArr = machineArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+time+">)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)" +
+        String[] timeStampArr = machineArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + time + ">)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)" +
                 "(.)(\")");
         String timeStamp = timeStampArr[1].split("\"")[0];
 
-        String [] observationArr = timeStampArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+observationGroup+">)(.)(<http://www.agtinternational.com/ontologies/I4.0#contains>)" +
+        String[] observationArr = timeStampArr[1].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + observationGroup + ">)(.)(<http://www.agtinternational.com/ontologies/I4.0#contains>)" +
                 "(.)(<http://project-hobbit.eu/resources/debs2017#)");
         timeS = UnixConverter.getUnixTime(timeStamp);
-        for(int i=1; i<observationArr.length; i++){
+        for (int i = 1; i < observationArr.length; i++) {
             String observation = observationArr[i].split(">")[0];
 
-            String [] propertyArr = observationArr[i].split("(.)(<http://project-hobbit.eu/resources/debs2017#"+observation+">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observedProperty>)" +
+            String[] propertyArr = observationArr[i].split("(.)(<http://project-hobbit.eu/resources/debs2017#" + observation + ">)(.)(<http://purl.oclc.org/NET/ssnx/ssn#observedProperty>)" +
                     "(.)(<http://www.agtinternational.com/ontologies/WeidmullerMetadata#)");
 
             String property = propertyArr[1].split(">")[0];
 
-            String [] valueArr = propertyArr[1].split("(.)(>)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)(.)(\")");//9433.11"^^<http://www.w3.org/2001/XMLSchema#double>
+            String[] valueArr = propertyArr[1].split("(.)(>)(.)(<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>)(.)(\")");//9433.11"^^<http://www.w3.org/2001/XMLSchema#double>
 
-            if(!valueArr[1].contains("#string")){
+            if (!valueArr[1].contains("#string")) {
                 String value = valueArr[1].split("\"")[0];
                 //  System.out.println(machine+"\t"+time+"\t"+timeStamp+"\t"+property+"\t"+value);
 
@@ -97,7 +97,6 @@ public class RegexProcessor  implements Runnable{
         }
 
 
-
         ob = new ObservationGroup(applicationTime, arr);
         try {
             this.queue.put(ob);
@@ -114,9 +113,9 @@ public class RegexProcessor  implements Runnable{
 
 
     }
+
     public RegexProcessor(String data) {
         this.data = data;
-
 
 
     }

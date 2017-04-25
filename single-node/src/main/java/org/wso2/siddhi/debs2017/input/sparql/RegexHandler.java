@@ -15,48 +15,48 @@ import java.util.regex.Pattern;
  * Created by sachini on 4/20/17.
  */
 public class RegexHandler implements EventHandler<RabbitMessage> {
-    private final int ID;
-    private final int NUM;
+    private final int id;
+    private final int num;
     private final RingBuffer<RabbitMessage> ringBuffer;
     static Pattern patternProperty = Pattern.compile("WeidmullerMetadata#(\\w*)>");
-    static Pattern patternValue = Pattern.compile("debs2017#Value_.*>.<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#");
+    static Pattern patternValue = Pattern.compile("debs2017#Value_.*>.<http://www.agtinternational" +
+            ".com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.or" +
+            "g/2001/XMLSchema#");
     String property = "";
-    String value =  "";
+    String value = "";
 
-    public RegexHandler(int ID, int handlers, RingBuffer ringBuffer){
-      this.ID = ID;
-      NUM = handlers;
-      this.ringBuffer = ringBuffer;
+    public RegexHandler(int id, int handlers, RingBuffer ringBuffer) {
+        this.id = id;
+        num = handlers;
+        this.ringBuffer = ringBuffer;
     }
 
 
     @Override
-    public void onEvent (RabbitMessage message , long sequence, boolean b) throws Exception {
-        //System.out.println("On event regexhandler");
+    public void onEvent(RabbitMessage message, long sequence, boolean b) throws Exception {
+
         if (!message.isTerminated()) {
 
-            if (message.getApplicationTime() % NUM == ID) {
+            if (message.getApplicationTime() % num == id) {
                 Matcher matcherProp = patternProperty.matcher(message.getProperty());
                 if (matcherProp.find()) {
                     property = matcherProp.group(1);
-                    // System.out.println(property + "Property");
+
                 }
 
                 MetaDataItem metaDataItem = null;
-                if(SingleNodeServer.isRegex){
+                if (SingleNodeServer.isRegex) {
                     metaDataItem = RegexMetaData.getMetaData().get(property);
                 } else {
                     metaDataItem = DebsMetaData.getMetaData().get(property);
                 }
 
 
-
-
-                if (metaDataItem !=null) {
+                if (metaDataItem != null) {
                     Matcher matchValue = patternValue.matcher(message.getValue());
                     if (matchValue.find()) {
                         value = matchValue.group(1);
-                        //System.out.println(value + "Value");
+
                     }
                     int centers = metaDataItem.getClusterCenters();
                     double probability = metaDataItem.getProbabilityThreshold();
@@ -70,8 +70,7 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
                             //Math.round(Double.parseDouble(value) * 10000.0) / 10000.0, //
                             centers,
                             probability});
-                    //System.out.println(message.getMachine() + "\tt" + message.getTimestamp() + "\t"+ message.getTime() +"\t"
-                    //  + property+"\t"+value);
+
                     try {
                         message = ringBuffer.get(sequence);
 
@@ -80,7 +79,6 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
 
                     } finally {
                         ringBuffer.publish(sequence);
-                        // System.out.println(message.getEvent()+ "Regex handler");
 
                     }
                 } else {
@@ -89,7 +87,6 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
                         message.setStateful(false);
                     } finally {
                         ringBuffer.publish(sequence);
-                        // System.out.println(message.isStateful()+ "Not stateful published");
 
                     }
 
@@ -98,6 +95,6 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
         }
 
     }
-    }
+}
 
 

@@ -1,6 +1,11 @@
 package org.wso2.siddhi.debs2017;
 
-import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -34,6 +39,7 @@ import java.util.ArrayList;
 public class CorrectnessTestCase {
 
     ArrayList<Object[]> arr = new ArrayList<>();
+
     @org.junit.Test
     public void Test1() {
 
@@ -65,33 +71,33 @@ public class CorrectnessTestCase {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
 
-                for(Event ev : events){
+                for (Event ev : events) {
 
-                        double val = (double)ev.getData()[3];
-                       if(val<0.005) {
-                            System.out.println(ev.getData()[0] + "\t" + ev.getData()[1] + "\t" + ev.getData()[2] + "\t" + ev.getData()[3] + "\n");
-                           String [] str = ev.getData()[1].toString().split("_");
+                    double val = (double) ev.getData()[3];
+                    if (val < 0.005) {
+                        System.out.println(ev.getData()[0] + "\t" + ev.getData()[1] + "\t" + ev.getData()[2] + "\t" + ev.getData()[3] + "\n");
+                        String[] str = ev.getData()[1].toString().split("_");
 
-                           String property = ev.getData()[2].toString();
-                           String timestamp = str[0].concat("_"+(Integer.parseInt(str[1])-5));
-                           double probability = Double.parseDouble(ev.getData()[3].toString());
-                           switch (property+timestamp) {
-                               case "_59_31Timestamp_24":
-                                    Assert.assertEquals(probability, 0.004115226337448559, 0.000001);
-                                   break;
-                               case "_59_31Timestamp_35":
-                                   Assert.assertEquals(probability, 0.0035555555555555557, 0.000001);
-                                   break;
-                               case "_59_106Timestamp_57":
-                                   Assert.assertEquals(probability, 0.003200000000000001, 0.000001);
-                                   break;
-                               case "_59_5Timestamp_57":
-                                   Assert.assertEquals(probability, 0.004115226337448559, 0.000001);
-                                   break;
-                               default:
-                                   break;
-                           }
+                        String property = ev.getData()[2].toString();
+                        String timestamp = str[0].concat("_" + (Integer.parseInt(str[1]) - 5));
+                        double probability = Double.parseDouble(ev.getData()[3].toString());
+                        switch (property + timestamp) {
+                            case "_59_31Timestamp_24":
+                                Assert.assertEquals(probability, 0.004115226337448559, 0.000001);
+                                break;
+                            case "_59_31Timestamp_35":
+                                Assert.assertEquals(probability, 0.0035555555555555557, 0.000001);
+                                break;
+                            case "_59_106Timestamp_57":
+                                Assert.assertEquals(probability, 0.003200000000000001, 0.000001);
+                                break;
+                            case "_59_5Timestamp_57":
+                                Assert.assertEquals(probability, 0.004115226337448559, 0.000001);
+                                break;
+                            default:
+                                break;
                         }
+                    }
 
 
                 }
@@ -108,7 +114,7 @@ public class CorrectnessTestCase {
         sparql();
         try {
 
-            for(int i =0; i<arr.size(); i++){
+            for (int i = 0; i < arr.size(); i++) {
                 inputHandler.send(arr.get(i));
 
             }
@@ -119,11 +125,10 @@ public class CorrectnessTestCase {
         executionPlanRuntime.start();
 
 
-
     }
 
     private void sparql() {
-            String queryString = "" +
+        String queryString = "" +
                 "SELECT ?machine ?time ?timestamp ?dimension ?value" +
                 " WHERE {" +
                 "?observation <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.agtinternational.com/ontologies/I4.0#MoldingMachineObservationGroup> ." +
@@ -136,7 +141,7 @@ public class CorrectnessTestCase {
                 "?output <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?valID ." +
                 "?valID <http://www.agtinternational.com/ontologies/IoTCore#valueLiteral> ?value . " +
                 "}" +
-               "ORDER BY (?timestamp ?dimension)"+
+                "ORDER BY (?timestamp ?dimension)" +
                 "";
 
         try {
@@ -149,7 +154,7 @@ public class CorrectnessTestCase {
 
             for (; results.hasNext(); ) {
                 QuerySolution solution = results.nextSolution();
-               // Resource ob = solution.getResource("observation");
+                // Resource ob = solution.getResource("observation");
 
                 Resource time = solution.getResource("time"); // Get a result variable - must be a resource
                 Resource property = solution.getResource("dimension");
@@ -159,10 +164,10 @@ public class CorrectnessTestCase {
 
                 String machineName = machine.getLocalName();
                 String dimension = property.getLocalName();
-               // System.out.println(DebsMetaData.getMetaData().keySet());
-                if (DebsMetaData.getMetaData().keySet().contains(dimension) &&  !value.toString().contains("#string")) {
-                            arr.add(new Object[]{machineName, time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), dimension, value.getDouble(),
-                                    DebsMetaData.getMetaData().get(dimension).getClusterCenters()});
+                // System.out.println(DebsMetaData.getMetaData().keySet());
+                if (DebsMetaData.getMetaData().keySet().contains(dimension) && !value.toString().contains("#string")) {
+                    arr.add(new Object[]{machineName, time.getLocalName(), UnixConverter.getUnixTime(timestamp.getString()), dimension, value.getDouble(),
+                            DebsMetaData.getMetaData().get(dimension).getClusterCenters()});
 
 
                 }
@@ -177,7 +182,7 @@ public class CorrectnessTestCase {
     }
 
     @org.junit.Test
-    public void Test2(){
+    public void Test2() {
 
     }
 

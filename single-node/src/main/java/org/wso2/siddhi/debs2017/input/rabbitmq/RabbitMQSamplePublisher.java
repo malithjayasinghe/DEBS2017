@@ -6,9 +6,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
@@ -27,21 +25,24 @@ import java.util.concurrent.TimeoutException;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * RabbitMQSamplePublisher
+ */
 public class RabbitMQSamplePublisher {
-    private static String TASK_QUEUE_NAME = "test123";
+    private static String taskQueueName = "test123";
 
 
     /**
      * input queue name
      * no. of machines
      * isTest -  true/false
-     *
      */
     public static void main(String[] argv)
             throws java.io.IOException, TimeoutException {
 
         if (argv.length > 0) {
-            TASK_QUEUE_NAME = argv[0];
+            taskQueueName = argv[0];
         }
         int machines = Integer.parseInt(argv[1]);
 
@@ -51,24 +52,28 @@ public class RabbitMQSamplePublisher {
         factory.setHost("localhost");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+        channel.queueDeclare(taskQueueName, true, false, false, null);
         BufferedReader reader = null;
         String data = "";
         String delimeter = "----";
         try {
 
-            if(isTest) {
-                switch (machines){
-                    case 1 : reader = new BufferedReader(new FileReader("frmattedData_63.nt"));
+            if (isTest) {
+                switch (machines) {
+                    case 1:
+                        reader = new BufferedReader(new FileReader("frmattedData_63.nt"));
                         break;
-                    case 2 : reader = new BufferedReader(new FileReader("formatted5000_1machine.txt"));
+                    case 2:
+                        reader = new BufferedReader(new FileReader("formatted5000_1machine.txt"));
                         break;
-                    case 3 : reader = new BufferedReader(new FileReader("formatted5000_10machines.txt"));
+                    case 3:
+                        reader = new BufferedReader(new FileReader("formatted5000_10machines.txt"));
+                        break;
+                    default:
                         break;
                 }
 
-            }
-            else {
+            } else {
                 reader = new BufferedReader(new FileReader("frmattedData_63.nt"));
 
             }
@@ -84,19 +89,19 @@ public class RabbitMQSamplePublisher {
                     String dataInLine = scanner.next();
                     if (dataInLine.contains(delimeter)) {
 
-                        if(isTest) {
-                            channel.basicPublish("", TASK_QUEUE_NAME,
+                        if (isTest) {
+                            channel.basicPublish("", taskQueueName,
                                     MessageProperties.PERSISTENT_TEXT_PLAIN,
                                     data.getBytes());
-                            count++;System.out.println(count);
+                            count++;
+
                         } else {
                             for (int i = 0; i < machines; i++) {
-                                count++;System.out.println(count);
+                                count++;
+                                String data1 = data.replace("Machine_59", "Machine_" + i).
+                                        replace("_59_", "_" + i + "_");
 
-
-                                String data1 = data.replace("Machine_59", "Machine_" + i).replace("_59_", "_" + i + "_");
-
-                                channel.basicPublish("", TASK_QUEUE_NAME,
+                                channel.basicPublish("", taskQueueName,
                                         MessageProperties.PERSISTENT_TEXT_PLAIN,
                                         data1.getBytes());
 
@@ -114,13 +119,14 @@ public class RabbitMQSamplePublisher {
                 }
             }
 
-            String TERMINATION_MESSAGE = "~~Termination Message~~";
-            channel.basicPublish("", TASK_QUEUE_NAME,
+            String terminationMessage = "~~Termination Message~~";
+            channel.basicPublish("", taskQueueName,
                     MessageProperties.PERSISTENT_TEXT_PLAIN,
-                    TERMINATION_MESSAGE.getBytes());
+                    terminationMessage.getBytes());
+
 
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         channel.close();

@@ -4,8 +4,6 @@ import com.lmax.disruptor.EventHandler;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
-import java.util.ArrayList;
-
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
@@ -34,7 +32,7 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
         Object[] o = wrapper.getEvent().getData();
         probability = Double.parseDouble(o[3].toString());
         threshold = Double.parseDouble(o[4].toString());
-        if(wrapper.getEvent().getTimestamp() == -1l){
+        if (wrapper.getEvent().getTimestamp() == -1l) {
             System.out.println("debs : terminated");
             Event[] events = {wrapper.getEvent()};
             siddhiClient.send("output", events);

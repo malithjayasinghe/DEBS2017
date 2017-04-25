@@ -4,10 +4,15 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.sparql.CentralDispatcher;
 
+
 import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -24,17 +29,19 @@ import java.util.concurrent.*;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+/**
+ * RabbitMQConsumer
+ */
 public class RabbitMQConsumer {
 
-    private static String TASK_QUEUE_NAME = "";
-
+    private static final Logger logger = LoggerFactory.getLogger(RabbitMQConsumer.class);
 
 
     /**
      * Consumes the sample data
      */
     public void consume(String inputQueue, int rabbitMQExecutor) {
-        TASK_QUEUE_NAME = inputQueue;
         Connection connection;
         Channel channel;
         Consumer consumer;
@@ -47,11 +54,12 @@ public class RabbitMQConsumer {
             channel = connection.createChannel();
             consumer = new CentralDispatcher(channel);
             boolean autoAck = true; // acknowledgment is covered below
-            channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);
-        } catch (IOException e) {
-            e.printStackTrace();
+            channel.basicConsume(inputQueue, autoAck, consumer);
+
         } catch (TimeoutException e) {
-            e.printStackTrace();
+            logger.debug(e.getMessage());
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
         }
 
 

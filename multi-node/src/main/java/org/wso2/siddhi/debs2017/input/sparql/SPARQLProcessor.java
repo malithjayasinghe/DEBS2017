@@ -6,7 +6,6 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -89,7 +88,7 @@ public class SPARQLProcessor implements Runnable {
                 Literal timestamp = solution.getLiteral("timestamp");
                 Literal value = solution.getLiteral("value");
                 String stateful = property.getLocalName();
-                if (DebsMetaData.getMetaData().containsKey(stateful) ) {
+                if (DebsMetaData.getMetaData().containsKey(stateful)) {
 
                     int centers = DebsMetaData.getMetaData().get(stateful).getClusterCenters();
                     double probability = DebsMetaData.getMetaData().get(stateful).getProbabilityThreshold();
@@ -103,7 +102,6 @@ public class SPARQLProcessor implements Runnable {
                             centers,
                             probability,
                             0});
-
 
 
                     arr.add(event);

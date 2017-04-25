@@ -27,6 +27,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import org.hobbit.core.data.RabbitQueue;
 import org.wso2.siddhi.core.event.Event;
+
 import java.io.StringWriter;
 
 
@@ -54,8 +55,7 @@ public class MultiNodeAlertGenerator {
     /**
      * initialize the parameters from the sidhhi event, to generate the alert
      *
-     *
-     * @param rabbitQueue  publish to rabbitmq
+     * @param rabbitQueue publish to rabbitmq
      */
     public MultiNodeAlertGenerator(RabbitQueue rabbitQueue) {
 
@@ -65,13 +65,12 @@ public class MultiNodeAlertGenerator {
     /**
      * generate the rdf model and publish to rabbitmq
      */
-    public  void generateAlert(Event event) {
+    public void generateAlert(Event event) {
         this.probThresh = Double.toString((Double) event.getData()[3]);
         this.timestamp = transformTimestamp((String) event.getData()[1]);
         this.dimension = (String) event.getData()[2];
         this.machineNumber = (String) event.getData()[0];
         this.dispatchedTime = event.getTimestamp();
-
 
 
         Model model = ModelFactory.createDefaultModel();
