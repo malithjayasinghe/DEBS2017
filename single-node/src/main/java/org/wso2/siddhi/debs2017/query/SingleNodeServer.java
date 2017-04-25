@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkSystem;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 import org.wso2.siddhi.debs2017.input.sparql.*;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
@@ -39,7 +40,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 * limitations under the License.
 */
 
-//org.wso2.siddhi.debs2017.query.SingleNodeServer
 public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
@@ -251,11 +251,14 @@ public class SingleNodeServer {
                     e.printStackTrace();
                 }
 
-                if(isTestcase)
+                if(isTestcase) {
                     DebsMetaData.load("molding_machine_10M.metadata.nt");
-                else
-                    DebsMetaData.generate("molding_machine_10M.metadata.nt",machines);
+                    //RegexMetaData.load("molding_machine_10M.metadata.nt");
 
+                }else {
+                    DebsMetaData.load("10molding_machine_5000dp.metadata.nt");
+                    //RegexMetaData.load("10molding_machine_5000dp.metadata.nt");
+                }
 
 
                 Executor executor = Executors.newCachedThreadPool();

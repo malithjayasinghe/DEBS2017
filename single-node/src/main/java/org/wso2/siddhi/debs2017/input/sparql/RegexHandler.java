@@ -5,6 +5,7 @@ import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MetaDataItem;
+import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
 
 import java.util.regex.Matcher;
@@ -40,8 +41,11 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
                     property = matcherProp.group(1);
                     // System.out.println(property + "Property");
                 }
-                String stateful = property;
-                MetaDataItem metaDataItem = DebsMetaData.getMetaData().get(stateful);
+
+                //MetaDataItem metaDataItem = RegexMetaData.getMetaData().get(property);
+                MetaDataItem metaDataItem = DebsMetaData.getMetaData().get(property);
+
+
                 if (metaDataItem !=null) {
                     Matcher matchValue = patternValue.matcher(message.getValue());
                     if (matchValue.find()) {

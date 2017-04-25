@@ -40,14 +40,14 @@ public class DebsMetaData {
     /**
      * Adds a value to meta data container
      *
-     * @param machineNumber        machine number
+     *
      * @param dimension            dimension
      * @param clusterCenters       cluster center
      * @param probabilityThreshold probability threshold
      */
-    private static void addValue(String machineNumber, String dimension, int clusterCenters,
+    private static void addValue( String dimension, int clusterCenters,
                                  double probabilityThreshold) {
-        MetaDataItem dm = new MetaDataItem(machineNumber, dimension, clusterCenters, probabilityThreshold);
+        MetaDataItem dm = new MetaDataItem(dimension, clusterCenters, probabilityThreshold);
         String mapKey = dm.getDimension();
         meta.put(mapKey, dm);
     }
@@ -78,8 +78,8 @@ public class DebsMetaData {
                     Resource property = solution.getResource("dimension");
                     Literal cluster = solution.getLiteral("clusters");
                     Literal thresh = solution.getLiteral("threshold");
-                    String dimension = property.getLocalName().replace("_59", "_" + i);
-                    DebsMetaData.addValue("Machine_" + i, dimension
+                    String dimension = property.getLocalName().replace("_59_", "_"+ i+"_");
+                    DebsMetaData.addValue(dimension
                             , cluster.getInt(), thresh.getDouble());
                 }
             }
@@ -104,11 +104,11 @@ public class DebsMetaData {
             for (; results.hasNext(); ) {
                 QuerySolution solution = results.nextSolution();
                 Resource property = solution.getResource("dimension");
-                Resource machine = solution.getResource("machine");
+               // Resource machine = solution.getResource("machine");
                 Literal cluster = solution.getLiteral("clusters");
                 Literal thresh = solution.getLiteral("threshold");
                 // DebsMetaData db = new DebsMetaData();
-                DebsMetaData.addValue(machine.getLocalName(), property.getLocalName()
+                DebsMetaData.addValue( property.getLocalName()
                         , cluster.getInt(), thresh.getDouble());
             }
         } catch (Exception e) {

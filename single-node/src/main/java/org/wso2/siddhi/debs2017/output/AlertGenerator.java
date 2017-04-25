@@ -68,21 +68,21 @@ public class AlertGenerator {
      * generate the rdf model and publish to rabbitmq
      */
     public void generateAlert(Event event) {
-    if(!sort){
+//    if(!sort){
         //System.out.println(event);
             publishEvent(event);
-            return;
-        }
-        this.currentTime = (String) event.getData()[1];
-        Anomaly anomaly = new Anomaly(Integer.parseInt(event.getData()[2].toString().split("_")[2]),
-                Integer.parseInt(event.getData()[0].toString().split("_")[1]), event);
-        if (this.currentTime.equals(this.preTime)) {
-            arr.add(anomaly);
-        } else {
-            publish(arr);
-            this.preTime = this.currentTime;
-            arr.add(anomaly);
-        }
+           // return;
+//        }
+//        this.currentTime = (String) event.getData()[1];
+//        Anomaly anomaly = new Anomaly(Integer.parseInt(event.getData()[2].toString().split("_")[2]),
+//                Integer.parseInt(event.getData()[0].toString().split("_")[1]), event);
+//        if (this.currentTime.equals(this.preTime)) {
+//            arr.add(anomaly);
+//        } else {
+//            publish(arr);
+//            this.preTime = this.currentTime;
+//            arr.add(anomaly);
+//        }
     }
 
     private void publish(ArrayList<Anomaly> arrayList) {
@@ -130,16 +130,16 @@ public class AlertGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(out.toString());
+        //System.out.println(out.toString());
         sum += System.nanoTime() - dispatchedTime;
         //System.out.println("Latency for event" + "\t" + event + ":" + "\t" + (System.currentTimeMillis() - dispatchedTime));
 
     }
 
     public void terminate() {
-        if(sort) {
-            publish(arr);
-        }
+//        if(sort) {
+//            publish(arr);
+//        }
         long endTime = System.currentTimeMillis();
         double runTime = (endTime - SingleNodeServer.startime) / 1000.0;
         System.out.println("Running time in sec\t:" + runTime);
