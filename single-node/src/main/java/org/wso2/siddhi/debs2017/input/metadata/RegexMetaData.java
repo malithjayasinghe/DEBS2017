@@ -87,7 +87,7 @@ public class RegexMetaData {
                     if (matcher.find()){
                         probabilty = Double.parseDouble(matcher.group(1));
                         addValue(property, clusters, probabilty);
-                        System.out.println(property+","+clusters+","+probabilty);
+                      //  System.out.println(property+","+clusters+","+probabilty);
                     }
 
                 }
@@ -121,9 +121,80 @@ public class RegexMetaData {
         String mapKey = dm.getDimension();
         meta.put(mapKey, dm);
     }
+
     public static HashMap<String, MetaDataItem> getMetaData() {
         return meta;
     }
 
 
+    public static void generate(String filePath, int machines) {
+        //long start = System.currentTimeMillis();
+        Path path = Paths.get(filePath);
+        //Path path = Paths.get("molding_machine_10M.metadata.nt");
+        int count= 0;
+        int nextOccurence = 6;
+
+
+        int propCount = 5;
+        int clusterCount = 7;
+        int probCount = 9;
+
+        String property = "";
+        int clusters  = 0;
+        double probabilty = 0.0;
+
+        try {
+            byte[] data = Files.readAllBytes(path);
+
+            is = new ByteArrayInputStream(data);
+            bfReader = new BufferedReader(new InputStreamReader(is));
+            String temp = null;
+            while ((temp = bfReader.readLine()) != null) {
+                count++;
+
+                // System.out.println(count+"\t"+temp);
+                if(count==propCount){
+                    propCount +=nextOccurence;
+
+                    Matcher matcheProp = patternPropety.matcher(temp);
+                    if (matcheProp.find()){
+                        property = matcheProp.group(1);
+                    }
+
+                } else if(count==clusterCount){
+                    clusterCount +=nextOccurence;
+
+                    Matcher matcher = patternClusters.matcher(temp);
+                    if (matcher.find()){
+                        clusters= Integer.parseInt(matcher.group(1));
+                    }
+
+                } if(count==probCount){
+                    probCount +=nextOccurence;
+
+                    Matcher matcher = patternProbability.matcher(temp);
+                    if (matcher.find()){
+                        probabilty = Double.parseDouble(matcher.group(1));
+                        for (int i =0; i<machines; i++) {
+                            property = property.replace("_59_", "_"+i+"_");
+                            addValue(property, clusters, probabilty);
+                        }
+
+                     //   System.out.println(property+","+clusters+","+probabilty);
+                    }
+
+                }
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (Exception ex) {
+
+            }
+        }
+    }
 }

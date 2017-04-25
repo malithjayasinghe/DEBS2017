@@ -22,8 +22,8 @@ import org.wso2.siddhi.debs2017.output.AlertGenerator;
 */
 public class SiddhiEventHandler implements EventHandler<RabbitMessage> {
 
-    private final long ID;
-    private final long NUM;
+    private final int ID;
+    private final int NUM;
     private final SiddhiQuery sq;
     private RingBuffer<RabbitMessage> ringBuffer;
     private static AlertGenerator alertGenerator;
@@ -39,10 +39,10 @@ public class SiddhiEventHandler implements EventHandler<RabbitMessage> {
                 //System.out.println(("Termination received by sidhhi handler"));
                // alertGenerator.terminate();
             } else {
-                //System.out.println(message.getEvent());
+
                 String[] splitter = o[2].toString().split("_");
                 long partition = Long.parseLong(splitter[2]);
-                //long partition = Long.parseLong(o[2].toString().substring(1));
+
                if (partition % NUM == ID) {
 
                     //setting the buffer sequence
@@ -55,12 +55,12 @@ public class SiddhiEventHandler implements EventHandler<RabbitMessage> {
         }
     }
 
-    public SiddhiEventHandler(long id, long num, RingBuffer<RabbitMessage> ringBuffer,AlertGenerator alertGenerator){
+    public SiddhiEventHandler(int id, int num, RingBuffer<RabbitMessage> ringBuffer){
         this.ID = id;
         this.NUM = num;
         this.sq = new SiddhiQuery(ringBuffer,alertGenerator);
         this.ringBuffer = ringBuffer;
-        this.alertGenerator = alertGenerator;
+        //this.alertGenerator = alertGenerator;
 
     }
 

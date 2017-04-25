@@ -52,17 +52,25 @@ public class RabbitMQSamplePublisher {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
         channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
-        BufferedReader reader;
+        BufferedReader reader = null;
         String data = "";
-        String delimeter;
+        String delimeter = "----";
         try {
+
             if(isTest) {
-                reader = new BufferedReader(new FileReader("frmattedData_63.nt"));  //frmattedData_63.nt  formatted5000_1machine.txt
-                delimeter = "----";
+                switch (machines){
+                    case 1 : reader = new BufferedReader(new FileReader("frmattedData_63.nt"));
+                        break;
+                    case 2 : reader = new BufferedReader(new FileReader("formatted5000_1machine.txt"));
+                        break;
+                    case 3 : reader = new BufferedReader(new FileReader("formatted5000_10machines.txt"));
+                        break;
+                }
+
             }
             else {
                 reader = new BufferedReader(new FileReader("frmattedData_63.nt"));
-                delimeter = "----";
+
             }
 
             //molding_machine_100M.nt rdfSample.txt //Machine_59 //frmattedData.txt//frmattedData_63.nt
@@ -75,26 +83,27 @@ public class RabbitMQSamplePublisher {
                 while (scanner.hasNext()) {
                     String dataInLine = scanner.next();
                     if (dataInLine.contains(delimeter)) {
-                        if (data.length() > 100) {
+
+                        if(isTest) {
+                            channel.basicPublish("", TASK_QUEUE_NAME,
+                                    MessageProperties.PERSISTENT_TEXT_PLAIN,
+                                    data.getBytes());
+                            count++;System.out.println(count);
+                        } else {
                             for (int i = 0; i < machines; i++) {
-                                count++;
-                                System.out.println(count);
-                                // System.out.println(data);
-                                //Thread.sleep(5000);
+                                count++;System.out.println(count);
+
+
                                 String data1 = data.replace("Machine_59", "Machine_" + i).replace("_59_", "_" + i + "_");
-                                if(isTest)
+
                                 channel.basicPublish("", TASK_QUEUE_NAME,
                                         MessageProperties.PERSISTENT_TEXT_PLAIN,
-                                        data.getBytes());
-                                else
-                                    channel.basicPublish("", TASK_QUEUE_NAME,
-                                            MessageProperties.PERSISTENT_TEXT_PLAIN,
-                                            data1.getBytes());
-
+                                        data1.getBytes());
 
 
                             }
                         }
+
                         data = "";
                     } else {
                         data += " " + dataInLine;

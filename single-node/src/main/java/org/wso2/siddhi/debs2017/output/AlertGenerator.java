@@ -130,7 +130,7 @@ public class AlertGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //System.out.println(out.toString());
+        System.out.println(out.toString());
         sum += System.nanoTime() - dispatchedTime;
         //System.out.println("Latency for event" + "\t" + event + ":" + "\t" + (System.currentTimeMillis() - dispatchedTime));
 

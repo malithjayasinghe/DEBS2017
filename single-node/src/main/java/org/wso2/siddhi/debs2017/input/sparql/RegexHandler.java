@@ -7,6 +7,7 @@ import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MetaDataItem;
 import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.processor.EventWrapper;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,8 +43,14 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
                     // System.out.println(property + "Property");
                 }
 
-                //MetaDataItem metaDataItem = RegexMetaData.getMetaData().get(property);
-                MetaDataItem metaDataItem = DebsMetaData.getMetaData().get(property);
+                MetaDataItem metaDataItem = null;
+                if(SingleNodeServer.isRegex){
+                    metaDataItem = RegexMetaData.getMetaData().get(property);
+                } else {
+                    metaDataItem = DebsMetaData.getMetaData().get(property);
+                }
+
+
 
 
                 if (metaDataItem !=null) {

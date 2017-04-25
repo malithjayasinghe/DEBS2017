@@ -15,7 +15,9 @@ import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.input.sparql.RegexPattern;
+import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -53,14 +55,14 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
     private static ExecutorService RMQ_EXECUTOR;
 
-
-    private static Pattern patternTime = Pattern.compile("<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime>.<http://project-hobbit.eu/resources/debs2017#(.*)>");
-    private static Pattern patternTimestamp = Pattern.compile("<http://www.agtinternational.com/ontologies/IoTCore#valueLiteral>.\"(.*)\"\\^\\^<http://www.w3.org/2001/XMLSchema#dateTime>");
-    private static Pattern patternMachine = Pattern.compile("<http://www.agtinternational.com/ontologies/I4.0#machine>.<http://www.agtinternational.com/ontologies/WeidmullerMetadata#(.*)>");
-
     public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec){
         RMQ_EXECUTOR = Executors.newFixedThreadPool(rabbitMQExec);
-        DebsMetaData.load(metadataFile);
+        if(SingleNodeServer.isRegex){
+            RegexMetaData.load(metadataFile);
+        } else {
+            DebsMetaData.load(metadataFile);
+        }
+
 
 
     }

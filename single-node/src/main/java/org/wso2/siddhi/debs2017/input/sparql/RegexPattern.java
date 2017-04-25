@@ -85,16 +85,16 @@ public class RegexPattern {
 
                     valCount+=nextOccurrence;
 
-                    long sequence = SingleNodeServer.Buffer.next();  // Grab the next sequence
+                    long sequence = SingleNodeServer.buffer.next();  // Grab the next sequence
 
-                     RabbitMessage message = SingleNodeServer.Buffer.get(sequence); // Get the entry in the Disruptor
+                     RabbitMessage message = SingleNodeServer.buffer.get(sequence); // Get the entry in the Disruptor
                         message.setMachine(machine);
                         message.setTimestamp(time);
                         message.setTime(uTime);
                         message.setProperty(propertyLine);
                         message.setValue(temp);
                         message.setApplicationTime(this.timestamp);
-                        SingleNodeServer.Buffer.publish(sequence);
+                        SingleNodeServer.buffer.publish(sequence);
 
 
                 }
@@ -116,9 +116,9 @@ public class RegexPattern {
 
 
     public static void publishTerminate(long timestamp){
-        long sequence = SingleNodeServer.Buffer.next();  // Grab the next sequence
+        long sequence = SingleNodeServer.buffer.next();  // Grab the next sequence
         try {
-            RabbitMessage wrapper = SingleNodeServer.Buffer.get(sequence); // Get the entry in the Disruptor
+            RabbitMessage wrapper = SingleNodeServer.buffer.get(sequence); // Get the entry in the Disruptor
             wrapper.setApplicationTime(timestamp);
             wrapper.setStateful(true);
             wrapper.setTerminated(true);
@@ -126,7 +126,7 @@ public class RegexPattern {
 
         } finally {
 
-            SingleNodeServer.Buffer.publish(sequence);
+            SingleNodeServer.buffer.publish(sequence);
 
 
         }

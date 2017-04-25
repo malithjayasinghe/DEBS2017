@@ -44,10 +44,11 @@ public class SingleNodeServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
-    public static RingBuffer<RabbitMessage> Buffer;
+    public static RingBuffer<RabbitMessage> buffer;
 
 
     public static long startime;
+    public  static boolean isRegex = true;
 
     //ttl
 
@@ -55,153 +56,57 @@ public class SingleNodeServer {
     public static int transitionsCount = 5;
     public static int windowSize = 10;
 
-    /*public static void createhandler(int handlersize,RingBuffer ring, DebsAnomalyDetector debsAnormalyDetector, Disruptor disruptor ){
-        switch (handlersize){
-            case 2: {
 
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 2L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, ring);
-                disruptor.handleEventsWith(sh1,sh2);
-                disruptor.after(sh1, sh2).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-
-            }
-            case 3:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3);
-                disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-
-            }
-            case 4:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 4L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 4L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 4L, ring);
-                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 4L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3,sh4);
-                disruptor.after(sh1, sh2, sh3,sh4).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-
-            }
-            case 5:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 5L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 5L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 5L, ring);
-                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 5L, ring);
-                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 5L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5);
-                disruptor.after(sh1, sh2, sh3,sh4,sh5).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-
-            }
-            case 6:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 6L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 6L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 6L, ring);
-                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 6L, ring);
-                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 6L, ring);
-                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 6L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6);
-                disruptor.after(sh1, sh2, sh3,sh4,sh5,sh6).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-            }
-            case 7:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 7L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 7L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 7L, ring);
-                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 7L, ring);
-                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 7L, ring);
-                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 7L, ring);
-                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 7L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7);
-                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-            }
-            case 8:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 8L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 8L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 8L, ring);
-                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 8L, ring);
-                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 8L, ring);
-                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 8L, ring);
-                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 8L, ring);
-                SiddhiEventHandler sh8 = new SiddhiEventHandler(7L, 8L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8);
-                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-            }
-            case 9:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 9L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 9L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 9L, ring);
-                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 8L, ring);
-                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 9L, ring);
-                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 9L, ring);
-                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 9L, ring);
-                SiddhiEventHandler sh8 = new SiddhiEventHandler(7L, 9L, ring);
-                SiddhiEventHandler sh9 = new SiddhiEventHandler(8L, 9L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9);
-                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-            }
-            case 10:{
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 10L, ring);
-                SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 10L, ring);
-                SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 10L, ring);
-                SiddhiEventHandler sh4 = new SiddhiEventHandler(3L, 10L, ring);
-                SiddhiEventHandler sh5 = new SiddhiEventHandler(4L, 10L, ring);
-                SiddhiEventHandler sh6 = new SiddhiEventHandler(5L, 10L, ring);
-                SiddhiEventHandler sh7 = new SiddhiEventHandler(6L, 10L, ring);
-                SiddhiEventHandler sh8 = new SiddhiEventHandler(7L, 10L, ring);
-                SiddhiEventHandler sh9 = new SiddhiEventHandler(8L, 10L, ring);
-                SiddhiEventHandler sh10 = new SiddhiEventHandler(9L, 10L, ring);
-                disruptor.handleEventsWith(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9,sh10);
-                disruptor.after(sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9,sh10).handleEventsWith(debsAnormalyDetector);
-                disruptor.start();
-                break;
-            }
-
-        }
-    }*/
     public static void main(String[] args) {
         /**
-         * input queue
-         * output queue
-         * no. of rabbitmq executor threads
-         * ringbuffersize
-         * no. of machines - for metadata generation
-         * istestcase - true/false
-         *
+         * 0 input queue
+         * 1 output queue
+         * 2 no. of rabbitmq executor threads
+         * 3 isRegex
+         * 4 no. of rehex handlers
+         * 5 no. of siddhi handlers
+         * 6  isTestcase
+         * 7 machines
          */
 
         startime = System.currentTimeMillis();
 
 
-      //  if (args.length == 9) {
-            boolean isTestcase = Boolean.parseBoolean(args[5]);
-            int machines = Integer.parseInt(args[4]);
-            int rabbitMQExecutor = Integer.parseInt(args[2]);
-            int ringbuffersize = Integer.parseInt(args[3]);
+      if (args.length == 9) {
+          int rabbitMQExecutor = Integer.parseInt(args[2]);
+          isRegex = Boolean.parseBoolean(args[3]);
+          int regexHandlers = Integer.parseInt(args[4]);
+          int siddhiHandlers = Integer.parseInt(args[5]);
+          int ringbuffersize = Integer.parseInt(args[6]);
+          boolean isTestcase = Boolean.parseBoolean(args[7]);
+          int machines = Integer.parseInt(args[8]);
+
+          //Disruptor
+          Executor executor = Executors.newCachedThreadPool();
+          Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
+
+          buffer = disruptor.getRingBuffer();
+          //Creating RegexHandlers
+          RegexHandler [] regexHandlerArr = new RegexHandler[regexHandlers];
+          for(int i = 0; i<regexHandlers; i++){
+              regexHandlerArr[i] = new RegexHandler(i, regexHandlers, buffer);
+          }
+
+          //Create SiddhiHandlers
+          SiddhiEventHandler [] siddhiEventHandlerArr = new SiddhiEventHandler[siddhiHandlers];
+          for(int i = 0; i<siddhiHandlers; i++){
+              siddhiEventHandlerArr[i] = new SiddhiEventHandler(i, siddhiHandlers, buffer);
+          }
+
+          //Map to the disruptor
+
 
             if (args[0].equals("-hobbit")) {
 
                 String metadata = args[1];
                 RabbitQueue rmqPublisher = null;
                 AlertGenerator alertGenerator = null;
-                Executor executor = Executors.newCachedThreadPool();
 
-                Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
-                Buffer = disruptor.getRingBuffer();
                 DebsAnomalyDetector debsAnormalyDetector = null;
 
 
@@ -216,16 +121,13 @@ public class SingleNodeServer {
                     rmqPublisher = system.getOutputQueue();
                     alertGenerator = new AlertGenerator(rmqPublisher, false);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
-                    RegexHandler reg = new RegexHandler(0,2,Buffer);
-                    RegexHandler reg1 = new RegexHandler(1,2,Buffer);
-                    SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 2L, Buffer ,alertGenerator);
-                    SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, Buffer,alertGenerator);
 
-                    disruptor.handleEventsWith(reg,reg1);
-                    disruptor.after(reg,reg1).handleEventsWith(sh1, sh2);
-                    disruptor.after(sh1,sh2).handleEventsWith(debsAnormalyDetector);
+
+                    disruptor.handleEventsWith(regexHandlerArr);
+                    disruptor.after(regexHandlerArr).handleEventsWith(siddhiEventHandlerArr);
+                    disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
                     disruptor.start();
-                    //createhandler(handlers,ring,debsAnormalyDetector,disruptor);
+
 
                     system.run();
                 } finally {
@@ -251,20 +153,30 @@ public class SingleNodeServer {
                     e.printStackTrace();
                 }
 
-                if(isTestcase) {
-                    DebsMetaData.load("molding_machine_10M.metadata.nt");
-                    //RegexMetaData.load("molding_machine_10M.metadata.nt");
-
-                }else {
-                    DebsMetaData.load("10molding_machine_5000dp.metadata.nt");
-                    //RegexMetaData.load("10molding_machine_5000dp.metadata.nt");
+                //check if regex
+                if(isRegex){
+                    if(isTestcase){
+                        switch (machines){
+                            case 1 : RegexMetaData.load("molding_machine_10M.metadata.nt"); break;
+                            case 2 : RegexMetaData.load("molding_machine_10M.metadata.nt"); break;
+                            case 3 : RegexMetaData.load("10molding_machine_5000dp.metadata.nt"); break;
+                        }
+                    } else  {
+                        RegexMetaData.generate("molding_machine_10M.metadata.nt", machines);
+                    }
+                } else {
+                    if(isTestcase){
+                        switch (machines){
+                            case 1 : DebsMetaData.load("molding_machine_10M.metadata.nt"); break;
+                            case 2 : DebsMetaData.load("molding_machine_10M.metadata.nt"); break;
+                            case 3 : DebsMetaData.load("10molding_machine_5000dp.metadata.nt"); break;
+                        }
+                    } else  {
+                        DebsMetaData.generate("molding_machine_10M.metadata.nt", machines);
+                    }
                 }
 
 
-                Executor executor = Executors.newCachedThreadPool();
-
-                Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
-                Buffer = disruptor.getRingBuffer();
 
 
                 output = new RabbitQueue(channel, outputQueue);
@@ -272,14 +184,10 @@ public class SingleNodeServer {
                 DebsAnomalyDetector debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
 
 
-                RegexHandler reg = new RegexHandler(0,2,Buffer);
-                RegexHandler reg1 = new RegexHandler(1,2,Buffer);
-                SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 1L, Buffer ,alertGenerator);
-                //SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 2L, Buffer,alertGenerator);
 
-                disruptor.handleEventsWith(reg,reg1);
-                disruptor.after(reg,reg1).handleEventsWith(sh1);
-                disruptor.after(sh1).handleEventsWith(debsAnormalyDetector);
+                disruptor.handleEventsWith(regexHandlerArr);
+                disruptor.after(regexHandlerArr).handleEventsWith(siddhiEventHandlerArr);
+                disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();
@@ -287,9 +195,8 @@ public class SingleNodeServer {
 
 
 
-
             }
 
-        //}
+        }
     }
 }
