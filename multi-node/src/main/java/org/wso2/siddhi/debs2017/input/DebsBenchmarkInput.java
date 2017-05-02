@@ -14,6 +14,7 @@ import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.sparql.LineProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
 import org.wso2.siddhi.debs2017.input.sparql.RegexProcessor;
 import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
@@ -236,8 +237,10 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
 //                    System.out.println("sp");
 //                    EXECUTOR.execute(sparQLProcessor);
                 long time = System.nanoTime();
-                Runnable regex = new RegexProcessor(message, time);
-                EXECUTOR.execute(regex);
+               // Runnable regex = new RegexProcessor(message, time);
+
+                Runnable lineRegex = new LineProcessor(bytes,System.nanoTime());
+                EXECUTOR.execute(lineRegex);
 //                } else {
 //                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
 //                    EXECUTOR.execute(regexProcessor);

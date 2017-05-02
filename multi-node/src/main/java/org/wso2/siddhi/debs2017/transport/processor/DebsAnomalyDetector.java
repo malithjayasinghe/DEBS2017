@@ -33,8 +33,11 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
         probability = Double.parseDouble(o[3].toString());
         threshold = Double.parseDouble(o[4].toString());
         if (wrapper.getEvent().getTimestamp() == -1l) {
+            Event[] events = new Event[1];
+            events[0] = new Event(-1l, new Object[]{"machine", "time", "dimension", -1.0, -1.0,
+                    Integer.parseInt(wrapper.getEvent().getData()[7].toString())});
             System.out.println("debs : terminated");
-            Event[] events = {wrapper.getEvent()};
+           // Event[] events = {wrapper.getEvent()};
             siddhiClient.send("output", events);
         } else {
             if (probability < threshold && probability > 0) {

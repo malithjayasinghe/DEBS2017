@@ -59,7 +59,7 @@ public class DimensionAggregator extends AttributeAggregator {
         cluster.cluster();
         ArrayList<Integer> centers = cluster.getCenterA(arr);
 
-        if (centers.size() >= SingleNodeServer.windowSize) {
+        if (centers.size() > SingleNodeServer.transitionsCount) {
             markovModel.execute(centers);
             //get the total probability
             probability = markovModel.updateProbability(centers);

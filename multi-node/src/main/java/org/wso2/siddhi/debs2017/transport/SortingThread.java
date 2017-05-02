@@ -63,7 +63,7 @@ public class SortingThread extends Thread {
                     }
                 }
                 multiNodeAlertGenerator.terminate();
-                System.exit(0);
+               // System.exit(0);
                 System.out.println("Termination received");
                 break;
             } else {
@@ -182,6 +182,7 @@ public class SortingThread extends Thread {
                     } else {
 
                         elements.set(i, 2);
+                        System.out.println(event);
                         termination++;
 
                     }
@@ -195,6 +196,11 @@ public class SortingThread extends Thread {
         }
     }
 
+
+    /**
+     * sort the alerts by property and timestamp
+     * @param anomalies - contain the object to be sorted
+     */
     public static void publish(ArrayList<Anomaly> anomalies) {
         Collections.sort(anomalyList);
         for (int i = 0; i < anomalies.size(); i++) {

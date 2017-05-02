@@ -67,7 +67,7 @@ public class EventDispatcher extends DefaultConsumer {
         Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
         sort.start();
-        DebsMetaData.generate("molding_machine_10M.metadata.nt");
+        DebsMetaData.load("molding_machine_10M.metadata.nt");
     }
 
     /**
@@ -104,8 +104,10 @@ public class EventDispatcher extends DefaultConsumer {
 //                bytesRec += body.length;
 //                Runnable sparQLProcessor = new SPARQLProcessor(msg);
 //                EXECUTOR.execute(sparQLProcessor);
-            Runnable regex = new RegexProcessor(msg, time);
-            EXECUTOR.execute(regex);
+            //Runnable regex = new RegexProcessor(msg, time);
+
+            Runnable lineRegex = new LineProcessor(body,System.nanoTime());
+            EXECUTOR.execute(lineRegex);
 //            } else{
 //                //System.out.println(count+"\t"+bytesRec+"\t"+body.length);
 //                count++;

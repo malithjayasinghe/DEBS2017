@@ -36,7 +36,7 @@ public class RegexPattern {
         int propCount = 12;
         int valCount = 16;
         int nextOccurrence = 8;
-
+        int line =0;
         String propertyLine = "";
         String time = "";
         String timeStamp = "";
@@ -90,7 +90,9 @@ public class RegexPattern {
                     message.setProperty(propertyLine);
                     message.setValue(temp);
                     message.setApplicationTime(this.timestamp);
+                    message.setLine(line);
                     SingleNodeServer.buffer.publish(sequence);
+                    line = line +1;
 
 
                 }

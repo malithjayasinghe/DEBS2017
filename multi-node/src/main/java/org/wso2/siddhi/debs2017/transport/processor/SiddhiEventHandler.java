@@ -32,6 +32,7 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
             System.out.println("siddhi : terminated");
         } else {
             String[] splitter = o[2].toString().split("_");
+
             long partition = Long.parseLong(splitter[2]);
             if (partition % NUM == ID) {
                 sq.setSequence(sequence);

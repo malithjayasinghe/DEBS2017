@@ -13,6 +13,7 @@ import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
 import org.wso2.siddhi.debs2017.input.sparql.RegexHandler;
+import org.wso2.siddhi.debs2017.input.sparql.UltimateHandler;
 import org.wso2.siddhi.debs2017.output.AlertGenerator;
 import org.wso2.siddhi.debs2017.processor.DebsAnomalyDetector;
 import org.wso2.siddhi.debs2017.processor.SiddhiEventHandler;
@@ -61,6 +62,7 @@ public class SingleNodeServer {
 
     public static void main(String[] args) {
         /**
+         * inputqueue, outputqueue, no. of rabbitmqexecutors, isRegex, no. of regex handlers, no. of siddhi handlers, ring buffersize,  isTest , machine
          * 0 input queue
          * 1 output queue
          * 2 no. of rabbitmq executor threads
@@ -89,7 +91,12 @@ public class SingleNodeServer {
 
             buffer = disruptor.getRingBuffer();
             //Creating RegexHandlers
-            RegexHandler[] regexHandlerArr = new RegexHandler[regexHandlers];
+            UltimateHandler[] regexHandlerArr = new UltimateHandler[regexHandlers];
+            for (int i = 0; i < regexHandlers; i++) {
+                regexHandlerArr[i] = new UltimateHandler(i, regexHandlers, buffer);
+            }
+
+          /*  RegexHandler[] regexHandlerArr = new RegexHandler[regexHandlers];
             for (int i = 0; i < regexHandlers; i++) {
                 regexHandlerArr[i] = new RegexHandler(i, regexHandlers, buffer);
             }
@@ -97,9 +104,9 @@ public class SingleNodeServer {
             //Create SiddhiHandlers
             SiddhiEventHandler[] siddhiEventHandlerArr = new SiddhiEventHandler[siddhiHandlers];
             for (int i = 0; i < siddhiHandlers; i++) {
-                siddhiEventHandlerArr[i] = new SiddhiEventHandler(i, siddhiHandlers, buffer);
-            }
-
+               siddhiEventHandlerArr[i] = new SiddhiEventHandler(i, siddhiHandlers, buffer);
+          }
+*/
             //Map to the disruptor
 
 
@@ -125,9 +132,9 @@ public class SingleNodeServer {
 
 
                     disruptor.handleEventsWith(regexHandlerArr);
-                    disruptor.after(regexHandlerArr).handleEventsWith(siddhiEventHandlerArr);
-                    disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
-                    disruptor.start();
+                   disruptor.after(regexHandlerArr).handleEventsWith(debsAnormalyDetector);
+//                    disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
+                   disruptor.start();
 
 
                     system.run();
@@ -202,8 +209,8 @@ public class SingleNodeServer {
 
 
                 disruptor.handleEventsWith(regexHandlerArr);
-                disruptor.after(regexHandlerArr).handleEventsWith(siddhiEventHandlerArr);
-                disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
+                disruptor.after(regexHandlerArr).handleEventsWith(debsAnormalyDetector);
+              //  disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();

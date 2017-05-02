@@ -6,15 +6,16 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MetaDataItem;
 import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
+import org.wso2.siddhi.debs2017.processor.SiddhiQuery;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by sachini on 4/20/17.
+ * Created by sachini on 4/28/17.
  */
-public class RegexHandler implements EventHandler<RabbitMessage> {
+public class UltimateHandler implements EventHandler<RabbitMessage> {
     private final int id;
     private final int num;
     private final RingBuffer<RabbitMessage> ringBuffer;
@@ -24,11 +25,13 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
             "g/2001/XMLSchema#");
     String property = "";
     String value = "";
+    private final SiddhiQuery sq;
 
-    public RegexHandler(int id, int handlers, RingBuffer ringBuffer) {
+    public UltimateHandler(int id, int handlers, RingBuffer ringBuffer) {
         this.id = id;
         num = handlers;
         this.ringBuffer = ringBuffer;
+        this.sq = new SiddhiQuery(ringBuffer);
     }
 
 
@@ -37,7 +40,7 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
 
         if (!message.isTerminated()) {
 
-            if (message.getApplicationTime() % num == id) {
+            if (message.getLine() % num == id) {
                 Matcher matcherProp = patternProperty.matcher(message.getProperty());
                 if (matcherProp.find()) {
                     property = matcherProp.group(1);
@@ -66,22 +69,17 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
                             message.getTimestamp(),
                             property,
                             message.getTime(),
-
                             Double.parseDouble(value),
                             //Math.round(Double.parseDouble(value) * 10000.0) / 10000.0, //
                             centers,
                             probability});
 
-                    try {
-                        message = ringBuffer.get(sequence);
 
-                        message.setEvent(event);
-                        message.setStateful(true);
+                    //setting the buffer sequence
+                    sq.setSequence(sequence);
 
-                    } finally {
-                        ringBuffer.publish(sequence);
-
-                    }
+                    //publish event to sidhdhi
+                    sq.publish(event);
                 } else {
                     try {
                         message = ringBuffer.get(sequence);
@@ -97,5 +95,3 @@ public class RegexHandler implements EventHandler<RabbitMessage> {
 
     }
 }
-
-

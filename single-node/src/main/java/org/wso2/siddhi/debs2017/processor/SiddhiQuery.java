@@ -109,6 +109,7 @@ public class SiddhiQuery {
         try {
             RabbitMessage wrapper = buffer.get(sequence);
             wrapper.setEvent(ev);
+            wrapper.setStateful(true);
         } finally {
             buffer.publish(sequence);
         }
