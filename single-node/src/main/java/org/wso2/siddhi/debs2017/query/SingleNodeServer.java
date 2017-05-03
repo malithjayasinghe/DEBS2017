@@ -237,8 +237,8 @@ public class SingleNodeServer {
 
 
                while (true){
-                   if(MetaExtract.meta.size() == 55){
-                       System.out.println(MetaExtract.meta.size());
+                   if(MetaExtract.meta.size() == 55000){
+                      // System.out.println(MetaExtract.meta.size());
                        disruptormeta.shutdown();
                    break;
                    }
