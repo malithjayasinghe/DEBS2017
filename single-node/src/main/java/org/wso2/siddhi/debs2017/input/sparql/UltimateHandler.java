@@ -5,6 +5,7 @@ import com.lmax.disruptor.RingBuffer;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.input.metadata.MetaDataItem;
+import org.wso2.siddhi.debs2017.input.metadata.MetaExtract;
 import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.processor.SiddhiQuery;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
@@ -49,7 +50,7 @@ public class UltimateHandler implements EventHandler<RabbitMessage> {
 
                 MetaDataItem metaDataItem = null;
                 if (SingleNodeServer.isRegex) {
-                    metaDataItem = RegexMetaData.getMetaData().get(property);
+                    metaDataItem = MetaExtract.getMetaData().get(property);
                 } else {
                     metaDataItem = DebsMetaData.getMetaData().get(property);
                 }
