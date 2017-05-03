@@ -1,15 +1,17 @@
 package org.wso2.siddhi.debs2017.query;
 
+import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.siddhi.debs2017.extension.utils.markov.EventDataHolder;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkSystem;
-import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.*;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 import org.wso2.siddhi.debs2017.input.sparql.RabbitMessage;
 import org.wso2.siddhi.debs2017.input.sparql.RegexHandler;
@@ -19,6 +21,7 @@ import org.wso2.siddhi.debs2017.processor.DebsAnomalyDetector;
 import org.wso2.siddhi.debs2017.processor.SiddhiEventHandler;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
@@ -48,7 +51,7 @@ public class SingleNodeServer {
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeServer.class);
 
     public static RingBuffer<RabbitMessage> buffer;
-
+    public  static RingBuffer<MetaPattern>  meta;
 
     public static long startime;
     public static boolean isRegex = true;
@@ -87,7 +90,8 @@ public class SingleNodeServer {
 
             //Disruptor
             Executor executor = Executors.newCachedThreadPool();
-            Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
+            Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor,
+                    ProducerType.SINGLE, new BusySpinWaitStrategy());
 
             buffer = disruptor.getRingBuffer();
             //Creating RegexHandlers
@@ -96,7 +100,7 @@ public class SingleNodeServer {
                 regexHandlerArr[i] = new UltimateHandler(i, regexHandlers, buffer);
             }
 
-          /*  RegexHandler[] regexHandlerArr = new RegexHandler[regexHandlers];
+           /* RegexHandler[] regexHandlerArr = new RegexHandler[regexHandlers];
             for (int i = 0; i < regexHandlers; i++) {
                 regexHandlerArr[i] = new RegexHandler(i, regexHandlers, buffer);
             }
@@ -105,8 +109,20 @@ public class SingleNodeServer {
             SiddhiEventHandler[] siddhiEventHandlerArr = new SiddhiEventHandler[siddhiHandlers];
             for (int i = 0; i < siddhiHandlers; i++) {
                siddhiEventHandlerArr[i] = new SiddhiEventHandler(i, siddhiHandlers, buffer);
-          }
-*/
+          }*/
+
+
+           //Metadata extraction with disruptor
+            Executor executormeta = Executors.newCachedThreadPool();
+            Disruptor<MetaPattern> disruptormeta = new Disruptor<>(MetaPattern::new, ringbuffersize, executormeta,
+                    ProducerType.SINGLE, new BusySpinWaitStrategy());
+            meta = disruptormeta.getRingBuffer();
+            MetaHandler m1 = new MetaHandler(0 , 2);
+            MetaHandler m2 = new MetaHandler(1,2);
+            disruptormeta.handleEventsWith(m1,m2);
+            disruptormeta.start();
+
+
             //Map to the disruptor
 
 
@@ -125,15 +141,21 @@ public class SingleNodeServer {
                     system = new DebsBenchmarkSystem(metadata, rabbitMQExecutor);
                     system.init();
 
+                    while (true){
+                        if(MetaExtract.meta.size() == 55000){
+                            disruptormeta.shutdown();
+                            break;
+                        }
+                    }
+
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
                     alertGenerator = new AlertGenerator(rmqPublisher);
                     debsAnormalyDetector = new DebsAnomalyDetector(alertGenerator);
 
-
                     disruptor.handleEventsWith(regexHandlerArr);
                    disruptor.after(regexHandlerArr).handleEventsWith(debsAnormalyDetector);
-//                    disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
+                 //  disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
                    disruptor.start();
 
 
@@ -168,10 +190,13 @@ public class SingleNodeServer {
                     if (isTestcase) {
                         switch (machines) {
                             case 1:
-                                RegexMetaData.load("molding_machine_10M.metadata.nt");
+                                //RegexMetaData.load("molding_machine_10M.metadata.nt");
+                                MetaExtract.load("molding_machine_10M.metadata.nt");
+                               // MetaExtract.load("10molding_machine_5000dp.metadata.nt");
+                               // System.out.println("Time to load"+" "+ (System.currentTimeMillis()-time));
                                 break;
                             case 2:
-                                RegexMetaData.load("molding_machine_10M.metadata.nt");
+                                MetaExtract.load("molding_machine_10M.metadata.nt");
                                 break;
                             case 3:
                                 RegexMetaData.load("10molding_machine_5000dp.metadata.nt");
@@ -180,7 +205,7 @@ public class SingleNodeServer {
                                 break;
                         }
                     } else {
-                        RegexMetaData.generate("molding_machine_10M.metadata.nt", machines);
+                        MetaExtract.load("1000molding_machine.metadata.nt");
                     }
                 } else {
                     if (isTestcase) {
@@ -198,9 +223,26 @@ public class SingleNodeServer {
                                 break;
                         }
                     } else {
-                        DebsMetaData.generate("molding_machine_10M.metadata.nt", machines);
+                        DebsMetaData.load("1000molding_machine.metadata.nt");
                     }
                 }
+
+
+               /* try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+
+
+
+               while (true){
+                   if(MetaExtract.meta.size() == 55){
+                       System.out.println(MetaExtract.meta.size());
+                       disruptormeta.shutdown();
+                   break;
+                   }
+               }
 
 
                 output = new RabbitQueue(channel, outputQueue);
@@ -210,7 +252,7 @@ public class SingleNodeServer {
 
                 disruptor.handleEventsWith(regexHandlerArr);
                 disruptor.after(regexHandlerArr).handleEventsWith(debsAnormalyDetector);
-              //  disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
+               // disruptor.after(siddhiEventHandlerArr).handleEventsWith(debsAnormalyDetector);
                 disruptor.start();
 
                 RabbitMQConsumer rmq = new RabbitMQConsumer();

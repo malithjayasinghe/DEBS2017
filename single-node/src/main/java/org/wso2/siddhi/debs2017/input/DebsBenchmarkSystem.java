@@ -15,6 +15,7 @@ import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.metadata.MetaExtract;
 import org.wso2.siddhi.debs2017.input.metadata.RegexMetaData;
 import org.wso2.siddhi.debs2017.input.sparql.RegexPattern;
 import org.wso2.siddhi.debs2017.query.SingleNodeServer;
@@ -60,7 +61,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec) {
         rmqExecutor = Executors.newFixedThreadPool(rabbitMQExec);
         if (SingleNodeServer.isRegex) {
-            RegexMetaData.load(metadataFile);
+            MetaExtract.load(metadataFile);
         } else {
             DebsMetaData.load(metadataFile);
         }
