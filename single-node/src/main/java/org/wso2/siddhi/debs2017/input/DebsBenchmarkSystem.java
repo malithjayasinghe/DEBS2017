@@ -1,6 +1,7 @@
 package org.wso2.siddhi.debs2017.input;
 
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -58,8 +59,11 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
 
     private ExecutorService rmqExecutor;
 
-    public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec) {
-        rmqExecutor = Executors.newFixedThreadPool(rabbitMQExec);
+    private int prefetchedCount =1;
+
+    public DebsBenchmarkSystem(String metadataFile, int rabbitMQExec, int count) {
+        this.prefetchedCount = count;
+        rmqExecutor = Executors.newFixedThreadPool(rabbitMQExec, new ThreadFactoryBuilder().setNameFormat("Input-Executor-Pool-%d").build());
         if (SingleNodeServer.isRegex) {
             MetaExtract.load(metadataFile);
         } else {
@@ -113,9 +117,14 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
             TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(getHost());
+
         if (executorService == null) {
-            return factory.newConnection();
+            factory.setHeartbeatExecutor(Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Output-Heartbeat-Thread-%d").build()));
+            factory.setShutdownExecutor(Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Output-Shutdown-Thread-%d").build()));
+            return factory.newConnection(Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Output-Executor-Pool-%d").build()));
         }
+        factory.setHeartbeatExecutor(Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Input-Heartbeat-Thread-%d").build()));
+        factory.setShutdownExecutor( Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Input-Shutdown-Thread-%d").build()));
         return factory.newConnection(executorService);
     }
 
@@ -138,7 +147,7 @@ public class DebsBenchmarkSystem extends AbstractCommandReceivingComponent {
     }
 
     private int getPrefetchCount() {
-        return 1;
+        return this.prefetchedCount;
     }
 
     private String getInputQueueName() {
