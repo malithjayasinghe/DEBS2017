@@ -32,29 +32,24 @@ public class DebsAnomalyDetector implements EventHandler<RabbitMessage> {
 
     @Override
     public void onEvent(RabbitMessage wrapper, long l, boolean b) throws Exception {
+
         if (wrapper.isStateful()) {
             Object[] o = wrapper.getEvent().getData();
-            if (wrapper.getEvent().getTimestamp() == -1L) {
+            if (wrapper.isTerminated()) {
                 alertGenerator.terminate();
             } else {
                 probability = Double.parseDouble(o[3].toString());
                 threshold = Double.parseDouble(o[4].toString());
                 if (probability < threshold && probability > 0) {
-                    send(wrapper.getEvent());
+                   // send(wrapper.getEvent());
+                    alertGenerator.generateAlert(wrapper.getEvent());
                 }
             }
         }
 
     }
 
-    /**
-     * Generates an alert
-     *
-     * @param event the event to generate the alert from
-     */
-    private synchronized void send(Event event) {
-        alertGenerator.generateAlert(event);
-    }
+
 
     /**
      * The constructor

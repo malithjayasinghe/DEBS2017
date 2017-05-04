@@ -56,6 +56,7 @@ public class AlertGenerator {
     private long dispatchedTime;
     private double sum = 0;
 
+    private Channel channel;
     private static final Logger logger = LoggerFactory.getLogger(AlertGenerator.class);
 
 
@@ -67,6 +68,7 @@ public class AlertGenerator {
      */
     public AlertGenerator(RabbitQueue rabbitMQPublisher) {
         this.rabbitMQPublisher = rabbitMQPublisher;
+        this.channel = rabbitMQPublisher.getChannel();
 
     }
 
@@ -108,9 +110,9 @@ public class AlertGenerator {
         String str = "N-TRIPLES";
         out = new StringWriter();
         model.write(out, str);
-        Channel channel = rabbitMQPublisher.getChannel();
+
         try {
-            channel.basicPublish("", rabbitMQPublisher.getName(),
+            this.channel.basicPublish("", rabbitMQPublisher.getName(),
                     MessageProperties.PERSISTENT_BASIC, out.toString().getBytes());
         } catch (IOException e) {
             logger.debug(e.getMessage());
@@ -128,13 +130,15 @@ public class AlertGenerator {
         logger.info("Average throghput(msg)\t:" + CentralDispatcher.count / runTime);
         logger.info("Average throghput(bytes)\t:" + CentralDispatcher.bytesRec / runTime);
         logger.info("Average Latency : " + ((sum / 1000000) / anomalyCount));
-        Channel channel = rabbitMQPublisher.getChannel();
+
         String terminationMessage = "~~Termination Message~~";
         try {
-            channel.basicPublish("", rabbitMQPublisher.getName(),
+            this.channel.basicPublish("", rabbitMQPublisher.getName(),
                     MessageProperties.PERSISTENT_BASIC, terminationMessage.getBytes());
         } catch (IOException e) {
             logger.debug(e.getMessage());
         }
+
+        //System.out.println("Threads end : "+Thread.activeCount());
     }
 }
