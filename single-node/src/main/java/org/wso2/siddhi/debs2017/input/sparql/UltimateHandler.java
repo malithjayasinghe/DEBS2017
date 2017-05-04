@@ -13,9 +13,24 @@ import org.wso2.siddhi.debs2017.query.SingleNodeServer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by sachini on 4/28/17.
- */
+
+
+
+/*
+* Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 public class UltimateHandler implements EventHandler<RabbitMessage> {
     private final int id;
     private final int num;
@@ -50,7 +65,7 @@ public class UltimateHandler implements EventHandler<RabbitMessage> {
 
                 MetaDataItem metaDataItem = null;
                 if (SingleNodeServer.isRegex) {
-                    metaDataItem = MetaExtract.getMetaData().get(property);
+                    metaDataItem = RegexMetaData.getMetaData().get(property);
                 } else {
                     metaDataItem = DebsMetaData.getMetaData().get(property);
                 }
@@ -78,7 +93,6 @@ public class UltimateHandler implements EventHandler<RabbitMessage> {
 
                     //setting the buffer sequence
                     sq.setSequence(sequence);
-
                     //publish event to sidhdhi
                     sq.publish(event);
                 } else {

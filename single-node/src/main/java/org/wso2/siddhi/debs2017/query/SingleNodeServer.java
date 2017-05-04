@@ -90,8 +90,9 @@ public class SingleNodeServer {
 
             //Disruptor
             Executor executor = Executors.newCachedThreadPool();
-            Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor,
-                    ProducerType.SINGLE, new BusySpinWaitStrategy());
+            Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor);
+//            Disruptor<RabbitMessage> disruptor = new Disruptor<>(RabbitMessage::new, ringbuffersize, executor,
+//                    ProducerType.MULTI, new BusySpinWaitStrategy());
 
             buffer = disruptor.getRingBuffer();
             //Creating RegexHandlers
@@ -113,14 +114,14 @@ public class SingleNodeServer {
 
 
            //Metadata extraction with disruptor
-            Executor executormeta = Executors.newCachedThreadPool();
-            Disruptor<MetaPattern> disruptormeta = new Disruptor<>(MetaPattern::new, ringbuffersize, executormeta,
-                    ProducerType.SINGLE, new BusySpinWaitStrategy());
-            meta = disruptormeta.getRingBuffer();
-            MetaHandler m1 = new MetaHandler(0 , 2);
-            MetaHandler m2 = new MetaHandler(1,2);
-            disruptormeta.handleEventsWith(m1,m2);
-            disruptormeta.start();
+//            Executor executormeta = Executors.newCachedThreadPool();
+//            Disruptor<MetaPattern> disruptormeta = new Disruptor<>(MetaPattern::new, ringbuffersize, executormeta,
+//                    ProducerType.SINGLE, new BusySpinWaitStrategy());
+//            meta = disruptormeta.getRingBuffer();
+//            MetaHandler m1 = new MetaHandler(0 , 2);
+//            MetaHandler m2 = new MetaHandler(1,2);
+//            disruptormeta.handleEventsWith(m1,m2);
+//            disruptormeta.start();
 
 
             //Map to the disruptor
@@ -138,15 +139,15 @@ public class SingleNodeServer {
                 logger.debug("Running...");
                 DebsBenchmarkSystem system = null;
                 try {
-                    system = new DebsBenchmarkSystem(metadata, rabbitMQExecutor);
+                    system = new DebsBenchmarkSystem(metadata, rabbitMQExecutor, machines);
                     system.init();
 
-                    while (true){
-                        if(MetaExtract.meta.size() == 55000){
-                            disruptormeta.shutdown();
-                            break;
-                        }
-                    }
+//                    while (true){
+//                        if(MetaExtract.meta.size() == 55000){
+//                            disruptormeta.shutdown();
+//                            break;
+//                        }
+//                    }
 
                     //disruptor
                     rmqPublisher = system.getOutputQueue();
@@ -190,10 +191,7 @@ public class SingleNodeServer {
                     if (isTestcase) {
                         switch (machines) {
                             case 1:
-                                //RegexMetaData.load("molding_machine_10M.metadata.nt");
                                 MetaExtract.load("molding_machine_10M.metadata.nt");
-                               // MetaExtract.load("10molding_machine_5000dp.metadata.nt");
-                               // System.out.println("Time to load"+" "+ (System.currentTimeMillis()-time));
                                 break;
                             case 2:
                                 MetaExtract.load("molding_machine_10M.metadata.nt");
@@ -228,21 +226,16 @@ public class SingleNodeServer {
                 }
 
 
-               /* try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
 
 
 
-               while (true){
-                   if(MetaExtract.meta.size() == 55000){
-                      // System.out.println(MetaExtract.meta.size());
-                       disruptormeta.shutdown();
-                   break;
-                   }
-               }
+//               while (true){
+//                   if(MetaExtract.meta.size() == 55000){
+//                      // System.out.println(MetaExtract.meta.size());
+//                       disruptormeta.shutdown();
+//                   break;
+//                   }
+//               }
 
 
                 output = new RabbitQueue(channel, outputQueue);
