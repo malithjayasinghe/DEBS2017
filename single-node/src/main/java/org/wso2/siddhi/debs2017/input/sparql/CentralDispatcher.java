@@ -55,6 +55,7 @@ public class CentralDispatcher extends DefaultConsumer {
                 getChannel().close();
                 getChannel().getConnection().close();
                 RegexPattern.publishTerminate(System.nanoTime());
+
             } catch (IOException e) {
                 logger.debug(e.getMessage());
             } catch (TimeoutException e) {

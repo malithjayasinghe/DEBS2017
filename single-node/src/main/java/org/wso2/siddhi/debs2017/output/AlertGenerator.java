@@ -117,7 +117,7 @@ public class AlertGenerator {
         } catch (IOException e) {
             logger.debug(e.getMessage());
         }
-        System.out.println(out.toString());
+       // System.out.println(out.toString());
         sum += System.nanoTime() - dispatchedTime;
 
     }

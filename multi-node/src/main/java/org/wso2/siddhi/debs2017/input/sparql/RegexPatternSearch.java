@@ -4,21 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.debs2017.input.UnixConverter;
-import org.wso2.siddhi.debs2017.query.SingleNodeServer;
+import org.wso2.siddhi.debs2017.query.CentralDispatcher;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by sachini on 4/20/17.
+ * Created by sachini on 5/4/17.
  */
-public class RegexPattern {
-    private static final Logger logger = LoggerFactory.getLogger(RegexPattern.class);
+public class RegexPatternSearch {
+    private static final Logger logger = LoggerFactory.getLogger(RegexPatternSearch.class);
     private final long timestamp;
     private byte[] data;
     static Pattern patternTime = Pattern.compile("ationResultTime>.<http://project-hobbit.eu/" +
@@ -80,10 +77,10 @@ public class RegexPattern {
                 } else if (count == valCount) {
 
                     valCount += nextOccurrence;
+/*
+                    long sequence = CentralDispatcher.buffer.next();  // Grab the next sequence
 
-                    long sequence = SingleNodeServer.buffer.next();  // Grab the next sequence
-
-                    RabbitMessage message = SingleNodeServer.buffer.get(sequence); // Get the entry in the Disruptor
+                    RdfMessage message = CentralDispatcher.buffer.get(sequence); // Get the entry in the Disruptor
                     message.setMachine(machine);
                     message.setTimestamp(time);
                     message.setTime(uTime);
@@ -91,7 +88,18 @@ public class RegexPattern {
                     message.setValue(temp);
                     message.setApplicationTime(this.timestamp);
                     message.setLine(line);
-                    SingleNodeServer.buffer.publish(sequence);
+                    CentralDispatcher.buffer.publish(sequence);*/
+                    int node = Integer.parseInt(machine.split("_")[1]);
+                    Event event = new Event(this.timestamp, new Object[]{machine, time, propertyLine, uTime,
+                                            temp, node,line});
+                    if(node % 3 == 0) {
+                        EventDispatcher.siddhiClient0.send("input", new Event[]{event});
+                    }else if(node % 3 == 1){
+                        EventDispatcher.siddhiClient1.send("input", new Event[]{event});
+                    }else {
+                        EventDispatcher.siddhiClient2.send("input", new Event[]{event});
+                    }
+
                     line = line +1;
 
 
@@ -115,10 +123,10 @@ public class RegexPattern {
     }
 
 
-    public static void publishTerminate(long timestamp) {
-        long sequence = SingleNodeServer.buffer.next();  // Grab the next sequence
+    public static void publishTerminate() {
+       /* long sequence = CentralDispatcher.buffer.next();  // Grab the next sequence
         try {
-            RabbitMessage wrapper = SingleNodeServer.buffer.get(sequence); // Get the entry in the Disruptor
+            RdfMessage wrapper = CentralDispatcher.buffer.get(sequence); // Get the entry in the Disruptor
             wrapper.setApplicationTime(timestamp);
             wrapper.setStateful(true);
             wrapper.setTerminated(true);
@@ -128,13 +136,20 @@ public class RegexPattern {
 
         } finally {
 
-            SingleNodeServer.buffer.publish(sequence);
+            CentralDispatcher.buffer.publish(sequence);
 
 
-        }
+        }*/
+        Event e1 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 0, 0});
+        Event e2 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 1, 1});
+        Event e3 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 2, 2});
+        EventDispatcher.siddhiClient0.send("input",new Event[]{e1});
+        EventDispatcher.siddhiClient1.send("input",new Event[]{e2});
+        EventDispatcher.siddhiClient2.send("input",new Event[]{e3});
+
     }
 
-    public RegexPattern(byte[] data, long timestamp) {
+    public RegexPatternSearch(byte[] data, long timestamp) {
         this.data = data;
         this.timestamp = timestamp;
         // this.ringBuffer = ringBuffer;

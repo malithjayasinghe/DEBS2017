@@ -1,8 +1,13 @@
 package org.wso2.siddhi.debs2017.query;
 
+import com.lmax.disruptor.BusySpinWaitStrategy;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkInput;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
+import org.wso2.siddhi.debs2017.input.sparql.RdfMessage;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,6 +29,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 */
 public class CentralDispatcher {
     public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
+    public static RingBuffer<RdfMessage> buffer;
+
 
     public static void main(String[] args) {
 
@@ -41,6 +48,11 @@ public class CentralDispatcher {
             for (int i = 0; i < executorSize; i++) {
                 arrayList.add(new LinkedBlockingQueue());
             }
+
+           /* Disruptor<RdfMessage> disruptor = new Disruptor<>(RdfMessage::new, ringbuffersize, executor,
+                    ProducerType.MULTI, new BusySpinWaitStrategy());
+            buffer = disruptor.getRingBuffer();
+*/
 
             if (args[0].equals("-hobbit")) {
 

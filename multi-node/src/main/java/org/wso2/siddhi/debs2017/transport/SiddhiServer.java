@@ -43,10 +43,9 @@ public class SiddhiServer {
                     attribute("time", Attribute.Type.STRING).
                     attribute("dimension", Attribute.Type.STRING).
                     attribute("uTime", Attribute.Type.LONG).
-                    attribute("value", Attribute.Type.DOUBLE).
-                    attribute("centers", Attribute.Type.INT).
-                    attribute("threshold", Attribute.Type.DOUBLE).
-                    attribute("node", Attribute.Type.INT);
+                    attribute("value", Attribute.Type.STRING).
+                    attribute("node", Attribute.Type.INT).
+                    attribute("line",Attribute.Type.INT);
 
             TcpNettyServer tcpNettyServer = new TcpNettyServer();
 
@@ -57,9 +56,9 @@ public class SiddhiServer {
 
             RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
 
-            SiddhiEventHandler sh1 = new SiddhiEventHandler(0L, 3L, ring);
-            SiddhiEventHandler sh2 = new SiddhiEventHandler(1L, 3L, ring);
-            SiddhiEventHandler sh3 = new SiddhiEventHandler(2L, 3L, ring);
+            SiddhiEventHandler sh1 = new SiddhiEventHandler(0, 3, ring);
+            SiddhiEventHandler sh2 = new SiddhiEventHandler(1, 3, ring);
+            SiddhiEventHandler sh3 = new SiddhiEventHandler(2, 3, ring);
 
             DebsAnomalyDetector debsAnomalyDetector = new DebsAnomalyDetector(hostClient, portClient);
 

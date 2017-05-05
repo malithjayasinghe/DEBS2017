@@ -6,17 +6,16 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.query.CentralDispatcher;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -37,14 +36,16 @@ import java.util.concurrent.TimeUnit;
 */
 public class EventDispatcher extends DefaultConsumer {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(EventDispatcher.class);
     private static int count = 0;
     private static long startTime;
-    private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static ExecutorService EXECUTOR;
-    private static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = CentralDispatcher.arrayList;
+   // private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
+   // private static ExecutorService EXECUTOR;
+   // private static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = CentralDispatcher.arrayList;
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
-
+    public static TcpNettyClient siddhiClient0 = new TcpNettyClient();
+    public static TcpNettyClient siddhiClient1 = new TcpNettyClient();
+    public static TcpNettyClient siddhiClient2 = new TcpNettyClient();
     /**
      * The constructor
      *
@@ -58,15 +59,16 @@ public class EventDispatcher extends DefaultConsumer {
      */
     public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3, int executorSize) {
         super(channel);
-        EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
-
+       // EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
         startTime = System.currentTimeMillis();
-
+        this.siddhiClient0.connect(host1, port1);
+        this.siddhiClient1.connect(host2, port2);
+        this.siddhiClient2.connect(host3, port3);
 
         //TODO: I do not think we need to synchronize the array list
-        Collections.synchronizedList(arrayList);
+        /*Collections.synchronizedList(arrayList);
         SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
-        sort.start();
+        sort.start();*/
         DebsMetaData.load("molding_machine_10M.metadata.nt");
     }
 
@@ -84,7 +86,7 @@ public class EventDispatcher extends DefaultConsumer {
         if (msg.equals(TERMINATION_MESSAGE)) {
             System.out.println("event - Terminated");
 
-            EXECUTOR.shutdown();
+         /*   EXECUTOR.shutdown();
             try {
                 EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
@@ -94,6 +96,16 @@ public class EventDispatcher extends DefaultConsumer {
                 }
             } catch (Exception e) {
                 //do nothing
+            }*/
+            try {
+                getChannel().close();
+                getChannel().getConnection().close();
+                RegexPatternSearch.publishTerminate(System.nanoTime());
+
+            } catch (IOException e) {
+                logger.debug(e.getMessage());
+            } catch (TimeoutException e) {
+                logger.debug(e.getMessage());
             }
 
         } else {
@@ -101,20 +113,12 @@ public class EventDispatcher extends DefaultConsumer {
             // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
             count++;
             long time = System.nanoTime();
-//                bytesRec += body.length;
-//                Runnable sparQLProcessor = new SPARQLProcessor(msg);
-//                EXECUTOR.execute(sparQLProcessor);
-            //Runnable regex = new RegexProcessor(msg, time);
+            RegexPatternSearch regexPatternSearch = new RegexPatternSearch(body,time);
+            regexPatternSearch.process();
 
-            Runnable lineRegex = new LineProcessor(body,System.nanoTime());
-            EXECUTOR.execute(lineRegex);
-//            } else{
-//                //System.out.println(count+"\t"+bytesRec+"\t"+body.length);
-//                count++;
-//                bytesRec += body.length;
-//                Runnable regexProcessor = new RegexProcessor(msg);
-//                EXECUTOR.execute(regexProcessor);
-//            }
+           /* Runnable lineRegex = new LineProcessor(body,System.nanoTime());
+            EXECUTOR.execute(lineRegex);*/
+
 
         }
     }
