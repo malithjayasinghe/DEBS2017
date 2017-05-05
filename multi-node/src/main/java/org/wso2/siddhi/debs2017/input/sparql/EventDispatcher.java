@@ -37,21 +37,15 @@ import java.util.concurrent.*;
 public class EventDispatcher extends DefaultConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(EventDispatcher.class);
-    public static TcpNettyClient siddhiClient0 = new TcpNettyClient();
-    public static TcpNettyClient siddhiClient1 = new TcpNettyClient();
+
     /**
      * The constructor
      *
      * @param channel the channel
-     * @param host1   the host 1
-     * @param port1   the port 1
-     * @param host2   the host 2
-     * @param port2   the port 2
+     *
      */
-    public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2) {
+    public EventDispatcher(Channel channel) {
         super(channel);
-       this.siddhiClient0.connect(host1, port1);
-       this.siddhiClient1.connect(host2, port2);
     }
 
     /**

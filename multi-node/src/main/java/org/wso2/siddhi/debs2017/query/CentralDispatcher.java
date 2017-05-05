@@ -2,6 +2,7 @@ package org.wso2.siddhi.debs2017.query;
 
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkInput;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
+import org.wso2.siddhi.debs2017.transport.utils.TcpNettyClient;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -20,6 +21,9 @@ import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
 */
 public class CentralDispatcher {
 
+    public static TcpNettyClient siddhiClient0 = new TcpNettyClient();
+    public static TcpNettyClient siddhiClient1 = new TcpNettyClient();
+
 
     public static void main(String[] args) {
 
@@ -28,10 +32,9 @@ public class CentralDispatcher {
             int client1port = Integer.parseInt(args[3]);
             String client2host = args[4];
             int client2port = Integer.parseInt(args[5]);
-//            String client3host = args[6];
-//            int client3port = Integer.parseInt(args[7]);
 
-           // int executorSize = Integer.parseInt(args[8]);
+            siddhiClient0.connect(client1host, client1port);
+            siddhiClient1.connect(client2host, client2port);
 
 
            /* Disruptor<RdfMessage> disruptor = new Disruptor<>(RdfMessage::new, ringbuffersize, executor,
@@ -45,9 +48,9 @@ public class CentralDispatcher {
 
 
                 try {
-                 /*   DebsBenchmarkInput db = new DebsBenchmarkInput(metadata, client1host, client1port, client2host, client2port, client3host, client3port, executorSize);
+                    DebsBenchmarkInput db = new DebsBenchmarkInput(metadata);
                     db.init();
-                    db.run();*/
+                    db.run();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -60,7 +63,7 @@ public class CentralDispatcher {
 
                 RabbitMQConsumer con = new RabbitMQConsumer();
                 try {
-                    con.consume(queue, rmqHost, client1host, client1port, client2host, client2port);
+                    con.consume(queue, rmqHost);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -82,11 +82,11 @@ public class RegexPatternSearch {
                     if(node % 2 == 0) {
                         Event event = new Event(this.timestamp, new Object[]{machine, time, propertyLine, uTime,
                                 temp, 0, line});
-                        EventDispatcher.siddhiClient0.send("input", new Event[]{event});
+                        CentralDispatcher.siddhiClient0.send("input", new Event[]{event});
                     }else {
                         Event event = new Event(this.timestamp, new Object[]{machine, time, propertyLine, uTime,
                                 temp, 1, line});
-                       EventDispatcher.siddhiClient1.send("input", new Event[]{event});
+                        CentralDispatcher.siddhiClient1.send("input", new Event[]{event});
                     }
                     line++;
 
@@ -115,8 +115,8 @@ public class RegexPatternSearch {
         Event e1 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 0, 0});
        Event e2 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 1, 1});
 //
-        EventDispatcher.siddhiClient0.send("input",new Event[]{e1});
-        EventDispatcher.siddhiClient1.send("input",new Event[]{e2});
+        CentralDispatcher.siddhiClient0.send("input",new Event[]{e1});
+        CentralDispatcher.siddhiClient1.send("input",new Event[]{e2});
 
     }
 

@@ -53,18 +53,15 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
     private RabbitQueue inputQueue;
 
 
-    private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-    private static ExecutorService EXECUTOR;
     private static ExecutorService RMQ_EXECUTOR;
 
 
     // private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
 
 
-    public DebsBenchmarkInput(String metadataFile, String client1host, int client1port, String client2host, int client2port, String client3host, int client3port, int executorSize) {
+    public DebsBenchmarkInput(String metadataFile) {
         RMQ_EXECUTOR = Executors.newFixedThreadPool(8);
         DebsMetaData.load(metadataFile);
-        EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
 
     }
 
