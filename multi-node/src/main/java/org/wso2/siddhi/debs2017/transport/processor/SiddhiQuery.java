@@ -79,14 +79,14 @@ public class SiddhiQuery {
     public void publish(Event obj) {
         try {
             // inputHandler.send(obj.getData());
-            inputHandler.send(obj);
-        } catch (InterruptedException e) {
+           inputHandler.send(obj);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //setting the sequence from the ringbuffer
-    public synchronized void setSequence(long l) {
+    public void setSequence(long l) {
         this.sequence = l;
     }
 
@@ -94,12 +94,14 @@ public class SiddhiQuery {
      * @param ev probability of the event sequence in the window
      *           publishing the debsevent back tot he ring buffer after setting the probability
      */
-    private synchronized void publishEvent(Event ev) {
+    private void publishEvent(Event ev) {
+
         try {
-            EventWrapper wrapper = buffer.get(sequence);
+            EventWrapper wrapper = this.buffer.get(this.sequence);
             wrapper.setEvent(ev);
-        } finally {
-            buffer.publish(sequence);
+            wrapper.setStateful(true);
+        }finally {
+            this.buffer.publish(this.sequence);
         }
     }
 

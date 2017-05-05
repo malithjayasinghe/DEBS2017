@@ -33,11 +33,11 @@ public class SiddhiEventHandler implements EventHandler<EventWrapper> {
         } else {
             String[] splitter = o[2].toString().split("_");
 
-            long partition = Long.parseLong(splitter[2]);
-            if (partition % NUM == ID) {
-                sq.setSequence(sequence);
-                sq.publish(wrapper.getEvent());
-            }
+//            long partition = Long.parseLong(splitter[2]);
+//            if (partition % NUM == ID) {
+//                sq.setSequence(sequence);
+//                sq.publish(wrapper.getEvent());
+//            }
         }
 
     }

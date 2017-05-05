@@ -19,6 +19,28 @@ import org.wso2.siddhi.core.event.Event;
 */
 public class EventWrapper {
     private Event event;
+    private boolean stateful;
+    private int line;
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
+
+
+    public boolean isStateful() {
+        return stateful;
+    }
+
+    public void setStateful(boolean stateful) {
+        this.stateful = stateful;
+    }
+
+
 
     public Event getEvent() {
         return this.event;

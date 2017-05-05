@@ -29,30 +29,26 @@ public class DebsAnomalyDetector implements EventHandler<EventWrapper> {
     @Override
     public void onEvent(EventWrapper wrapper, long l, boolean b) throws Exception {
 
-        Object[] o = wrapper.getEvent().getData();
-        probability = Double.parseDouble(o[3].toString());
-        threshold = Double.parseDouble(o[4].toString());
+
         if (wrapper.getEvent().getTimestamp() == -1l) {
             Event[] events = new Event[1];
             events[0] = new Event(-1l, new Object[]{"machine", "time", "dimension", -1.0, -1.0,
-                    Integer.parseInt(wrapper.getEvent().getData()[7].toString())});
+                    Integer.parseInt(wrapper.getEvent().getData()[5].toString())});
             System.out.println("debs : terminated");
            // Event[] events = {wrapper.getEvent()};
-            siddhiClient.send("output", events);
-        } else {
+           siddhiClient.send("output", events);
+        } else if(wrapper.isStateful()) {
+            Object[] o = wrapper.getEvent().getData();
+            probability = Double.parseDouble(o[3].toString());
+            threshold = Double.parseDouble(o[4].toString());
             if (probability < threshold && probability > 0) {
-                System.out.println(wrapper.getEvent() + "At anomalydetector");
-                send(wrapper.getEvent());
+                Event[] events = {wrapper.getEvent()};
+                siddhiClient.send("output", events);
             }
         }
 
     }
 
-    private synchronized void send(Event event) {
-        count++;
-        Event[] events = {event};
-        siddhiClient.send("output", events);
-    }
 
     public DebsAnomalyDetector(String host, int port) {
         this.siddhiClient = new TcpNettyClient();
