@@ -35,12 +35,13 @@ public class SiddhiServer {
     public static RingBuffer<EventWrapper> ringBuffer;
 
     public static void main(String[] args) {
-        if (args.length == 5) {
+        if (args.length == 6) {
             int ringBufferSize = Integer.parseInt(args[4]);
             String hostServer = args[0];
             int portServer = Integer.parseInt(args[1]);
             String hostClient = args[2];
             int portClient = Integer.parseInt(args[3]);
+            int handlerCount = Integer.parseInt(args[5]);
 
             DebsMetaData.load("molding_machine_10M.metadata.nt");
             StreamDefinition streamDefinition = StreamDefinition.id("input").
@@ -60,17 +61,16 @@ public class SiddhiServer {
             Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new, buffersize, executor);
 
             ringBuffer = disruptor.getRingBuffer();
-
-            RegexEventHandler sh1 = new RegexEventHandler(0, 2, ringBuffer);
-            RegexEventHandler sh2 = new RegexEventHandler(1, 2, ringBuffer);
-           // RegexEventHandler sh3 = new RegexEventHandler(2, 3, ring);
+            RegexEventHandler[] regexEventHandlers = new RegexEventHandler[handlerCount];
+            for (int i =0; i<handlerCount; i++){
+                regexEventHandlers[i] = new RegexEventHandler(i, handlerCount, ringBuffer);
+            }
 
 
             DebsAnomalyDetector debsAnomalyDetector = new DebsAnomalyDetector(hostClient, portClient);
 
-            disruptor.handleEventsWith(sh1, sh2);
-            disruptor.after(sh1, sh2).handleEventsWith(debsAnomalyDetector);
-            // disruptor.handleEventsWith(debsAnomalyDetector);
+            disruptor.handleEventsWith(regexEventHandlers);
+            disruptor.after(regexEventHandlers).handleEventsWith(debsAnomalyDetector);
 
             disruptor.start();
             tcpNettyServer.addStreamListener(new SiddhiListener(streamDefinition));
@@ -80,7 +80,7 @@ public class SiddhiServer {
             serverConfig.setPort(portServer);
             tcpNettyServer.bootServer(serverConfig);
         } else {
-            System.out.println("Expected 5 parameters : server host, server port, client host, client port, ringbuffer size");
+            System.out.println("Expected 5 parameters : server host, server port, client host, client port, ringbuffer size, no of Handlers");
         }
 
     }
