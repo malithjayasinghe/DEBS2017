@@ -14,11 +14,6 @@ import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
-import org.wso2.siddhi.debs2017.input.sparql.LineProcessor;
-import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
-import org.wso2.siddhi.debs2017.input.sparql.RegexProcessor;
-import org.wso2.siddhi.debs2017.input.sparql.SorterThread;
-import org.wso2.siddhi.debs2017.query.CentralDispatcher;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -61,7 +56,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
     private static ExecutorService EXECUTOR;
     private static ExecutorService RMQ_EXECUTOR;
 
-    private ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = CentralDispatcher.arrayList;
+
     // private AtomicBoolean isSparQL = SingleNodeServer.isSparQL;
 
 
@@ -69,8 +64,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
         RMQ_EXECUTOR = Executors.newFixedThreadPool(8);
         DebsMetaData.load(metadataFile);
         EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
-        SorterThread sort = new SorterThread(arrayList, client1host, client1port, client2host, client2port, client3host, client3port);
-        sort.start();
+
     }
 
 
@@ -222,10 +216,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
                 try {
                     EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
                     System.out.println("-------------------------------------");
-                    for (int i = 0; i < arrayList.size(); i++) {
-                        ObservationGroup ob = new ObservationGroup(-1l, null);
-                        arrayList.get(i).put(ob);
-                    }
+
                 } catch (InterruptedException e) {
                     //do nothing
                 }
@@ -239,8 +230,7 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
                 long time = System.nanoTime();
                // Runnable regex = new RegexProcessor(message, time);
 
-                Runnable lineRegex = new LineProcessor(bytes,System.nanoTime());
-                EXECUTOR.execute(lineRegex);
+
 //                } else {
 //                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
 //                    EXECUTOR.execute(regexProcessor);

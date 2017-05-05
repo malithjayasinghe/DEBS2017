@@ -45,7 +45,6 @@ public class EventDispatcher extends DefaultConsumer {
     private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
     public static TcpNettyClient siddhiClient0 = new TcpNettyClient();
     public static TcpNettyClient siddhiClient1 = new TcpNettyClient();
-    public static TcpNettyClient siddhiClient2 = new TcpNettyClient();
     /**
      * The constructor
      *
@@ -54,16 +53,13 @@ public class EventDispatcher extends DefaultConsumer {
      * @param port1   the port 1
      * @param host2   the host 2
      * @param port2   the port 2
-     * @param host3   the host 3
-     * @param port3   the port 3
      */
-    public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2, String host3, int port3, int executorSize) {
+    public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2) {
         super(channel);
        // EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
         startTime = System.currentTimeMillis();
-        this.siddhiClient0.connect(host1, port1);
-        this.siddhiClient1.connect(host2, port2);
-        this.siddhiClient2.connect(host3, port3);
+       this.siddhiClient0.connect(host1, port1);
+       this.siddhiClient1.connect(host2, port2);
 
         //TODO: I do not think we need to synchronize the array list
         /*Collections.synchronizedList(arrayList);
@@ -86,21 +82,11 @@ public class EventDispatcher extends DefaultConsumer {
         if (msg.equals(TERMINATION_MESSAGE)) {
             System.out.println("event - Terminated");
 
-         /*   EXECUTOR.shutdown();
-            try {
-                EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
-                for (int i = 0; i < arrayList.size(); i++) {
-                    ObservationGroup ob = new ObservationGroup(-1l, null);
-                    arrayList.get(i).put(ob);
-                }
-            } catch (Exception e) {
-                //do nothing
-            }*/
             try {
                 getChannel().close();
                 getChannel().getConnection().close();
-                RegexPatternSearch.publishTerminate(System.nanoTime());
+                RegexPatternSearch.publishTerminate();
 
             } catch (IOException e) {
                 logger.debug(e.getMessage());

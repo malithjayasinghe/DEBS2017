@@ -1,8 +1,4 @@
-package org.wso2.siddhi.debs2017.input.sparql;
-
-import org.wso2.siddhi.core.event.Event;
-
-import java.util.ArrayList;
+package org.wso2.siddhi.debs2017.transport.processor;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -19,24 +15,5 @@ import java.util.ArrayList;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class ObservationGroup {
-    private long timestamp;
-    private ArrayList<Event> dataArr;
-
-    public long getTimestamp() {
-        return this.timestamp;
-    }
-
-    public void setTimestamp(long time) {
-        this.timestamp = time;
-    }
-
-    public ArrayList<Event> getDataArr() {
-        return this.dataArr;
-    }
-
-    public ObservationGroup(long timestamp, ArrayList<Event> arr) {
-        this.timestamp = timestamp;
-        this.dataArr = arr;
-    }
+public class RegexEventHandler {
 }

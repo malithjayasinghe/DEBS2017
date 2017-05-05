@@ -77,30 +77,18 @@ public class RegexPatternSearch {
                 } else if (count == valCount) {
 
                     valCount += nextOccurrence;
-/*
-                    long sequence = CentralDispatcher.buffer.next();  // Grab the next sequence
-
-                    RdfMessage message = CentralDispatcher.buffer.get(sequence); // Get the entry in the Disruptor
-                    message.setMachine(machine);
-                    message.setTimestamp(time);
-                    message.setTime(uTime);
-                    message.setProperty(propertyLine);
-                    message.setValue(temp);
-                    message.setApplicationTime(this.timestamp);
-                    message.setLine(line);
-                    CentralDispatcher.buffer.publish(sequence);*/
                     int node = Integer.parseInt(machine.split("_")[1]);
-                    Event event = new Event(this.timestamp, new Object[]{machine, time, propertyLine, uTime,
-                                            temp, node,line});
-                    if(node % 3 == 0) {
-                        EventDispatcher.siddhiClient0.send("input", new Event[]{event});
-                    }else if(node % 3 == 1){
-                        EventDispatcher.siddhiClient1.send("input", new Event[]{event});
-                    }else {
-                        EventDispatcher.siddhiClient2.send("input", new Event[]{event});
-                    }
 
-                    line = line +1;
+                    if(node % 2 == 0) {
+                        Event event = new Event(this.timestamp, new Object[]{machine, time, propertyLine, uTime,
+                                temp, 0, line});
+                        EventDispatcher.siddhiClient0.send("input", new Event[]{event});
+                    }else {
+                        Event event = new Event(this.timestamp, new Object[]{machine, time, propertyLine, uTime,
+                                temp, 1, line});
+                       EventDispatcher.siddhiClient1.send("input", new Event[]{event});
+                    }
+                    line++;
 
 
                 }
@@ -124,28 +112,11 @@ public class RegexPatternSearch {
 
 
     public static void publishTerminate() {
-       /* long sequence = CentralDispatcher.buffer.next();  // Grab the next sequence
-        try {
-            RdfMessage wrapper = CentralDispatcher.buffer.get(sequence); // Get the entry in the Disruptor
-            wrapper.setApplicationTime(timestamp);
-            wrapper.setStateful(true);
-            wrapper.setTerminated(true);
-            wrapper.setEvent(new Event(-1L, new Object[]{}));
-            System.out.println("Termination published");
-
-
-        } finally {
-
-            CentralDispatcher.buffer.publish(sequence);
-
-
-        }*/
         Event e1 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 0, 0});
-        Event e2 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 1, 1});
-        Event e3 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 2, 2});
+       Event e2 = new Event(-1l, new Object[]{"machine", "time", "dimension", -1L, "value", 1, 1});
+//
         EventDispatcher.siddhiClient0.send("input",new Event[]{e1});
         EventDispatcher.siddhiClient1.send("input",new Event[]{e2});
-        EventDispatcher.siddhiClient2.send("input",new Event[]{e3});
 
     }
 

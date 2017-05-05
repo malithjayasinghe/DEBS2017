@@ -1,16 +1,7 @@
 package org.wso2.siddhi.debs2017.query;
 
-import com.lmax.disruptor.BusySpinWaitStrategy;
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.dsl.Disruptor;
-import com.lmax.disruptor.dsl.ProducerType;
 import org.wso2.siddhi.debs2017.input.DebsBenchmarkInput;
 import org.wso2.siddhi.debs2017.input.rabbitmq.RabbitMQConsumer;
-import org.wso2.siddhi.debs2017.input.sparql.ObservationGroup;
-import org.wso2.siddhi.debs2017.input.sparql.RdfMessage;
-
-import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /*
 * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -28,8 +19,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 * limitations under the License.
 */
 public class CentralDispatcher {
-    public static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList;
-    public static RingBuffer<RdfMessage> buffer;
 
 
     public static void main(String[] args) {
@@ -44,10 +33,6 @@ public class CentralDispatcher {
 
             int executorSize = Integer.parseInt(args[8]);
 
-            arrayList = new ArrayList<>(executorSize);
-            for (int i = 0; i < executorSize; i++) {
-                arrayList.add(new LinkedBlockingQueue());
-            }
 
            /* Disruptor<RdfMessage> disruptor = new Disruptor<>(RdfMessage::new, ringbuffersize, executor,
                     ProducerType.MULTI, new BusySpinWaitStrategy());
@@ -75,14 +60,14 @@ public class CentralDispatcher {
 
                 RabbitMQConsumer con = new RabbitMQConsumer();
                 try {
-                    con.consume(queue, rmqHost, client1host, client1port, client2host, client2port, client3host, client3port, executorSize);
+                    con.consume(queue, rmqHost, client1host, client1port, client2host, client2port);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         } else {
-            System.out.println("Expected 9 parameters: queue name, rmq host, client1 host, client1 port, client2 host, client2 port, client3 host, client3 port, executor size");
-            System.out.println("Expected 9 parameters: -hobbit, metadataFile, client1 host, client1 port, client2 host, client2 port, client3 host, client3 port, executor size");
+            System.out.println("Expected 9 parameters: queue name, rmq host, client1 host, client1 port, client2 host, client2 port ");
+            System.out.println("Expected 9 parameters: -hobbit, metadataFile, client1 host, client1 port, client2 host, client2 port ");
         }
     }
 }
