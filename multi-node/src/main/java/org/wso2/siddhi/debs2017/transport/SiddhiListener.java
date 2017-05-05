@@ -24,11 +24,10 @@ import org.wso2.siddhi.tcp.transport.callback.StreamListener;
 public class SiddhiListener implements StreamListener {
     // private static final Logger log = Logger.getLogger(org.wso2.siddhi.tcp.transport.callback.LogStreamListener.class);
     private StreamDefinition streamDefinition;
-    private RingBuffer<EventWrapper> ringBuffer;
+    private RingBuffer<EventWrapper> ringBuffer = SiddhiServer.ringBuffer;
 
-    public SiddhiListener(StreamDefinition streamDefinition, RingBuffer<EventWrapper> ring) {
+    public SiddhiListener(StreamDefinition streamDefinition) {
         this.streamDefinition = streamDefinition;
-        this.ringBuffer = ring;
 
     }
 
@@ -45,11 +44,14 @@ public class SiddhiListener implements StreamListener {
     @Override
     public void onEvents(Event[] events) {
 
+
         for (int i = 0; i < events.length; i++) {
+            int line = Integer.parseInt(events[i].getData()[6].toString());
             long sequence = this.ringBuffer.next();  // Grab the next sequence
             try {
                 EventWrapper wrapper = this.ringBuffer.get(sequence); // Get the entry in the Disruptor
                 wrapper.setEvent(events[i]);
+                wrapper.setLine(line);
             } finally {
                 this.ringBuffer.publish(sequence);
             }

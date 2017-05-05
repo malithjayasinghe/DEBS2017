@@ -2,8 +2,10 @@ package org.wso2.siddhi.debs2017.transport;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
 import org.wso2.siddhi.debs2017.transport.processor.DebsAnomalyDetector;
 import org.wso2.siddhi.debs2017.transport.processor.EventWrapper;
+import org.wso2.siddhi.debs2017.transport.processor.RegexEventHandler;
 import org.wso2.siddhi.debs2017.transport.processor.SiddhiEventHandler;
 import org.wso2.siddhi.debs2017.transport.utils.TcpNettyServer;
 import org.wso2.siddhi.query.api.definition.Attribute;
@@ -30,6 +32,8 @@ import java.util.concurrent.Executors;
 */
 public class SiddhiServer {
 
+    public static RingBuffer<EventWrapper> ringBuffer;
+
     public static void main(String[] args) {
         if (args.length == 5) {
             int ringBufferSize = Integer.parseInt(args[4]);
@@ -38,6 +42,7 @@ public class SiddhiServer {
             String hostClient = args[2];
             int portClient = Integer.parseInt(args[3]);
 
+            DebsMetaData.load("molding_machine_10M.metadata.nt");
             StreamDefinition streamDefinition = StreamDefinition.id("input").
                     attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
@@ -54,20 +59,21 @@ public class SiddhiServer {
             int buffersize = ringBufferSize;
             Disruptor<EventWrapper> disruptor = new Disruptor<>(EventWrapper::new, buffersize, executor);
 
-            RingBuffer<EventWrapper> ring = disruptor.getRingBuffer();
+            ringBuffer = disruptor.getRingBuffer();
 
-            SiddhiEventHandler sh1 = new SiddhiEventHandler(0, 3, ring);
-            SiddhiEventHandler sh2 = new SiddhiEventHandler(1, 3, ring);
-            SiddhiEventHandler sh3 = new SiddhiEventHandler(2, 3, ring);
+            RegexEventHandler sh1 = new RegexEventHandler(0, 2, ringBuffer);
+            RegexEventHandler sh2 = new RegexEventHandler(1, 2, ringBuffer);
+           // RegexEventHandler sh3 = new RegexEventHandler(2, 3, ring);
+
 
             DebsAnomalyDetector debsAnomalyDetector = new DebsAnomalyDetector(hostClient, portClient);
 
-            disruptor.handleEventsWith(sh1, sh2, sh3);
-            disruptor.after(sh1, sh2, sh3).handleEventsWith(debsAnomalyDetector);
+            disruptor.handleEventsWith(sh1, sh2);
+            disruptor.after(sh1, sh2).handleEventsWith(debsAnomalyDetector);
             // disruptor.handleEventsWith(debsAnomalyDetector);
 
             disruptor.start();
-            tcpNettyServer.addStreamListener(new SiddhiListener(streamDefinition, ring));
+            tcpNettyServer.addStreamListener(new SiddhiListener(streamDefinition));
 
             ServerConfig serverConfig = new ServerConfig();
             serverConfig.setHost(hostServer);

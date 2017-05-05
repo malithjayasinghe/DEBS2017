@@ -51,7 +51,7 @@ public class SortingThread extends Thread {
      * Start the sorting thread.
      */
     public void run() {
-        sortByMachine = OutputServer.isSort;
+        sortByMachine = false;
         System.out.println(sortByMachine);
         while (true) {
             if (termination == 3) {
