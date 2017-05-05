@@ -37,12 +37,6 @@ import java.util.concurrent.*;
 public class EventDispatcher extends DefaultConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(EventDispatcher.class);
-    private static int count = 0;
-    private static long startTime;
-   // private static ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("%d").build();
-   // private static ExecutorService EXECUTOR;
-   // private static ArrayList<LinkedBlockingQueue<ObservationGroup>> arrayList = CentralDispatcher.arrayList;
-    private static final String TERMINATION_MESSAGE = "~~Termination Message~~";
     public static TcpNettyClient siddhiClient0 = new TcpNettyClient();
     public static TcpNettyClient siddhiClient1 = new TcpNettyClient();
     /**
@@ -56,16 +50,8 @@ public class EventDispatcher extends DefaultConsumer {
      */
     public EventDispatcher(Channel channel, String host1, int port1, String host2, int port2) {
         super(channel);
-       // EXECUTOR = Executors.newFixedThreadPool(executorSize, threadFactory);
-        startTime = System.currentTimeMillis();
        this.siddhiClient0.connect(host1, port1);
        this.siddhiClient1.connect(host2, port2);
-
-        //TODO: I do not think we need to synchronize the array list
-        /*Collections.synchronizedList(arrayList);
-        SorterThread sort = new SorterThread(arrayList, host1, port1, host2, port2, host3, port3);
-        sort.start();*/
-        DebsMetaData.load("molding_machine_10M.metadata.nt");
     }
 
     /**
@@ -78,11 +64,9 @@ public class EventDispatcher extends DefaultConsumer {
      * @throws IOException thrown if an IO exception occurs
      */
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-        String msg = new String(body, "UTF-8");
-        if (msg.equals(TERMINATION_MESSAGE)) {
+
+        if (body.length<30) {
             System.out.println("event - Terminated");
-
-
             try {
                 getChannel().close();
                 getChannel().getConnection().close();
@@ -95,16 +79,10 @@ public class EventDispatcher extends DefaultConsumer {
             }
 
         } else {
-//            if(isSparQL.get()){
-            // System.out.println(count+"\t"+bytesRec+"\t"+body.length);
-            count++;
+
             long time = System.nanoTime();
             RegexPatternSearch regexPatternSearch = new RegexPatternSearch(body,time);
             regexPatternSearch.process();
-
-           /* Runnable lineRegex = new LineProcessor(body,System.nanoTime());
-            EXECUTOR.execute(lineRegex);*/
-
 
         }
     }

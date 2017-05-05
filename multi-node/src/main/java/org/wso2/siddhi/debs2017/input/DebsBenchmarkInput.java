@@ -14,6 +14,7 @@ import org.hobbit.core.data.RabbitQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.debs2017.input.metadata.DebsMetaData;
+import org.wso2.siddhi.debs2017.input.sparql.RegexPatternSearch;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -209,36 +210,15 @@ public class DebsBenchmarkInput extends AbstractCommandReceivingComponent {
 
     private void handleDelivery(byte[] bytes) {
         try {
-            String message = new String(bytes, CHARSET);
-            if (TERMINATION_MESSAGE.equals(message)) {
-                logger.debug("Got termination message");
-                EXECUTOR.shutdown();
-                try {
-                    EXECUTOR.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                    System.out.println("-------------------------------------");
-
-                } catch (InterruptedException e) {
-                    //do nothing
-                }
-                // terminationMessageBarrier.countDown();
+            if (bytes.length<30) {
+                RegexPatternSearch.publishTerminate();
             } else {
-                //logger.debug("Repeating message: {}", message);
-//                if(isSparQL.get()){
-//                    Runnable sparQLProcessor = new SPARQLProcessor(message);
-//                    System.out.println("sp");
-//                    EXECUTOR.execute(sparQLProcessor);
                 long time = System.nanoTime();
-               // Runnable regex = new RegexProcessor(message, time);
+                RegexPatternSearch regexPatternSearch = new RegexPatternSearch(bytes,time);
+                regexPatternSearch.process();
 
-
-//                } else {
-//                    Runnable regexProcessor = new RegexProcessor(message, System.currentTimeMillis());
-//                    EXECUTOR.execute(regexProcessor);
-//                }
-
-                //sends to output queue
-                //send(bytes);
             }
+
         } catch (Exception e) {
             logger.error("Exception", e);
         }
