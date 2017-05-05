@@ -42,7 +42,7 @@ public class SortingThread extends Thread {
 
         multiNodeAlertGenerator = new MultiNodeAlertGenerator(rmq);
         addQueues();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             elements.add(0);
         }
     }
@@ -54,7 +54,7 @@ public class SortingThread extends Thread {
         sortByMachine = false;
         System.out.println(sortByMachine);
         while (true) {
-            if (termination == 3) {
+            if (termination == 2) {
                 if (anomalyList.size() != 0) {
                     publish(anomalyList);
                 } else if (sortingList.size() != 0) {
@@ -130,8 +130,8 @@ public class SortingThread extends Thread {
         multiNodeAlertGenerator.generateAlert(currentEvent);
         sortingList.remove(currentEvent);
 
-        anomalycount++;
-        System.out.println(anomalycount + "Anomaly count");
+       /* anomalycount++;
+        System.out.println(anomalycount + "Anomaly count");*/
 
 
     }
@@ -140,7 +140,7 @@ public class SortingThread extends Thread {
      * assign the linked blocking queues to the arraylist
      */
     public void addQueues() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             blockingQueues.add(new LinkedBlockingQueue<Event>());
         }
     }

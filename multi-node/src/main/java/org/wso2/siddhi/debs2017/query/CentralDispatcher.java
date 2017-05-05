@@ -23,15 +23,15 @@ public class CentralDispatcher {
 
     public static void main(String[] args) {
 
-        if (args.length == 9) {
+        if (args.length == 6) {
             String client1host = args[2];
             int client1port = Integer.parseInt(args[3]);
             String client2host = args[4];
             int client2port = Integer.parseInt(args[5]);
-            String client3host = args[6];
-            int client3port = Integer.parseInt(args[7]);
+//            String client3host = args[6];
+//            int client3port = Integer.parseInt(args[7]);
 
-            int executorSize = Integer.parseInt(args[8]);
+           // int executorSize = Integer.parseInt(args[8]);
 
 
            /* Disruptor<RdfMessage> disruptor = new Disruptor<>(RdfMessage::new, ringbuffersize, executor,
@@ -45,9 +45,9 @@ public class CentralDispatcher {
 
 
                 try {
-                    DebsBenchmarkInput db = new DebsBenchmarkInput(metadata, client1host, client1port, client2host, client2port, client3host, client3port, executorSize);
+                 /*   DebsBenchmarkInput db = new DebsBenchmarkInput(metadata, client1host, client1port, client2host, client2port, client3host, client3port, executorSize);
                     db.init();
-                    db.run();
+                    db.run();*/
 
                 } catch (Exception e) {
                     e.printStackTrace();

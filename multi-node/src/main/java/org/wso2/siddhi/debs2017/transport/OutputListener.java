@@ -62,8 +62,7 @@ public class OutputListener implements StreamListener {
     public void onEvents(Event[] events) {
         Event newEvent = events[0];
         int node = Integer.parseInt(newEvent.getData()[5].toString());
-        System.out.println("Node number" + node);
-        System.out.println("---"+newEvent);
+
         if (node == 0)
             try {
                 blockingQueues.get(0).put(newEvent);
