@@ -35,15 +35,24 @@ public class SiddhiServer {
     public static RingBuffer<EventWrapper> ringBuffer;
 
     public static void main(String[] args) {
-        if (args.length == 6) {
+        if (args.length == 7) {
             int ringBufferSize = Integer.parseInt(args[4]);
             String hostServer = args[0];
             int portServer = Integer.parseInt(args[1]);
             String hostClient = args[2];
             int portClient = Integer.parseInt(args[3]);
             int handlerCount = Integer.parseInt(args[5]);
+            int metaDataCase = Integer.parseInt(args[6]);
 
-            DebsMetaData.load("molding_machine_10M.metadata.nt");
+            switch (metaDataCase){
+                case 1:
+                    DebsMetaData.load("molding_machine_10M.metadata.nt");
+                    break;
+                case 2:
+                    DebsMetaData.load("1000molding_machine_5000dp.metadata.nt");
+            }
+
+
             StreamDefinition streamDefinition = StreamDefinition.id("input").
                     attribute("machine", Attribute.Type.STRING).
                     attribute("time", Attribute.Type.STRING).
